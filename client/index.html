@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Discover Wizard by Zoho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+</head>
+
+<body>
+    <div class="page-shell">
+        <div class="wizard-container">
+            <aside class="brand-panel" aria-hidden="true">
+                <div class="brand-mark">
+                    <img class="brand-logo" src="logo.png" alt="Zoho logo">
+                </div>
+                <p class="brand-kicker">Zoho Discover Wizard</p>
+                <h2>Find your fastest path from first step to full rollout.</h2>
+                <p class="brand-copy">Share where you are today and we will map the right setup, tooling, and next actions for your team.</p>
+            </aside>
+
+            <section class="wizard-panel">
+                <!-- Progress bar -->
+                <div class="progress-bar">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span class="progress-label active" data-stage="1">Your Profile</span>
+                        <span class="progress-label" data-stage="2">Pain Points</span>
+                        <span class="progress-label" data-stage="3">Your Roadmap</span>
+                    </div>
+                </div>
+
+                <!-- Wizard content area -->
+                <div class="wizard-content" id="wizardContent">
+
+                    <!-- Q1: What are you looking for? -->
+                    <div class="question-card active" data-question="intent">
+                        <div class="question-header">
+                            <span class="stage-badge">Step 1 of 3</span>
+                            <h1>What brings you here?</h1>
+                            <p class="question-subtitle">Help us understand what kind of guidance would be most useful.</p>
+                        </div>
+
+                        <div class="options-grid options-single-col">
+                            <button class="option-card" data-value="stuck">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>I'm stuck</h3>
+                                    <p>Something isn't working or I'm not sure where to go next</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="specific-problem">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>One specific problem</h3>
+                                    <p>I know what I need to solve and I'm looking for the right tool</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="consultation">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>I want a consultation</h3>
+                                    <p>Walk me through what Zoho can do for my business</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q2: Relationship to Zoho -->
+                    <div class="question-card" data-question="relationship">
+                        <div class="question-header">
+                            <span class="stage-badge">Step 2 of 3</span>
+                            <h1>What's your relationship with Zoho?</h1>
+                            <p class="question-subtitle">This helps us tailor recommendations to where you are today.</p>
+                        </div>
+
+                        <div class="options-grid options-single-col">
+                            <button class="option-card" data-value="trial">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>I'm in a trial</h3>
+                                    <p>Currently trying out Zoho products</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="single-product">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Single product customer</h3>
+                                    <p>I'm paying for one Zoho app (CRM, Books, Desk, etc.)</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="zoho-one">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Zoho One customer</h3>
+                                    <p>I have access to the full Zoho suite</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="new">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>I'm brand new</h3>
+                                    <p>Haven't signed up for anything yet</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q3: Access level -->
+                    <div class="question-card" data-question="access">
+                        <div class="question-header">
+                            <span class="stage-badge">Step 3 of 3</span>
+                            <h1>Are you an admin?</h1>
+                            <p class="question-subtitle">Knowing your access level helps us recommend actions you can actually take.</p>
+                        </div>
+
+                        <div class="options-grid options-two-col">
+                            <button class="option-card option-card--tall" data-value="admin">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Yes, I'm an admin</h3>
+                                    <p>I can install apps, manage users, and configure settings</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card option-card--tall" data-value="not-admin">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>No, I'm a regular user</h3>
+                                    <p>I use the tools but someone else manages the account</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card option-card--tall" data-value="unsure">
+                                <div class="option-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>I'm not sure</h3>
+                                    <p>I don't know what access level I have</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════ -->
+                    <!-- STAGE 2: Requirements Development  -->
+                    <!-- ═══════════════════════════════════ -->
+
+                    <!-- Q4: Area of interest (multi-select) -->
+                    <div class="question-card" data-question="areas">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s2">Step 1 of 4</span>
+                            <h1>What areas of your business need attention?</h1>
+                            <p class="question-subtitle">Select all that apply. This shapes everything that follows.</p>
+                        </div>
+
+                        <div class="chip-grid" data-multi="true">
+                            <button class="chip" data-value="lead-management">Follow up with leads</button>
+                            <button class="chip" data-value="quoting">Create quotes &amp; proposals</button>
+                            <button class="chip" data-value="deal-closing">Close more deals</button>
+                            <button class="chip" data-value="invoicing">Send invoices</button>
+                            <button class="chip" data-value="payments">Collect online payments</button>
+                            <button class="chip" data-value="accounting">Accounting &amp; bookkeeping</button>
+                            <button class="chip" data-value="support">Customer support</button>
+                            <button class="chip" data-value="esignature">Document signing</button>
+                            <button class="chip" data-value="client-projects">Client project delivery</button>
+                            <button class="chip" data-value="internal-projects">Internal project management</button>
+                            <button class="chip" data-value="email-marketing">Email marketing</button>
+                            <button class="chip" data-value="social-marketing">Social media marketing</button>
+                            <button class="chip" data-value="reporting">Reports &amp; dashboards</button>
+                            <button class="chip" data-value="collaboration">Team collaboration</button>
+                        </div>
+                    </div>
+
+                    <!-- Q5: Process deep-dive (Who/What/When/Where/Why/How) -->
+                    <div class="question-card" data-question="process">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s2">Step 2 of 4</span>
+                            <h1>Tell us more about your process</h1>
+                            <p class="question-subtitle">Help us understand the people, workflow, and pain behind your selected areas.</p>
+                        </div>
+
+                        <div class="process-form" id="processForm">
+                            <label class="form-field">
+                                <span class="form-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    Who is involved?
+                                </span>
+                                <input type="text" class="form-input" data-field="who" placeholder="e.g. Sales team of 5, one manager">
+                            </label>
+                            <label class="form-field">
+                                <span class="form-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                    What does the current process look like?
+                                </span>
+                                <textarea class="form-input form-textarea" data-field="what" placeholder="e.g. Leads come in via email, we track them in a spreadsheet..."></textarea>
+                            </label>
+                            <label class="form-field">
+                                <span class="form-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    When does this happen?
+                                </span>
+                                <input type="text" class="form-input" data-field="when" placeholder="e.g. Daily, weekly pipeline reviews on Monday">
+                            </label>
+                            <label class="form-field">
+                                <span class="form-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    Where does this happen?
+                                </span>
+                                <input type="text" class="form-input" data-field="where" placeholder="e.g. Remote team across 3 time zones">
+                            </label>
+                            <label class="form-field">
+                                <span class="form-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    Why is this a problem now?
+                                </span>
+                                <input type="text" class="form-input" data-field="why" placeholder="e.g. We're losing deals because follow-ups slip through the cracks">
+                            </label>
+                            <label class="form-field">
+                                <span class="form-label">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                                    How are you handling it today?
+                                </span>
+                                <input type="text" class="form-input" data-field="how" placeholder="e.g. Spreadsheets, manual emails, memory">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q6: Priorities -->
+                    <div class="question-card" data-question="priorities">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s2">Step 3 of 4</span>
+                            <h1>What matters most to you?</h1>
+                            <p class="question-subtitle">Rank your top priorities. Drag to reorder, or just pick your top 3.</p>
+                        </div>
+
+                        <div class="chip-grid" data-multi="true" data-max="3">
+                            <button class="chip chip--priority" data-value="cost">
+                                <span class="chip-rank"></span>
+                                Low cost
+                            </button>
+                            <button class="chip chip--priority" data-value="speed">
+                                <span class="chip-rank"></span>
+                                Fast to set up
+                            </button>
+                            <button class="chip chip--priority" data-value="integration">
+                                <span class="chip-rank"></span>
+                                Integrates with what I have
+                            </button>
+                            <button class="chip chip--priority" data-value="simplicity">
+                                <span class="chip-rank"></span>
+                                Simple to use
+                            </button>
+                            <button class="chip chip--priority" data-value="scalability">
+                                <span class="chip-rank"></span>
+                                Scales as we grow
+                            </button>
+                            <button class="chip chip--priority" data-value="automation">
+                                <span class="chip-rank"></span>
+                                Automates manual work
+                            </button>
+                            <button class="chip chip--priority" data-value="reporting">
+                                <span class="chip-rank"></span>
+                                Better visibility &amp; reporting
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q7: Confirm understanding -->
+                    <div class="question-card" data-question="confirm">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s2">Step 4 of 4</span>
+                            <h1>Does this look right?</h1>
+                            <p class="question-subtitle">Here's what we heard. Edit anything that's off before we build your roadmap.</p>
+                        </div>
+
+                        <div class="mind-map" id="mindMap">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════ -->
+                    <!-- STAGE 3: Map to Zoho              -->
+                    <!-- ═══════════════════════════════════ -->
+
+                    <!-- Q8: Bigin vs CRM -->
+                    <div class="question-card" data-question="crm-fit">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s3">Step 1 of 5</span>
+                            <h1>How complex is your sales process?</h1>
+                            <p class="question-subtitle">This helps us recommend the right CRM fit for your team.</p>
+                        </div>
+
+                        <div class="options-grid options-single-col">
+                            <button class="option-card" data-value="simple">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Simple &mdash; Bigin</h3>
+                                    <p>Small pipeline, few deals, straightforward follow-ups. Perfect for solopreneurs or small teams.</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="standard">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Standard &mdash; Zoho CRM</h3>
+                                    <p>Multiple stages, team selling, automations, and integrations with other Zoho apps.</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="advanced">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Advanced &mdash; CRM + Custom Modules</h3>
+                                    <p>Complex workflows, custom modules, territory management, advanced analytics.</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q9: Forms & Lead Capture -->
+                    <div class="question-card" data-question="forms">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s3">Step 2 of 5</span>
+                            <h1>How do leads reach you today?</h1>
+                            <p class="question-subtitle">We'll recommend the right capture tools based on your channels.</p>
+                        </div>
+
+                        <div class="chip-grid" data-multi="true">
+                            <button class="chip" data-value="website-forms">Website contact forms</button>
+                            <button class="chip" data-value="landing-pages">Landing pages &amp; campaigns</button>
+                            <button class="chip" data-value="live-chat">Live chat on website</button>
+                            <button class="chip" data-value="social">Social media DMs</button>
+                            <button class="chip" data-value="referrals">Word of mouth / referrals</button>
+                            <button class="chip" data-value="email-inbound">Inbound emails</button>
+                            <button class="chip" data-value="phone">Phone calls</button>
+                            <button class="chip" data-value="events">Events &amp; trade shows</button>
+                            <button class="chip" data-value="ads">Paid ads (Google, Meta)</button>
+                        </div>
+                    </div>
+
+                    <!-- Q10: Email Marketing -->
+                    <div class="question-card" data-question="email-fit">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s3">Step 3 of 5</span>
+                            <h1>What does your email outreach look like?</h1>
+                            <p class="question-subtitle">This determines whether you need Campaigns, Marketing Automation, or both.</p>
+                        </div>
+
+                        <div class="options-grid options-single-col">
+                            <button class="option-card" data-value="none">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>We don't do email marketing</h3>
+                                    <p>Not a priority right now</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="newsletters">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Newsletters &amp; announcements</h3>
+                                    <p>Occasional bulk sends to a contact list &mdash; Zoho Campaigns</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="automation">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Automated drip sequences</h3>
+                                    <p>Behavior-triggered emails, lead nurturing &mdash; Zoho Marketing Automation</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="both">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Both newsletters and automation</h3>
+                                    <p>Full marketing stack with campaigns + automated journeys</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q11: Quotes & Invoices -->
+                    <div class="question-card" data-question="billing-fit">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s3">Step 4 of 5</span>
+                            <h1>How do you handle quotes and invoices?</h1>
+                            <p class="question-subtitle">We'll map you to the right billing tools in Zoho.</p>
+                        </div>
+
+                        <div class="options-grid options-single-col">
+                            <button class="option-card" data-value="none">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Not applicable</h3>
+                                    <p>We don't send quotes or invoices</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="quotes-only">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Quotes &amp; proposals only</h3>
+                                    <p>We send estimates but handle invoicing elsewhere</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="invoicing">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Invoicing &amp; payments</h3>
+                                    <p>Need to send invoices and collect payments online</p>
+                                </div>
+                            </button>
+
+                            <button class="option-card" data-value="full-billing">
+                                <div class="option-icon option-icon--green">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+                                    </svg>
+                                </div>
+                                <div class="option-text">
+                                    <h3>Full quote-to-cash flow</h3>
+                                    <p>Quote → Invoice → Payment → Accounting, all connected</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Q12: Roadmap Output -->
+                    <div class="question-card" data-question="roadmap">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s3">Step 5 of 5</span>
+                            <h1>Your Zoho Roadmap</h1>
+                            <p class="question-subtitle">Here's your personalized solution — where to start, what to add, and how it all connects.</p>
+                        </div>
+
+                        <div class="roadmap" id="roadmapOutput">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation -->
+                <div class="wizard-nav" id="wizardNav">
+                    <button class="nav-btn nav-back" id="backBtn" style="visibility: hidden;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"/>
+                            <polyline points="12 19 5 12 12 5"/>
+                        </svg>
+                        Back
+                    </button>
+                    <button class="nav-btn nav-next" id="nextBtn" disabled>
+                        Continue
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                            <polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

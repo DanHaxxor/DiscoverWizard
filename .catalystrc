@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "21181000000019009",
+      "name": "discoverywizard",
+      "domain": {
+        "id": "50039961425",
+        "name": "discoverywizard-60047883716.development"
+      },
+      "timezone": "America/Chicago",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60047883716",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}
