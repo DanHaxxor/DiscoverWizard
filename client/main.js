@@ -519,20 +519,26 @@ function renderRoadmap() {
     const startWith = phase1[0] || 'Zoho CRM';
     const priorities = (a.priorities || []).map(v => priorityLabels[v] || v);
 
+    // Build rationale text from user answers
+    const proc = a.process || {};
+    const phase1Rationale = buildPhaseRationale(1, phase1, proc);
+    const phase2Rationale = buildPhaseRationale(2, phase2, proc);
+    const phase3Rationale = buildPhaseRationale(3, phase3, proc);
+
     // Render
     let html = '';
 
     // Phase 1
-    html += buildPhaseHtml(1, 'Start Here', 'Get your core workflow running first', phase1);
+    html += buildPhaseHtml(1, 'Start Here', 'Get your core workflow running first', phase1, phase1Rationale);
 
     if (phase2.length > 0) {
         html += '<div class="roadmap-connector"></div>';
-        html += buildPhaseHtml(2, 'Expand', 'Add supporting tools once core is stable', phase2);
+        html += buildPhaseHtml(2, 'Expand', 'Add supporting tools once core is stable', phase2, phase2Rationale);
     }
 
     if (phase3.length > 0) {
         html += '<div class="roadmap-connector"></div>';
-        html += buildPhaseHtml(3, 'Optimize', 'Layer in advanced capabilities', phase3);
+        html += buildPhaseHtml(3, 'Optimize', 'Layer in advanced capabilities', phase3, phase3Rationale);
     }
 
     // Where to start section
@@ -658,10 +664,14 @@ function renderRoadmap() {
     output.innerHTML = html;
 }
 
-function buildPhaseHtml(num, title, subtitle, apps) {
+function buildPhaseHtml(num, title, subtitle, apps, rationale) {
     const appsHtml = apps.map(app =>
         `<span class="roadmap-app roadmap-app--primary">${escapeHtml(app)}</span>`
     ).join('');
+
+    const rationaleHtml = rationale
+        ? `<p class="roadmap-phase-rationale">${rationale}</p>`
+        : '';
 
     return `
         <div class="roadmap-phase roadmap-phase--${num}">
@@ -670,9 +680,76 @@ function buildPhaseHtml(num, title, subtitle, apps) {
                 <span class="roadmap-phase-title">${title}</span>
             </div>
             <p class="roadmap-phase-subtitle">${subtitle}</p>
+            ${rationaleHtml}
             <div class="roadmap-apps">${appsHtml || '<span class="roadmap-app roadmap-app--supporting">No apps in this phase</span>'}</div>
         </div>
     `;
+}
+
+// App-level rationale snippets — explains *why* each app matters
+const appRationale = {
+    'Zoho CRM': 'captures and tracks every lead so nothing slips through the cracks',
+    'Zoho Bigin': 'gives you a simple pipeline view without the complexity of a full CRM',
+    'Zoho CRM (Enterprise)': 'handles complex sales workflows, territories, and custom modules your team needs',
+    'Zoho Forms': 'pulls leads from your website automatically into your pipeline',
+    'Zoho SalesIQ': 'shows you who is browsing your site right now so your team can reach out at the right moment',
+    'Zoho Campaigns': 'lets you send targeted emails to nurture leads that aren\'t ready to buy yet',
+    'Zoho Marketing Automation': 'replaces manual campaign work with behavior-triggered sequences',
+    'Zoho Campaigns + Marketing Automation': 'covers both bulk sends and automated drip sequences for full-funnel email',
+    'Zoho Analytics': 'gives you dashboards across sales, marketing, and support so you see the full picture',
+    'Zoho Books': 'handles your accounting and keeps finances connected to your sales data',
+    'Zoho Invoice': 'sends professional invoices and tracks payments without leaving your workflow',
+    'Zoho Invoice + Zoho Books': 'connects invoicing to your books so nothing falls between the cracks',
+    'Zoho Books + Invoice + Checkout': 'handles the full quote-to-cash flow from proposal to payment to ledger',
+    'Zoho CRM (Quotes module)': 'lets you generate and send quotes directly from deal records',
+    'Zoho CRM (Quotes)': 'lets you generate and send quotes directly from deal records',
+    'Zoho Desk': 'gives your support team full customer context on every ticket',
+    'Zoho Sign': 'gets contracts signed digitally without chasing paper',
+    'Zoho Projects': 'keeps project delivery organized with tasks, milestones, and team visibility',
+    'Zoho Sprints': 'manages agile sprints for internal dev or product teams',
+    'Zoho Social': 'schedules posts and captures leads from social engagement',
+    'Zoho Cliq': 'keeps your team communicating in one place with channels linked to projects',
+    'Zoho WorkDrive': 'gives your team shared file storage that integrates with everything else',
+    'Zoho Meeting': 'handles video calls and webinars without a separate subscription',
+    'Zoho Expense': 'automates expense tracking from receipt to ledger entry',
+    'Zoho Checkout': 'creates payment links and checkout pages for collecting money online',
+    'Zoho PageSense': 'tells you which parts of your website actually convert so you stop guessing',
+};
+
+function buildPhaseRationale(phaseNum, apps, proc) {
+    if (apps.length === 0) return '';
+
+    const reasons = apps
+        .map(app => appRationale[app])
+        .filter(Boolean);
+
+    if (reasons.length === 0) return '';
+
+    // Contextualize with what the user told us
+    let opener = '';
+    if (phaseNum === 1 && proc.why) {
+        opener = 'You mentioned that ' + escapeHtml(proc.why).toLowerCase() + '. ';
+    } else if (phaseNum === 1) {
+        opener = 'Based on what you told us, these are the essentials. ';
+    } else if (phaseNum === 2) {
+        opener = 'Once your core workflow is running, these tools add visibility and reach. ';
+    } else if (phaseNum === 3) {
+        opener = 'At this stage your team is comfortable and your data is clean. ';
+    }
+
+    // Build a sentence that strings the reasons together
+    const appSentences = apps.map((app) => {
+        const reason = appRationale[app];
+        if (!reason) return null;
+        const name = app.replace('Zoho ', '');
+        return `<strong>${escapeHtml(name)}</strong> ${reason}`;
+    }).filter(Boolean);
+
+    if (appSentences.length === 1) {
+        return opener + appSentences[0] + '.';
+    }
+
+    return opener + appSentences.slice(0, -1).join(', ') + ', and ' + appSentences[appSentences.length - 1] + '.';
 }
 
 backBtn.addEventListener('click', () => {
