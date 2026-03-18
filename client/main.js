@@ -872,3 +872,27 @@ backBtn.addEventListener('click', () => {
         updateProgress();
     }
 });
+
+// ── Print Results ────────────────────────────────
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#roadmapEmailBtn')) return;
+
+    const emailInput = document.getElementById('roadmapEmail');
+    const salutation = document.getElementById('roadmapSalutation');
+    const email = emailInput ? emailInput.value.trim() : '';
+
+    if (salutation) {
+        if (email) {
+            const name = email.split('@')[0]
+                .replace(/[._-]/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
+            salutation.textContent = 'Prepared for ' + name;
+            salutation.style.display = 'block';
+        } else {
+            salutation.textContent = '';
+            salutation.style.display = 'none';
+        }
+    }
+
+    window.print();
+});
