@@ -217,7 +217,6 @@ function showQuestion(questionKey) {
 
 // ── Progress Bar ──────────────────────────────────
 function updateProgress() {
-    const questions = currentQuestions();
     const totalQuestions = Object.values(stageQuestions).reduce((sum, q) => sum + q.length, 0);
     const questionsBefore = Object.entries(stageQuestions)
         .filter(([s]) => Number.parseInt(s, 10) < wizardState.currentStage)
@@ -567,53 +566,65 @@ function renderRoadmap() {
         `;
     }
 
-    // Honest Assessment — address concerns with candor
-    const w = a.worries || {};
+    // Honest Assessment — tool-to-task tradeoffs
     const worryEntries = [];
-    if (w['status-quo']) {
+
+    // Auto-generate based on what was recommended vs. where competitors are stronger
+    if (selectedAreas.includes('email-marketing') || emailFit === 'newsletters') {
         worryEntries.push({
-            label: 'If nothing changes',
-            concern: w['status-quo'],
-            response: 'Any CRM will help here — the key is adoption, not the tool. ' + escapeHtml(startWith) + ' works well for this, but if your team already knows HubSpot or Salesforce, switching costs may outweigh the savings. Start a 15-day trial and see if it clicks before committing.',
-        });
-    }
-    if (w.adoption) {
-        worryEntries.push({
-            label: 'Hesitation about switching',
-            concern: w.adoption,
-            response: 'This is a people problem, not a software problem. No tool fixes low adoption on its own. Zoho\'s UI is simpler than Salesforce, but more complex than HubSpot\'s free tier. If ease-of-use is the #1 concern, HubSpot may be a better fit. If budget and long-term flexibility matter more, Zoho gives you more for less.',
-        });
-    }
-    if (w['post-sale']) {
-        worryEntries.push({
-            label: 'After committing',
-            concern: w['post-sale'],
-            response: 'Zoho scales well up to mid-market. Enterprise-grade needs (50+ sales reps, complex territory rules, dedicated CSM) are where Salesforce pulls ahead. Support is responsive on paid plans but slower on free tiers. Be honest about where you\'ll be in 2 years — if the answer is 100+ users with complex workflows, plan your exit path now.',
+            label: 'Email marketing',
+            response: 'Using Zoho Campaigns for cold outreach is more complex than just using Mailchimp or SendGrid. Campaigns is built for warm lists and CRM-connected sends. If you\'re doing high-volume cold email, a dedicated tool like Instantly or Apollo will get better deliverability with less setup.',
         });
     }
 
-    // Auto-generate incompatibility warnings based on answers
-    const incompatibilities = [];
-    if (formChannels.includes('ads') && emailFit === 'automation') {
-        incompatibilities.push('Zoho Marketing Automation\'s ad tracking is basic compared to HubSpot or ActiveCampaign. If paid ads are a major lead source, you may want a dedicated tool like Google Ads + a landing page builder alongside Zoho.');
+    if (selectedAreas.includes('lead-management') || selectedAreas.includes('deal-closing')) {
+        worryEntries.push({
+            label: 'CRM adoption',
+            response: 'Using Zoho CRM for a team that\'s never stuck with a CRM before is more complex than just using HubSpot\'s free tier. HubSpot has a gentler learning curve and your team could be productive in a day. Zoho is more powerful long-term but needs a champion internally to drive adoption — if you don\'t have that person, start simpler.',
+        });
     }
-    if (selectedAreas.includes('email-marketing') && emailFit === 'automation') {
-        incompatibilities.push('Zoho Campaigns has stricter sending limits than Mailchimp or SendGrid for high-volume outreach. If your list is unverified or cold, deliverability tools like Instantly or Apollo may serve you better. Zoho is strongest when contacts are warm and already in your pipeline.');
+
+    if (emailFit === 'automation' || emailFit === 'both') {
+        worryEntries.push({
+            label: 'Marketing automation',
+            response: 'Using Zoho Marketing Automation for ad-driven lead nurturing is more complex than just using ActiveCampaign or HubSpot Marketing Hub. Zoho\'s automation builder works well within the Zoho ecosystem but its ad tracking and attribution are basic compared to tools purpose-built for paid acquisition funnels.',
+        });
     }
+
+    if (formChannels.includes('ads')) {
+        worryEntries.push({
+            label: 'Paid ad tracking',
+            response: 'Using Zoho PageSense for conversion tracking on paid campaigns is more complex than just using Google Analytics plus your ad platform\'s native pixel. PageSense is useful for A/B testing but doesn\'t replace proper ad attribution — you\'ll likely need both.',
+        });
+    }
+
+    if (crmFit === 'advanced' || selectedAreas.length > 6) {
+        worryEntries.push({
+            label: 'Scaling past mid-market',
+            response: 'Using Zoho CRM for enterprise-scale sales operations (50+ reps, territory management, CPQ) is more complex than just using Salesforce. Salesforce owns this space for a reason. If you\'re confident you\'ll be at that scale within 18 months, starting on Salesforce now avoids a painful migration later.',
+        });
+    }
+
     if (crmFit === 'simple' && selectedAreas.length > 5) {
-        incompatibilities.push('You selected Bigin but have ' + selectedAreas.length + ' areas of focus. Bigin is great for simple pipelines, but this level of complexity usually needs full Zoho CRM. Consider upgrading your CRM choice.');
-    }
-    if (selectedAreas.includes('support') && selectedAreas.includes('client-projects')) {
-        incompatibilities.push('Zoho Desk and Zoho Projects don\'t share a unified client view out of the box. If client project delivery and support are tightly linked, tools like Monday.com or ClickUp handle both in one place. In Zoho, you\'ll need to build that connection via Zoho Flow or custom integrations.');
+        worryEntries.push({
+            label: 'Bigin scope',
+            response: 'Using Zoho Bigin for ' + selectedAreas.length + ' areas of focus is more complex than it needs to be. Bigin is great for simple pipelines, but this level of complexity usually needs full Zoho CRM or even HubSpot\'s free CRM. Consider whether you\'re outgrowing Bigin before you start.',
+        });
     }
 
-    incompatibilities.forEach(note => {
+    if (selectedAreas.includes('support') && selectedAreas.includes('client-projects')) {
         worryEntries.push({
-            label: 'Potential incompatibility',
-            concern: '',
-            response: note,
+            label: 'Support + project delivery',
+            response: 'Using Zoho Desk alongside Zoho Projects for client work is more complex than just using Monday.com or ClickUp, which handle both in one place. Desk and Projects don\'t share a unified client view out of the box — you\'ll need Zoho Flow or custom integrations to connect them.',
         });
-    });
+    }
+
+    if (selectedAreas.includes('accounting') && billingFit === 'full-billing') {
+        worryEntries.push({
+            label: 'Full accounting',
+            response: 'Using Zoho Books for complex accounting (multi-entity, advanced inventory, payroll) is more complex than just using QuickBooks or Xero, which have deeper accounting ecosystems and more accountant integrations. Zoho Books is strong for straightforward bookkeeping tied to your CRM, but check with your accountant before committing.',
+        });
+    }
 
     if (worryEntries.length > 0) {
         html += `
@@ -622,14 +633,9 @@ function renderRoadmap() {
                 <div class="roadmap-worry-list">
                     ${worryEntries.map(entry => `
                         <div class="roadmap-worry-item">
-                            ${entry.concern ? `
                             <div class="roadmap-worry-concern">
                                 <span class="roadmap-worry-tag">${entry.label}</span>
-                                <p>${escapeHtml(entry.concern)}</p>
-                            </div>` : `
-                            <div class="roadmap-worry-concern">
-                                <span class="roadmap-worry-tag">${entry.label}</span>
-                            </div>`}
+                            </div>
                             <div class="roadmap-worry-response">
                                 <span class="roadmap-worry-arrow">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -847,7 +853,7 @@ function renderRoadmapSummary(selectedAreas, proc, integrations) {
     const paragraphs = [p1, p2, p3].filter(Boolean);
 
     questionHeader.innerHTML = `
-        <h1>Your Zoho Roadmap</h1>
+        <h1>Zoho One Concierge</h1>
         ${paragraphs.map(p => `<p class="roadmap-summary-text">${p}</p>`).join('')}
     `;
 }
