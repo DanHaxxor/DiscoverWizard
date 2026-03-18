@@ -558,42 +558,69 @@ function renderRoadmap() {
         `;
     }
 
-    // Worry Analysis — address concerns
+    // Honest Assessment — address concerns with candor
     const w = a.worries || {};
     const worryEntries = [];
     if (w['status-quo']) {
         worryEntries.push({
             label: 'If nothing changes',
             concern: w['status-quo'],
-            response: 'Starting with ' + escapeHtml(startWith) + ' addresses this directly. A phased rollout means your team sees value in the first week, not the first quarter.',
+            response: 'Any CRM will help here — the key is adoption, not the tool. ' + escapeHtml(startWith) + ' works well for this, but if your team already knows HubSpot or Salesforce, switching costs may outweigh the savings. Start a 15-day trial and see if it clicks before committing.',
         });
     }
     if (w.adoption) {
         worryEntries.push({
             label: 'Hesitation about switching',
             concern: w.adoption,
-            response: 'Zoho offers guided onboarding, data import wizards, and a 15-day free trial on most products. You can validate the fit before committing.',
+            response: 'This is a people problem, not a software problem. No tool fixes low adoption on its own. Zoho\'s UI is simpler than Salesforce, but more complex than HubSpot\'s free tier. If ease-of-use is the #1 concern, HubSpot may be a better fit. If budget and long-term flexibility matter more, Zoho gives you more for less.',
         });
     }
     if (w['post-sale']) {
         worryEntries.push({
             label: 'After committing',
             concern: w['post-sale'],
-            response: 'Zoho One scales from 5 to 5,000+ users. 24/5 support is included, and you can add or drop apps as your needs change — no long-term lock-in.',
+            response: 'Zoho scales well up to mid-market. Enterprise-grade needs (50+ sales reps, complex territory rules, dedicated CSM) are where Salesforce pulls ahead. Support is responsive on paid plans but slower on free tiers. Be honest about where you\'ll be in 2 years — if the answer is 100+ users with complex workflows, plan your exit path now.',
         });
     }
+
+    // Auto-generate incompatibility warnings based on answers
+    const incompatibilities = [];
+    if (formChannels.includes('ads') && emailFit === 'automation') {
+        incompatibilities.push('Zoho Marketing Automation\'s ad tracking is basic compared to HubSpot or ActiveCampaign. If paid ads are a major lead source, you may want a dedicated tool like Google Ads + a landing page builder alongside Zoho.');
+    }
+    if (selectedAreas.includes('email-marketing') && emailFit === 'automation') {
+        incompatibilities.push('Zoho Campaigns has stricter sending limits than Mailchimp or SendGrid for high-volume outreach. If your list is unverified or cold, deliverability tools like Instantly or Apollo may serve you better. Zoho is strongest when contacts are warm and already in your pipeline.');
+    }
+    if (crmFit === 'simple' && selectedAreas.length > 5) {
+        incompatibilities.push('You selected Bigin but have ' + selectedAreas.length + ' areas of focus. Bigin is great for simple pipelines, but this level of complexity usually needs full Zoho CRM. Consider upgrading your CRM choice.');
+    }
+    if (selectedAreas.includes('support') && selectedAreas.includes('client-projects')) {
+        incompatibilities.push('Zoho Desk and Zoho Projects don\'t share a unified client view out of the box. If client project delivery and support are tightly linked, tools like Monday.com or ClickUp handle both in one place. In Zoho, you\'ll need to build that connection via Zoho Flow or custom integrations.');
+    }
+
+    incompatibilities.forEach(note => {
+        worryEntries.push({
+            label: 'Potential incompatibility',
+            concern: '',
+            response: note,
+        });
+    });
 
     if (worryEntries.length > 0) {
         html += `
             <div class="roadmap-section roadmap-section--worries">
-                <span class="roadmap-section-label">Addressing Your Concerns</span>
+                <span class="roadmap-section-label">Honest Assessment</span>
                 <div class="roadmap-worry-list">
                     ${worryEntries.map(entry => `
                         <div class="roadmap-worry-item">
+                            ${entry.concern ? `
                             <div class="roadmap-worry-concern">
                                 <span class="roadmap-worry-tag">${entry.label}</span>
                                 <p>${escapeHtml(entry.concern)}</p>
-                            </div>
+                            </div>` : `
+                            <div class="roadmap-worry-concern">
+                                <span class="roadmap-worry-tag">${entry.label}</span>
+                            </div>`}
                             <div class="roadmap-worry-response">
                                 <span class="roadmap-worry-arrow">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
