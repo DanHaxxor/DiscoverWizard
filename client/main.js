@@ -9,7 +9,7 @@ const wizardState = {
 // Question keys per stage
 const stageQuestions = {
     1: ['intent', 'relationship', 'access'],
-    2: ['areas', 'process', 'priorities', 'confirm'],
+    2: ['areas', 'process', 'priorities', 'worries', 'confirm'],
     3: ['crm-fit', 'forms', 'email-fit', 'billing-fit', 'roadmap'],
 };
 
@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bindOptionCards();
     bindChips();
     bindFormInputs();
+    bindWorryForm();
 });
 
 // ── Option Card Selection (single-select, delegated) ──
@@ -152,6 +153,26 @@ function bindFormInputs() {
     });
 }
 
+// ── Worry Form (worry analysis) ──────────────────
+function bindWorryForm() {
+    const form = document.getElementById('worryForm');
+    if (!form) return;
+
+    form.addEventListener('input', () => {
+        const inputs = form.querySelectorAll('.form-input');
+        const data = {};
+        let filled = 0;
+        inputs.forEach(input => {
+            const val = input.value.trim();
+            data[input.dataset.field] = val;
+            if (val) filled++;
+        });
+        wizardState.answers.worries = data;
+        // Enable next as soon as any worry is captured
+        nextBtn.disabled = filled < 1;
+    });
+}
+
 // ── Show a specific question card ─────────────────
 function showQuestion(questionKey) {
     const cards = wizardContent.querySelectorAll('.question-card');
@@ -178,6 +199,9 @@ function showQuestion(questionKey) {
     if (questionKey === 'process') {
         const filled = answer ? Object.values(answer).filter(Boolean).length : 0;
         nextBtn.disabled = filled < 2;
+    } else if (questionKey === 'worries') {
+        const filled = answer ? Object.values(answer).filter(Boolean).length : 0;
+        nextBtn.disabled = filled < 1;
     } else if (Array.isArray(answer)) {
         nextBtn.disabled = answer.length === 0;
     } else if (questionKey === 'confirm' || questionKey === 'roadmap') {
@@ -276,9 +300,54 @@ function renderMindMap() {
         summaryParts.push(`What matters most to you: <strong>${joinList(prioritiesList)}</strong>.`);
     }
 
+    // Worry analysis summary
+    const worries = a.worries || {};
+    if (worries['status-quo']) {
+        summaryParts.push(`If nothing changes: ${escapeHtml(worries['status-quo'])}.`);
+    }
+    if (worries.adoption) {
+        summaryParts.push(`Hesitation about switching: ${escapeHtml(worries.adoption)}.`);
+    }
+    if (worries['post-sale']) {
+        summaryParts.push(`After committing: ${escapeHtml(worries['post-sale'])}.`);
+    }
+
     const summaryHtml = summaryParts.length > 0
         ? summaryParts.join(' ')
         : 'No details provided yet.';
+
+    // Build worry cards for the mind map
+    const worryCards = [];
+    if (worries['status-quo']) {
+        worryCards.push(`
+            <div class="mind-map-branch mind-map-worry mind-map-worry--status-quo">
+                <span class="mind-map-branch-label">If nothing changes</span>
+                <span class="mind-map-branch-value">${escapeHtml(worries['status-quo'])}</span>
+            </div>
+        `);
+    }
+    if (worries.adoption) {
+        worryCards.push(`
+            <div class="mind-map-branch mind-map-worry mind-map-worry--adoption">
+                <span class="mind-map-branch-label">Hesitations</span>
+                <span class="mind-map-branch-value">${escapeHtml(worries.adoption)}</span>
+            </div>
+        `);
+    }
+    if (worries['post-sale']) {
+        worryCards.push(`
+            <div class="mind-map-branch mind-map-worry mind-map-worry--post-sale">
+                <span class="mind-map-branch-label">After committing</span>
+                <span class="mind-map-branch-value">${escapeHtml(worries['post-sale'])}</span>
+            </div>
+        `);
+    }
+    const worriesHtml = worryCards.length > 0
+        ? `<div class="mind-map-branch mind-map-branch--worries">
+               <span class="mind-map-branch-label">Concerns</span>
+               <div class="mind-map-worry-cards">${worryCards.join('')}</div>
+           </div>`
+        : '';
 
     map.innerHTML = `
         <div class="mind-map-center">Your Requirements</div>
@@ -293,6 +362,7 @@ function renderMindMap() {
                 <div class="mind-map-chips">${prioritiesHtml || '<span class="mind-map-branch-value">None selected</span>'}</div>
             </div>
         </div>
+        ${worriesHtml}
         <div class="mind-map-summary">
             <span class="mind-map-summary-label">Here's what we heard</span>
             <p class="mind-map-summary-text">${summaryHtml}</p>
@@ -483,6 +553,55 @@ function renderRoadmap() {
                 <span class="roadmap-section-label">Key Integrations</span>
                 <div class="roadmap-section-content">
                     ${integrations.map(i => `<div>&bull; ${escapeHtml(i)}</div>`).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Worry Analysis — address concerns
+    const w = a.worries || {};
+    const worryEntries = [];
+    if (w['status-quo']) {
+        worryEntries.push({
+            label: 'If nothing changes',
+            concern: w['status-quo'],
+            response: 'Starting with ' + escapeHtml(startWith) + ' addresses this directly. A phased rollout means your team sees value in the first week, not the first quarter.',
+        });
+    }
+    if (w.adoption) {
+        worryEntries.push({
+            label: 'Hesitation about switching',
+            concern: w.adoption,
+            response: 'Zoho offers guided onboarding, data import wizards, and a 15-day free trial on most products. You can validate the fit before committing.',
+        });
+    }
+    if (w['post-sale']) {
+        worryEntries.push({
+            label: 'After committing',
+            concern: w['post-sale'],
+            response: 'Zoho One scales from 5 to 5,000+ users. 24/5 support is included, and you can add or drop apps as your needs change — no long-term lock-in.',
+        });
+    }
+
+    if (worryEntries.length > 0) {
+        html += `
+            <div class="roadmap-section roadmap-section--worries">
+                <span class="roadmap-section-label">Addressing Your Concerns</span>
+                <div class="roadmap-worry-list">
+                    ${worryEntries.map(entry => `
+                        <div class="roadmap-worry-item">
+                            <div class="roadmap-worry-concern">
+                                <span class="roadmap-worry-tag">${entry.label}</span>
+                                <p>${escapeHtml(entry.concern)}</p>
+                            </div>
+                            <div class="roadmap-worry-response">
+                                <span class="roadmap-worry-arrow">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </span>
+                                <p>${entry.response}</p>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
