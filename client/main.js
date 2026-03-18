@@ -525,6 +525,9 @@ function renderRoadmap() {
     const phase2Rationale = buildPhaseRationale(2, phase2, proc);
     const phase3Rationale = buildPhaseRationale(3, phase3, proc);
 
+    // Build and inject the summary into the question header
+    renderRoadmapSummary(selectedAreas, proc, integrations);
+
     // Render
     let html = '';
 
@@ -750,6 +753,103 @@ function buildPhaseRationale(phaseNum, apps, proc) {
     }
 
     return opener + appSentences.slice(0, -1).join(', ') + ', and ' + appSentences[appSentences.length - 1] + '.';
+}
+
+// Platform-agnostic category labels for solution summary
+const solutionCategories = {
+    'Zoho CRM': 'CRM',
+    'Zoho Bigin': 'CRM',
+    'Zoho CRM (Enterprise)': 'CRM',
+    'Zoho Forms': 'form and lead capture layer',
+    'Zoho SalesIQ': 'live chat and visitor tracking',
+    'Zoho Campaigns': 'email marketing tool',
+    'Zoho Marketing Automation': 'marketing automation platform',
+    'Zoho Campaigns + Marketing Automation': 'full email marketing stack',
+    'Zoho Analytics': 'analytics and reporting layer',
+    'Zoho Books': 'accounting system',
+    'Zoho Invoice': 'invoicing tool',
+    'Zoho Invoice + Zoho Books': 'invoicing and accounting system',
+    'Zoho Books + Invoice + Checkout': 'end-to-end billing stack',
+    'Zoho CRM (Quotes module)': 'quoting tool',
+    'Zoho CRM (Quotes)': 'quoting tool',
+    'Zoho Desk': 'help desk',
+    'Zoho Sign': 'e-signature tool',
+    'Zoho Projects': 'project management platform',
+    'Zoho Sprints': 'agile sprint tracker',
+    'Zoho Social': 'social media management',
+    'Zoho Cliq': 'team messaging',
+    'Zoho WorkDrive': 'shared file storage',
+    'Zoho Meeting': 'video conferencing',
+    'Zoho Expense': 'expense management',
+    'Zoho Checkout': 'payment collection',
+    'Zoho PageSense': 'website conversion tracking',
+};
+
+function renderRoadmapSummary(selectedAreas, proc, integrations) {
+    const questionHeader = document.querySelector('[data-question="roadmap"] .question-header');
+    if (!questionHeader) return;
+
+    // Gather pain points from areas
+    const painPoints = selectedAreas.map(v => areaLabels[v] || v);
+
+    // Get the unique solution categories from all primary apps
+    const a = wizardState.answers;
+    const allApps = new Set();
+    selectedAreas.forEach(area => {
+        const mapping = productMap[area];
+        if (!mapping) return;
+        mapping.primary.forEach(p => allApps.add(p));
+    });
+    // Apply overrides
+    const crmFit = a['crm-fit'];
+    if (crmFit && crmProducts[crmFit]) {
+        allApps.delete('Zoho CRM');
+        allApps.add(crmProducts[crmFit]);
+    }
+    const emailFit = a['email-fit'];
+    if (emailFit && emailProducts[emailFit]) {
+        allApps.delete('Zoho Campaigns');
+        allApps.delete('Zoho Marketing Automation');
+        allApps.add(emailProducts[emailFit]);
+    }
+
+    const categories = [...new Set([...allApps].map(app => solutionCategories[app]).filter(Boolean))];
+
+    // Paragraph 1: Pain points
+    let p1 = '';
+    if (proc.why) {
+        p1 = `Right now, your team is feeling the pain: <strong>${escapeHtml(proc.why)}</strong>.`;
+    } else if (painPoints.length > 0) {
+        p1 = `Right now, your biggest pain points are <strong>${joinList(painPoints.map(p => p.toLowerCase()))}</strong>.`;
+    }
+
+    // Paragraph 2: Connected problem → connected solution (platform-agnostic)
+    let p2 = '';
+    if (categories.length >= 2) {
+        p2 = `These problems are connected — and the fix isn't ${categories.length} separate tools. It's a connected stack where each layer feeds the next.`;
+        if (integrations.length > 0) {
+            const topIntegrations = integrations.slice(0, 2).map(i => escapeHtml(i).toLowerCase());
+            p2 += ` Specifically: ${topIntegrations.join(', and ')}.`;
+        }
+    }
+
+    // Paragraph 3: What the stack looks like (agnostic)
+    let p3 = '';
+    if (categories.length > 0) {
+        const catBold = categories.map(c => '<strong>' + c + '</strong>');
+        p3 = 'Your recommended stack: a ' + joinList(catBold);
+        if (proc.how) {
+            p3 += ` — replacing ${escapeHtml(proc.how).toLowerCase()} with tools that talk to each other`;
+        }
+        p3 += '. Wired together, this closes the gap between where you are today and where you need to be.';
+    }
+
+    const paragraphs = [p1, p2, p3].filter(Boolean);
+
+    questionHeader.innerHTML = `
+        <h1>Your Zoho Roadmap</h1>
+        ${paragraphs.map(p => `<p class="roadmap-summary-text">${p}</p>`).join('')}
+    `;
 }
 
 backBtn.addEventListener('click', () => {
