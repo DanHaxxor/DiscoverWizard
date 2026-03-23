@@ -196,10 +196,41 @@
                     <!-- STAGE 2: Requirements Development  -->
                     <!-- ═══════════════════════════════════ -->
 
+                    <!-- Q: Industry Selection -->
+                    <div class="question-card" data-question="industry">
+                        <div class="question-header">
+                            <span class="stage-badge stage-badge--s1">Step 2 of 4</span>
+                            <h1>What industry are you in?</h1>
+                            <p class="question-subtitle">This helps us tailor recommendations to your specific business context.</p>
+                        </div>
+
+                        <div class="industry-select-group">
+                            <div class="industry-field">
+                                <label class="industry-label" for="industrySelect">Industry</label>
+                                <div class="industry-select-wrapper">
+                                    <select id="industrySelect" class="industry-select">
+                                        <option value="" disabled selected>Select your industry…</option>
+                                    </select>
+                                    <svg class="industry-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </div>
+                            </div>
+
+                            <div class="industry-field" id="subIndustryField" style="display: none;">
+                                <label class="industry-label" for="subIndustrySelect">Sub-industry</label>
+                                <div class="industry-select-wrapper">
+                                    <select id="subIndustrySelect" class="industry-select">
+                                        <option value="" disabled selected>Select a sub-industry…</option>
+                                    </select>
+                                    <svg class="industry-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Q4: Area of interest (multi-select) -->
                     <div class="question-card" data-question="areas">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s1">Step 2 of 3</span>
+                            <span class="stage-badge stage-badge--s1">Step 3 of 4</span>
                             <h1>What areas of your business need attention?</h1>
                             <p class="question-subtitle">Select all that apply. This shapes everything that follows.</p>
                         </div>
@@ -356,15 +387,10 @@
                     <div class="question-card" data-question="confirm">
                         <div class="question-header">
                             <h1>Your Business Solution</h1>
-                            <p class="question-subtitle">Based on what you told us, here's what your business needs — independent of any specific platform.</p>
+                            <p class="question-subtitle">Here's what we understand about your situation — before we recommend any specific tools.</p>
                         </div>
 
-                        <div class="mind-map" id="mindMap">
-                            <div class="mind-map-summary">
-                                <span class="mind-map-summary-label">Here's what we heard</span>
-                                <p class="mind-map-summary-text"></p>
-                            </div>
-                        </div>
+                        <div class="mind-map" id="mindMap"></div>
 
                         <div class="discovery-cta">
                             <button class="discovery-cta-btn discovery-cta-btn--primary" id="getSolutionBtn">
@@ -572,7 +598,7 @@
                     <div class="question-card" data-question="roadmap">
                         <div class="roadmap-doc-header">
                             <img class="roadmap-doc-logo" src="logo.png" alt="Zoho">
-                            <span class="roadmap-doc-date">Prepared March 18, 2026</span>
+                            <span class="roadmap-doc-date" id="roadmapDate"></span>
                         </div>
 
                         <div class="question-header">

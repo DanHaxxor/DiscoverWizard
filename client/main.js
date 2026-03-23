@@ -8,7 +8,7 @@ const wizardState = {
 
 // Question keys per stage
 const stageQuestions = {
-    1: ['intent', 'areas', 'confirm'],
+    1: ['intent', 'industry', 'areas', 'confirm'],
     2: ['relationship', 'crm-fit', 'roadmap'],
 };
 
@@ -40,6 +40,320 @@ const priorityLabels = {
     'reporting': 'Better visibility & reporting',
 };
 
+// ── Industry Data ─────────────────────────────────
+const industryData = {
+    'advocacy-membership': {
+        label: 'Advocacy & Membership Groups',
+        subs: [
+            'Business, Professional, Labor, & Political Organizations',
+            'Civic & Social Organizations',
+            'Social Advocacy Organizations',
+        ],
+    },
+    'agriculture': {
+        label: 'Agriculture',
+        subs: [
+            'Animal Farming & Wildlife Harvesting',
+            'Crop Production',
+            'Forestry & Logging',
+        ],
+    },
+    'consulting': {
+        label: 'Business Consulting & Development',
+        subs: [
+            'Business Administration & Management Consultants',
+            'Human Resources Consultants',
+            'Marketing Consultants',
+            'Misc. Consulting Services',
+            'Process & Logistics Consultants',
+        ],
+    },
+    'construction': {
+        label: 'Construction',
+        subs: [
+            'Commercial/Government Building Construction',
+            'Heavy & Civil Engineering Construction',
+            'Residential Building Construction',
+            'Specialty Trade Contractors',
+        ],
+    },
+    'eating-drinking': {
+        label: 'Eating & Drinking Establishments',
+        subs: [
+            'Bars & Pubs',
+            'Caterers & Food Trucks',
+            'Restaurants & Cafeterias',
+        ],
+    },
+    'education': {
+        label: 'Education & Training',
+        subs: [
+            'Arts, Recreation, & Skills Instruction',
+            'Business Courses & Professional Training',
+            'Colleges, Universities, & Professional Schools',
+            'Elementary & Secondary Schools',
+            'Junior Colleges',
+            'Technical & Trade Schools',
+            'Testing, Guidance Counseling, & Other Educational Support',
+        ],
+    },
+    'engineering': {
+        label: 'Engineering & Technical Services',
+        subs: [
+            'Architectural & Engineering Services',
+            'Interior, Industrial, & Graphic Design Services',
+            'Misc. Technical Services',
+            'R&D Services',
+            'Technical Consulting Services',
+        ],
+    },
+    'entertainment': {
+        label: 'Entertainment & Recreation',
+        subs: [
+            'Amusement Parks & Arcades',
+            'Cultural, Historical, & Nature Sites',
+            'Event Promoters',
+            'Gambling Industries',
+            'Independent Artists',
+            'Leisure/Recreational Facilities & Services',
+            'Performing Arts Companies',
+            'Spectator Sports',
+            'Talent Agents & Managers',
+        ],
+    },
+    'facility-services': {
+        label: 'Facility & Operational Support Services',
+        subs: [
+            'Building & Residential Maintenance Services',
+            'Full-Service Facility Management',
+            'Investigation, Security, & Alarm Services',
+            'Misc. Facility & Operational Support Services',
+        ],
+    },
+    'finance': {
+        label: 'Finance',
+        subs: [
+            'Banking & Lending',
+            'Funds, Trusts, & Employee Benefits',
+            'Monetary Authorities—Central Bank',
+            'Securities, Commodities, & Investing',
+        ],
+    },
+    'government': {
+        label: 'Government',
+        subs: [
+            'Administration of Economic Programs',
+            'Administration of Environmental Quality Programs',
+            'Administration of Housing Programs, Urban Planning, & Community Development',
+            'Administration of Human Resource Programs',
+            'Executive, Legislative, & Other General Government Support',
+            'Justice, Public Order, & Safety Activities',
+            'National Security & International Affairs',
+            'Space Research & Technology',
+        ],
+    },
+    'healthcare': {
+        label: 'Healthcare',
+        subs: [
+            'Home Health Care Services',
+            'Hospitals',
+            'Medical & Diagnostic Laboratories',
+            'Misc. Outpatient Services',
+            'Non-Physician Outpatient Clinics',
+            'Nursing & Residential Care Facilities',
+            'Outpatient Care Centers',
+            'Outpatient Dentist Offices',
+            'Outpatient Physician Offices',
+        ],
+    },
+    'holding-companies': {
+        label: 'Holding Companies & Corporate Management',
+        subs: [
+            'Holding Companies & Corporate Management',
+        ],
+    },
+    'hospitality': {
+        label: 'Hospitality & Lodging',
+        subs: [
+            'Boarding Houses, Dorms, & Workers\' Accommodations',
+            'Hotels & Motels (incl Casino Hotels)',
+            'RV Parks & Recreational Camps',
+        ],
+    },
+    'insurance': {
+        label: 'Insurance',
+        subs: [
+            'Insurance Agencies & Brokerages',
+            'Insurance Carriers',
+            'Supplementary Insurance Services',
+        ],
+    },
+    'manufacturing': {
+        label: 'Manufacturing',
+        subs: [
+            'Aerospace Manufacturing',
+            'Apparel & Textile Manufacturing',
+            'Beverage Manufacturing',
+            'Cement & Concrete Manufacturing',
+            'Chemical Manufacturing',
+            'Clay & Ceramic Manufacturing',
+            'Computer & Electronics Manufacturing',
+            'Electrical & Lighting Equipment Manufacturing',
+            'Food Manufacturing',
+            'Furniture & Furnishings Manufacturing',
+            'Glass Manufacturing',
+            'Household Appliance Manufacturing',
+            'Leather Product Manufacturing',
+            'Machinery Manufacturing',
+            'Medical Equipment & Supplies Manufacturing',
+            'Metal Production & Fabrication',
+            'Misc. Nonmetallic Mineral Product Manufacturing',
+            'Misc. Specialty Product Manufacturing',
+            'Motor Vehicle Manufacturing',
+            'Paper Manufacturing',
+            'Petroleum & Coal Product Manufacturing',
+            'Pharmaceutical & Medicine Manufacturing',
+            'Plastic & Rubber Product Manufacturing',
+            'Printing',
+            'Tobacco Product Manufacturing',
+            'Train, Ship, & Misc. Transportation Manufacturing',
+            'Wood & Lumber Product Manufacturing',
+        ],
+    },
+    'media': {
+        label: 'Media',
+        subs: [
+            'Digital Media & Content Providers',
+            'Libraries & Archives',
+            'Motion Picture & Video Industry',
+            'Music & Audio Recording Industry',
+            'Print Media Publishing Industry',
+            'Radio & TV Stations',
+        ],
+    },
+    'personal-services': {
+        label: 'Personal Services',
+        subs: [
+            'Beauty, Grooming, & Wellness Services',
+            'Death Care Services',
+            'Drycleaning & Laundry Services',
+            'Misc. Personal Services',
+            'Private Households',
+        ],
+    },
+    'professional-admin': {
+        label: 'Professional & Administrative Services',
+        subs: [
+            'Accounting & Payroll Services',
+            'Advertising & PR',
+            'Business Support Services',
+            'Legal Services',
+            'Misc. Professional Services',
+            'Office Operations & Administration',
+            'Staffing & HR Services',
+            'Translation & Interpretation Services',
+            'Travel Arrangement & Reservation Services',
+        ],
+    },
+    'real-estate': {
+        label: 'Real Estate',
+        subs: [
+            'Property Mgmt, Appraisal, & Misc. Real Estate Services',
+            'Real Estate Agents & Brokerages',
+            'Real Estate Lessors & Operators',
+        ],
+    },
+    'religious': {
+        label: 'Religious Organizations',
+        subs: [
+            'Religious Organizations',
+        ],
+    },
+    'repair-maintenance': {
+        label: 'Repair, Maintenance, & Service Organizations',
+        subs: [
+            'Automotive Repair & Maintenance',
+            'Commercial Equipment Repair & Maintenance',
+            'Electronic & Precision Equipment Repair',
+            'Personal & Household Goods Repair',
+        ],
+    },
+    'retail': {
+        label: 'Retail',
+        subs: [
+            'Auto Dealers & Parts',
+            'Building Materials & Garden Supply',
+            'Clothing & Accessories Stores',
+            'Electronics & Appliance Stores',
+            'Food & Beverage Retail',
+            'Furniture & Home Furnishings Stores',
+            'Gas Stations',
+            'General Merchandise Stores',
+            'Health & Personal Care Stores',
+            'Misc. Retail',
+            'Online & Mail-Order Retail',
+            'Sporting Goods, Hobby, Book, & Music Stores',
+        ],
+    },
+    'social-services': {
+        label: 'Social Services & International Organizations',
+        subs: [
+            'Child & Youth Services',
+            'Community Food, Housing, & Emergency Relief',
+            'Individual & Family Services',
+            'Services for the Elderly & Persons with Disabilities',
+            'Vocational Rehabilitation Services',
+        ],
+    },
+    'software-tech': {
+        label: 'Software & Technology',
+        subs: [
+            'Custom Software Development',
+            'Data Processing & Hosting Services',
+            'IT Consulting & Systems Integration',
+            'SaaS & Cloud Services',
+            'Software Publishers',
+        ],
+    },
+    'telecom': {
+        label: 'Telecommunications',
+        subs: [
+            'Cable & Satellite Distribution',
+            'Telephone & Internet Service Providers',
+            'Wireless Telecommunications Carriers',
+        ],
+    },
+    'transportation': {
+        label: 'Transportation & Warehousing',
+        subs: [
+            'Air Transportation',
+            'Ground Passenger Transportation',
+            'Pipeline Transportation',
+            'Postal & Courier Services',
+            'Rail Transportation',
+            'Trucking & Freight Transportation',
+            'Warehousing & Storage',
+            'Water Transportation',
+        ],
+    },
+    'utilities': {
+        label: 'Utilities',
+        subs: [
+            'Electric Power Generation & Distribution',
+            'Natural Gas Distribution',
+            'Water, Sewage, & Other Systems',
+        ],
+    },
+    'wholesale': {
+        label: 'Wholesale Trade',
+        subs: [
+            'Durable Goods Wholesale',
+            'Electronic Markets & Agents/Brokers',
+            'Nondurable Goods Wholesale',
+        ],
+    },
+};
+
 // ── DOM References ────────────────────────────────
 const progressFill = document.getElementById('progressFill');
 const wizardContent = document.getElementById('wizardContent');
@@ -63,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bindChips();
     bindFormInputs();
     bindWorryForm();
+    bindIndustrySelects();
 });
 
 // ── Option Card Selection (single-select, delegated) ──
@@ -173,6 +488,65 @@ function bindWorryForm() {
     });
 }
 
+// ── Industry Select Binding ──────────────────────
+function bindIndustrySelects() {
+    const industrySelect = document.getElementById('industrySelect');
+    const subIndustrySelect = document.getElementById('subIndustrySelect');
+    const subIndustryField = document.getElementById('subIndustryField');
+    if (!industrySelect || !subIndustrySelect) return;
+
+    // Populate industry dropdown
+    Object.entries(industryData).forEach(([key, data]) => {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = data.label;
+        industrySelect.appendChild(opt);
+    });
+
+    // When industry changes, populate sub-industries
+    industrySelect.addEventListener('change', () => {
+        const key = industrySelect.value;
+        const data = industryData[key];
+        if (!data) return;
+
+        // Reset sub-industry
+        subIndustrySelect.innerHTML = '<option value="" disabled selected>Select a sub-industry…</option>';
+        data.subs.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            subIndustrySelect.appendChild(opt);
+        });
+
+        // Show sub-industry field with animation
+        subIndustryField.style.display = 'flex';
+
+        // Store industry answer
+        wizardState.answers.industry = {
+            category: key,
+            categoryLabel: data.label,
+            subIndustry: null,
+        };
+
+        // If only one sub-industry, auto-select it
+        if (data.subs.length === 1) {
+            subIndustrySelect.value = data.subs[0];
+            wizardState.answers.industry.subIndustry = data.subs[0];
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.disabled = true;
+        }
+    });
+
+    // When sub-industry changes
+    subIndustrySelect.addEventListener('change', () => {
+        if (wizardState.answers.industry) {
+            wizardState.answers.industry.subIndustry = subIndustrySelect.value;
+        }
+        nextBtn.disabled = false;
+    });
+}
+
 // ── Show a specific question card ─────────────────
 function showQuestion(questionKey) {
     const cards = wizardContent.querySelectorAll('.question-card');
@@ -203,6 +577,8 @@ function showQuestion(questionKey) {
     } else if (questionKey === 'worries') {
         const filled = answer ? Object.values(answer).filter(Boolean).length : 0;
         nextBtn.disabled = filled < 1;
+    } else if (questionKey === 'industry') {
+        nextBtn.disabled = !answer?.subIndustry;
     } else if (Array.isArray(answer)) {
         nextBtn.disabled = answer.length === 0;
     } else if (questionKey === 'confirm' || questionKey === 'roadmap') {
@@ -236,137 +612,224 @@ function updateProgress() {
     });
 }
 
+// ── Area icons & descriptions for Business Solution page ──
+const areaIcons = {
+    'lead-management': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    'quoting': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+    'deal-closing': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8l-8 8"/><path d="M8 8l8 8"/></svg>',
+    'invoicing': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+    'payments': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
+    'accounting': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>',
+    'support': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    'esignature': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>',
+    'client-projects': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+    'internal-projects': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    'email-marketing': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+    'social-marketing': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
+    'reporting': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+    'collaboration': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+};
+
+const areaDescriptions = {
+    'lead-management': 'Capture incoming leads automatically and ensure timely follow-up so nothing falls through the cracks.',
+    'quoting': 'Generate professional quotes and proposals quickly, with pricing pulled from your product catalog.',
+    'deal-closing': 'Track deals through your pipeline with visibility into what\'s stalling and what\'s ready to close.',
+    'invoicing': 'Send invoices directly from closed deals and track payment status in one place.',
+    'payments': 'Accept payments online with branded checkout pages and automatic reconciliation.',
+    'accounting': 'Keep your books accurate with automated transaction categorization and reconciliation.',
+    'support': 'Give your support team full customer context so they can resolve issues faster.',
+    'esignature': 'Send contracts and agreements for digital signature directly from your CRM or deal records.',
+    'client-projects': 'Turn won deals into active projects with tasks, timelines, and client visibility.',
+    'internal-projects': 'Plan sprints, assign tasks, and track progress across your internal teams.',
+    'email-marketing': 'Send targeted email campaigns based on CRM segments and track engagement.',
+    'social-marketing': 'Schedule posts, monitor engagement, and capture leads from social channels.',
+    'reporting': 'Build dashboards that pull data across sales, marketing, and support for a unified view.',
+    'collaboration': 'Keep your team aligned with shared files, messaging, and real-time updates.',
+};
+
+// ── Mind Map Helpers ──────────────────────────────
+function buildMindMapSummary(a, areasList, proc, prioritiesList) {
+    const parts = [];
+    const ind = a.industry;
+    if (ind?.categoryLabel) {
+        const showSub = ind.subIndustry && ind.subIndustry !== ind.categoryLabel;
+        const indText = showSub
+            ? `<strong>${escapeHtml(ind.categoryLabel)}</strong> (${escapeHtml(ind.subIndustry)})`
+            : `<strong>${escapeHtml(ind.categoryLabel)}</strong>`;
+        parts.push(`Your industry: ${indText}.`);
+    }
+    if (areasList.length > 0) {
+        parts.push(`You're looking for help with <strong>${joinList(areasList)}</strong>.`);
+    }
+    if (proc.who) parts.push(`This involves <strong>${escapeHtml(proc.who)}</strong>.`);
+    if (proc.what) parts.push(`Right now, ${escapeHtml(proc.what)}.`);
+    if (proc.why) parts.push(`The main driver: ${escapeHtml(proc.why)}.`);
+    if (proc.how) parts.push(`Currently you're handling this with ${escapeHtml(proc.how)}.`);
+    if (prioritiesList.length > 0) {
+        parts.push(`What matters most to you: <strong>${joinList(prioritiesList)}</strong>.`);
+    }
+    const worries = a.worries || {};
+    if (worries['status-quo']) parts.push(`If nothing changes: ${escapeHtml(worries['status-quo'])}.`);
+    if (worries.adoption) parts.push(`Hesitation about switching: ${escapeHtml(worries.adoption)}.`);
+    if (worries['post-sale']) parts.push(`After committing: ${escapeHtml(worries['post-sale'])}.`);
+    return parts.length > 0 ? parts.join(' ') : 'No details provided yet.';
+}
+
+function buildIndustrySection(ind) {
+    if (!ind?.categoryLabel) return '';
+    const showSub = ind.subIndustry && ind.subIndustry !== ind.categoryLabel;
+    const subHtml = showSub ? `<span class="industry-selected-sub">${escapeHtml(ind.subIndustry)}</span>` : '';
+    return `<div class="mind-map-section">
+        <div class="mind-map-section-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            <span>Industry</span>
+        </div>
+        <div class="industry-selected-preview">
+            <div class="industry-selected-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="industry-selected-text">
+                <span class="industry-selected-name">${escapeHtml(ind.categoryLabel)}</span>
+                ${subHtml}
+            </div>
+        </div>
+    </div>`;
+}
+
+// ── Tool category mapping (platform-agnostic) ────
+const areaToolCategories = {
+    'lead-management': { category: 'CRM & Lead Management', desc: 'A system to capture, track, and follow up with every lead automatically.' },
+    'quoting': { category: 'Quoting & Proposals', desc: 'Tools that generate professional quotes with pricing pulled from your catalog.' },
+    'deal-closing': { category: 'Pipeline & Deal Tracking', desc: 'Visual pipeline tools that show what\'s stalling and what\'s ready to close.' },
+    'invoicing': { category: 'Invoicing', desc: 'Automated invoice generation tied to your deals and accounting.' },
+    'payments': { category: 'Online Payments', desc: 'Branded checkout and payment collection with automatic reconciliation.' },
+    'accounting': { category: 'Accounting & Bookkeeping', desc: 'Automated transaction categorization, reconciliation, and financial reporting.' },
+    'support': { category: 'Help Desk & Support', desc: 'Ticketing systems that give agents full customer context for faster resolution.' },
+    'esignature': { category: 'E-Signature & Contracts', desc: 'Digital signing workflows embedded in your deal and document processes.' },
+    'client-projects': { category: 'Client Project Management', desc: 'Tools that turn won deals into trackable projects with client visibility.' },
+    'internal-projects': { category: 'Internal Project & Sprint Management', desc: 'Task boards, sprint planning, and progress tracking for internal teams.' },
+    'email-marketing': { category: 'Email Marketing & Automation', desc: 'Segmented campaigns and automated sequences driven by CRM data.' },
+    'social-marketing': { category: 'Social Media Management', desc: 'Scheduling, monitoring, and lead capture across social channels.' },
+    'reporting': { category: 'Analytics & Dashboards', desc: 'Cross-functional dashboards pulling data from sales, marketing, and support.' },
+    'collaboration': { category: 'Team Collaboration', desc: 'Messaging, shared files, and real-time updates to keep everyone aligned.' },
+};
+
 // ── Mind Map Rendering ────────────────────────────
 function renderMindMap() {
     const map = document.getElementById('mindMap');
     const a = wizardState.answers;
-
-    // Build areas chips
-    const areasHtml = (a.areas || [])
-        .map(v => `<span class="mind-map-chip">${areaLabels[v] || v}</span>`)
-        .join('');
-
-    // Build priorities chips
-    const prioritiesHtml = (a.priorities || [])
-        .map((v, i) => `<span class="mind-map-priority-chip"><span class="mind-map-priority-num">${i + 1}</span>${priorityLabels[v] || v}</span>`)
-        .join('');
-
-    // Process fields
     const proc = a.process || {};
-    const processFields = [
-        { key: 'who', label: 'Who' },
-        { key: 'what', label: 'What' },
-        { key: 'when', label: 'When' },
-        { key: 'where', label: 'Where' },
-        { key: 'why', label: 'Why' },
-        { key: 'how', label: 'How' },
-    ];
-    const processHtml = processFields
-        .filter(f => proc[f.key])
-        .map(f => `
-            <div class="mind-map-branch">
-                <span class="mind-map-branch-label">${f.label}</span>
-                <span class="mind-map-branch-value">${escapeHtml(proc[f.key])}</span>
-            </div>
-        `).join('');
-
-    // Build text summary
-    const areasList = (a.areas || []).map(v => areaLabels[v] || v);
-    const prioritiesList = (a.priorities || []).map(v => priorityLabels[v] || v);
-
-    let summaryParts = [];
-
-    if (areasList.length > 0) {
-        summaryParts.push(`You're looking for help with <strong>${joinList(areasList)}</strong>.`);
-    }
-
-    if (proc.who) {
-        summaryParts.push(`This involves <strong>${escapeHtml(proc.who)}</strong>.`);
-    }
-
-    if (proc.what) {
-        summaryParts.push(`Right now, ${escapeHtml(proc.what)}.`);
-    }
-
-    if (proc.why) {
-        summaryParts.push(`The main driver: ${escapeHtml(proc.why)}.`);
-    }
-
-    if (proc.how) {
-        summaryParts.push(`Currently you're handling this with ${escapeHtml(proc.how)}.`);
-    }
-
-    if (prioritiesList.length > 0) {
-        summaryParts.push(`What matters most to you: <strong>${joinList(prioritiesList)}</strong>.`);
-    }
-
-    // Worry analysis summary
     const worries = a.worries || {};
+    const ind = a.industry;
+    const selectedAreas = a.areas || [];
+
+    // ── Section 1: Here's what we heard you need to do ──
+    const needsItems = selectedAreas.map(v => `
+        <div class="mind-map-area-card">
+            <div class="mind-map-area-icon">${areaIcons[v] || ''}</div>
+            <div class="mind-map-area-detail">
+                <span class="mind-map-area-name">${areaLabels[v] || v}</span>
+                <span class="mind-map-area-desc">${areaDescriptions[v] || ''}</span>
+            </div>
+        </div>
+    `).join('');
+
+    // ── Section 2: Problems you're encountering ──
+    const problemItems = [];
+    if (proc.why) {
+        problemItems.push(`<div class="summary-insight summary-insight--pain"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>${escapeHtml(proc.why)}</span></div>`);
+    }
+    if (proc.what) {
+        problemItems.push(`<div class="summary-insight summary-insight--process"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>${escapeHtml(proc.what)}</span></div>`);
+    }
     if (worries['status-quo']) {
-        summaryParts.push(`If nothing changes: ${escapeHtml(worries['status-quo'])}.`);
+        problemItems.push(`<div class="summary-insight summary-insight--risk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>If nothing changes: ${escapeHtml(worries['status-quo'])}</span></div>`);
     }
     if (worries.adoption) {
-        summaryParts.push(`Hesitation about switching: ${escapeHtml(worries.adoption)}.`);
+        problemItems.push(`<div class="summary-insight summary-insight--caution"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Hesitation: ${escapeHtml(worries.adoption)}</span></div>`);
     }
     if (worries['post-sale']) {
-        summaryParts.push(`After committing: ${escapeHtml(worries['post-sale'])}.`);
+        problemItems.push(`<div class="summary-insight summary-insight--caution"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>After committing: ${escapeHtml(worries['post-sale'])}</span></div>`);
     }
 
-    const summaryHtml = summaryParts.length > 0
-        ? summaryParts.join(' ')
-        : 'No details provided yet.';
+    // ── Section 3: Software you're already using ──
+    const currentToolsHtml = proc.how
+        ? `<div class="summary-current-tools"><p class="summary-current-tools-text">${escapeHtml(proc.how)}</p></div>`
+        : '<span class="mind-map-branch-value">Not specified</span>';
 
-    // Build worry cards for the mind map
-    const worryCards = [];
-    if (worries['status-quo']) {
-        worryCards.push(`
-            <div class="mind-map-branch mind-map-worry mind-map-worry--status-quo">
-                <span class="mind-map-branch-label">If nothing changes</span>
-                <span class="mind-map-branch-value">${escapeHtml(worries['status-quo'])}</span>
-            </div>
-        `);
-    }
-    if (worries.adoption) {
-        worryCards.push(`
-            <div class="mind-map-branch mind-map-worry mind-map-worry--adoption">
-                <span class="mind-map-branch-label">Hesitations</span>
-                <span class="mind-map-branch-value">${escapeHtml(worries.adoption)}</span>
-            </div>
-        `);
-    }
-    if (worries['post-sale']) {
-        worryCards.push(`
-            <div class="mind-map-branch mind-map-worry mind-map-worry--post-sale">
-                <span class="mind-map-branch-label">After committing</span>
-                <span class="mind-map-branch-value">${escapeHtml(worries['post-sale'])}</span>
-            </div>
-        `);
-    }
-    const worriesHtml = worryCards.length > 0
-        ? `<div class="mind-map-branch mind-map-branch--worries">
-               <span class="mind-map-branch-label">Concerns</span>
-               <div class="mind-map-worry-cards">${worryCards.join('')}</div>
-           </div>`
-        : '';
+    // ── Section 4: Types of tools that could help ──
+    const toolCategories = selectedAreas
+        .map(v => areaToolCategories[v])
+        .filter(Boolean);
+    // Deduplicate by category name
+    const seen = new Set();
+    const uniqueTools = toolCategories.filter(t => {
+        if (seen.has(t.category)) return false;
+        seen.add(t.category);
+        return true;
+    });
+    const toolsHtml = uniqueTools.map(t => `
+        <div class="summary-tool-card">
+            <span class="summary-tool-name">${escapeHtml(t.category)}</span>
+            <span class="summary-tool-desc">${escapeHtml(t.desc)}</span>
+        </div>
+    `).join('');
 
+    // ── Section 5: Best place to start ──
+    const startArea = selectedAreas[0];
+    const startLabel = areaLabels[startArea] || '';
+    const priorities = (a.priorities || []).map(v => priorityLabels[v] || v);
+    let startRationale = '';
+    if (startLabel) {
+        startRationale = `Based on what you've told us, <strong>${startLabel.toLowerCase()}</strong> is your most pressing need.`;
+        if (proc.why) {
+            startRationale += ` You said: "${escapeHtml(proc.why)}" — solving this first creates the foundation everything else builds on.`;
+        }
+        if (priorities.length > 0) {
+            startRationale += ` Your priorities (<strong>${joinList(priorities)}</strong>) reinforce starting here.`;
+        }
+    }
+
+    // ── Industry badge ──
+    const industryHtml = buildIndustrySection(ind);
+
+    // ── Assemble ──
     map.innerHTML = `
-        <div class="mind-map-center">Your Requirements</div>
-        <div class="mind-map-branches">
-            <div class="mind-map-branch mind-map-branch--areas">
-                <span class="mind-map-branch-label">Areas of Focus</span>
-                <div class="mind-map-chips">${areasHtml || '<span class="mind-map-branch-value">None selected</span>'}</div>
-            </div>
-            ${processHtml}
-            <div class="mind-map-branch mind-map-branch--priorities">
-                <span class="mind-map-branch-label">Priorities</span>
-                <div class="mind-map-chips">${prioritiesHtml || '<span class="mind-map-branch-value">None selected</span>'}</div>
-            </div>
+        ${industryHtml}
+
+        <div class="mind-map-section">
+            <h2 class="mind-map-section-heading">Here's what we heard you need to do</h2>
+            <div class="mind-map-area-cards">${needsItems || '<span class="mind-map-branch-value">None selected</span>'}</div>
         </div>
-        ${worriesHtml}
-        <div class="mind-map-summary">
-            <span class="mind-map-summary-label">Here's what we heard</span>
-            <p class="mind-map-summary-text">${summaryHtml}</p>
+
+        ${problemItems.length > 0 ? `
+        <div class="mind-map-section">
+            <h2 class="mind-map-section-heading">Here's some of the problems you're encountering</h2>
+            <div class="summary-insights">${problemItems.join('')}</div>
+        </div>` : ''}
+
+        <div class="mind-map-section">
+            <h2 class="mind-map-section-heading">Here's the software you're already using</h2>
+            ${currentToolsHtml}
         </div>
+
+        ${uniqueTools.length > 0 ? `
+        <div class="mind-map-section">
+            <h2 class="mind-map-section-heading">Here are some types of tools that could help</h2>
+            <div class="summary-tool-cards">${toolsHtml}</div>
+        </div>` : ''}
+
+        ${startRationale ? `
+        <div class="mind-map-section mind-map-section--start">
+            <h2 class="mind-map-section-heading">Here's where we think is the best place to start — and why</h2>
+            <div class="summary-start-box">
+                <div class="summary-start-icon">${areaIcons[startArea] || ''}</div>
+                <div class="summary-start-content">
+                    <span class="summary-start-label">${escapeHtml(startLabel)}</span>
+                    <p class="summary-start-rationale">${startRationale}</p>
+                </div>
+            </div>
+        </div>` : ''}
     `;
 }
 
@@ -442,6 +905,14 @@ const billingProducts = {
 function renderRoadmap() {
     const output = document.getElementById('roadmapOutput');
     const a = wizardState.answers;
+
+    // Set prepared date dynamically
+    const dateEl = document.getElementById('roadmapDate');
+    if (dateEl) {
+        const now = new Date();
+        const formatted = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        dateEl.textContent = 'Prepared ' + formatted;
+    }
 
     // Collect all recommended apps from selected areas
     const selectedAreas = a.areas || [];

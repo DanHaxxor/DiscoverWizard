@@ -511,6 +511,121 @@ body {
     min-height: 68px;
 }
 
+/* ── Industry Select ────────────────────────────── */
+.industry-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.industry-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.industry-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6b7d93;
+}
+
+.industry-select-wrapper {
+    position: relative;
+}
+
+.industry-select {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #f7f9fd;
+    font-family: inherit;
+    font-size: 0.92rem;
+    color: var(--text);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: all var(--transition);
+}
+
+.industry-select:focus {
+    border-color: #5b97e8;
+    box-shadow: 0 0 0 3px rgba(11, 110, 232, 0.1);
+    background: #ffffff;
+}
+
+.industry-select:hover {
+    border-color: #b8d4f8;
+}
+
+.industry-select option {
+    padding: 0.5rem;
+}
+
+.industry-select option:disabled {
+    color: #9baabb;
+}
+
+.industry-select-arrow {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8a9bb2;
+    pointer-events: none;
+}
+
+.industry-selected-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    background: #eaf3ff;
+    border: 1.4px solid #c5defc;
+    border-radius: var(--radius-md);
+    margin-top: 0.25rem;
+    animation: fadeInUp 0.25s ease;
+}
+
+.industry-selected-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 8px;
+    color: var(--brand-blue);
+    flex-shrink: 0;
+}
+
+.industry-selected-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.industry-selected-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #064b98;
+}
+
+.industry-selected-sub {
+    font-size: 0.78rem;
+    color: #3a6ba8;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Mind Map (Requirements Viz) ──────────────────── */
 .mind-map {
     display: flex;
@@ -520,13 +635,264 @@ body {
 
 .mind-map-center {
     text-align: center;
-    padding: 1rem;
-    background: #0b5fbf;
-    color: white;
-    border-radius: var(--radius-lg);
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--text);
+    border-radius: 0;
     font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    border-bottom: 2px solid #e2eaf3;
+}
+
+/* ── Mind Map Sections ──────────────────────────── */
+.mind-map-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.mind-map-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
     font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+
+.mind-map-section-header svg {
+    color: var(--brand-blue);
+    flex-shrink: 0;
+}
+
+.mind-map-section--worries .mind-map-section-header svg {
+    color: #d97706;
+}
+
+/* ── Section Headings (conversational) ──────────── */
+.mind-map-section-heading {
+    font-family: 'Outfit', sans-serif;
     font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin: 0;
+    padding-bottom: 0.35rem;
+    border-bottom: 1.5px solid #e2eaf3;
+}
+
+/* ── Summary Insights (problems) ────────────────── */
+.summary-insights {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-insight {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text);
+}
+
+.summary-insight svg {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.summary-insight--pain {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.summary-insight--pain svg {
+    color: var(--brand-red);
+}
+
+.summary-insight--process {
+    background: #f7f9fd;
+    border: 1px solid var(--border);
+}
+
+.summary-insight--process svg {
+    color: var(--brand-blue);
+}
+
+.summary-insight--risk {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.summary-insight--risk svg {
+    color: #d97706;
+}
+
+.summary-insight--caution {
+    background: #faf5ff;
+    border: 1px solid #e9d5ff;
+}
+
+.summary-insight--caution svg {
+    color: #7c3aed;
+}
+
+/* ── Current Tools ──────────────────────────────── */
+.summary-current-tools {
+    padding: 0.75rem 1rem;
+    background: #f7f9fd;
+    border: 1.4px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.summary-current-tools-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0;
+}
+
+/* ── Tool Category Cards ────────────────────────── */
+.summary-tool-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+}
+
+.summary-tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.75rem 0.9rem;
+    background: #f0f7ff;
+    border: 1.4px solid #c5defc;
+    border-radius: var(--radius-md);
+}
+
+.summary-tool-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #064b98;
+}
+
+.summary-tool-desc {
+    font-size: 0.76rem;
+    color: #3a6ba8;
+    line-height: 1.45;
+}
+
+/* ── Start Recommendation ───────────────────────── */
+.mind-map-section--start {
+    margin-top: 0.25rem;
+}
+
+.summary-start-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem 1.15rem;
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    border-radius: var(--radius-md);
+}
+
+.summary-start-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    color: var(--brand-green);
+}
+
+.summary-start-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.summary-start-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #15803d;
+}
+
+.summary-start-rationale {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #1a4d2e;
+    margin: 0;
+}
+
+/* ── Area Cards ────────────────────────────────── */
+.mind-map-area-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+}
+
+.mind-map-area-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: #f7f9fd;
+    border: 1.4px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition);
+}
+
+.mind-map-area-card:hover {
+    border-color: #b8d4f8;
+    background: #f0f6ff;
+}
+
+.mind-map-area-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf3ff;
+    border: 1px solid #c5defc;
+    border-radius: 10px;
+    color: #0856b8;
+}
+
+.mind-map-area-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.mind-map-area-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.mind-map-area-desc {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    line-height: 1.45;
 }
 
 .mind-map-branches {
@@ -1148,6 +1514,14 @@ body {
         grid-template-columns: 1fr;
     }
 
+    .mind-map-area-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-tool-cards {
+        grid-template-columns: 1fr;
+    }
+
     .question-header h1 {
         font-size: 1.52rem;
     }
@@ -1251,9 +1625,10 @@ body {
 /* ── Discovery CTA ────────────────────────────────── */
 .discovery-cta {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     padding-top: 0.5rem;
 }
 
