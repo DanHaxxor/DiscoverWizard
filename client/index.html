@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Discover Wizard by Zoho</title>
+    <title>Zoho One Concierge</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
                 <div class="brand-mark">
                     <img class="brand-logo" src="logo.png" alt="Zoho logo">
                 </div>
-                <p class="brand-kicker">Zoho Discover Wizard</p>
+                <p class="brand-kicker">Zoho One Concierge</p>
                 <h2>Find your fastest path from first step to full rollout.</h2>
                 <p class="brand-copy">Share where you are today and we will map the right setup, tooling, and next actions for your team.</p>
             </aside>
@@ -31,9 +31,8 @@
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
                     <div class="progress-labels">
-                        <span class="progress-label active" data-stage="1">Your Profile</span>
-                        <span class="progress-label" data-stage="2">Pain Points</span>
-                        <span class="progress-label" data-stage="3">Your Roadmap</span>
+                        <span class="progress-label active" data-stage="1">Discovery</span>
+                        <span class="progress-label" data-stage="2">Zoho Solution</span>
                     </div>
                 </div>
 
@@ -41,9 +40,9 @@
                 <div class="wizard-content" id="wizardContent">
 
                     <!-- Q1: What are you looking for? -->
-                    <div class="question-card" data-question="intent">
+                    <div class="question-card active" data-question="intent">
                         <div class="question-header">
-                            <span class="stage-badge">Step 1 of 3</span>
+                            <span class="stage-badge stage-badge--s1">Step 1 of 3</span>
                             <h1>What brings you here?</h1>
                             <p class="question-subtitle">Help us understand what kind of guidance would be most useful.</p>
                         </div>
@@ -90,7 +89,7 @@
                     <!-- Q2: Relationship to Zoho -->
                     <div class="question-card" data-question="relationship">
                         <div class="question-header">
-                            <span class="stage-badge">Step 2 of 3</span>
+                            <span class="stage-badge stage-badge--s2">Step 1 of 3</span>
                             <h1>What's your relationship with Zoho?</h1>
                             <p class="question-subtitle">This helps us tailor recommendations to where you are today.</p>
                         </div>
@@ -149,7 +148,7 @@
                     <!-- Q3: Access level -->
                     <div class="question-card" data-question="access">
                         <div class="question-header">
-                            <span class="stage-badge">Step 3 of 3</span>
+                            <span class="stage-badge stage-badge--s2">Step 2 of 7</span>
                             <h1>Are you an admin?</h1>
                             <p class="question-subtitle">Knowing your access level helps us recommend actions you can actually take.</p>
                         </div>
@@ -200,7 +199,7 @@
                     <!-- Q4: Area of interest (multi-select) -->
                     <div class="question-card" data-question="areas">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s2">Step 1 of 5</span>
+                            <span class="stage-badge stage-badge--s1">Step 2 of 3</span>
                             <h1>What areas of your business need attention?</h1>
                             <p class="question-subtitle">Select all that apply. This shapes everything that follows.</p>
                         </div>
@@ -226,7 +225,7 @@
                     <!-- Q5: Process deep-dive (Who/What/When/Where/Why/How) -->
                     <div class="question-card" data-question="process">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s2">Step 2 of 5</span>
+                            <span class="stage-badge stage-badge--s1">Step 3 of 6</span>
                             <h1>Tell us more about your process</h1>
                             <p class="question-subtitle">Help us understand the people, workflow, and pain behind your selected areas.</p>
                         </div>
@@ -280,7 +279,7 @@
                     <!-- Q6: Priorities -->
                     <div class="question-card" data-question="priorities">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s2">Step 3 of 5</span>
+                            <span class="stage-badge stage-badge--s1">Step 4 of 6</span>
                             <h1>What matters most to you?</h1>
                             <p class="question-subtitle">Rank your top priorities. Drag to reorder, or just pick your top 3.</p>
                         </div>
@@ -320,7 +319,7 @@
                     <!-- Q7: Worry Analysis -->
                     <div class="question-card" data-question="worries">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s2">Step 4 of 5</span>
+                            <span class="stage-badge stage-badge--s1">Step 5 of 6</span>
                             <h1>What's on your mind?</h1>
                             <p class="question-subtitle">Capture any concerns — yours or your customer's. This helps us recommend with the full picture.</p>
                         </div>
@@ -356,16 +355,26 @@
                     <!-- Q8: Confirm understanding -->
                     <div class="question-card" data-question="confirm">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s2">Step 5 of 5</span>
-                            <h1>Does this look right?</h1>
-                            <p class="question-subtitle">Here's what we heard. Edit anything that's off before we build your roadmap.</p>
+                            <h1>Your Business Solution</h1>
+                            <p class="question-subtitle">Based on what you told us, here's what your business needs — independent of any specific platform.</p>
                         </div>
 
                         <div class="mind-map" id="mindMap">
                             <div class="mind-map-summary">
                                 <span class="mind-map-summary-label">Here's what we heard</span>
-                                <p class="mind-map-summary-text">You're looking for help with <strong>follow up with leads</strong>, <strong>close more deals</strong>, and <strong>email marketing</strong>. This involves <strong>a sales team of 5 plus one manager</strong>. Right now, leads come in through the website and social media, but they sit in a spreadsheet until someone remembers to follow up. The main driver: we're losing deals because follow-ups slip through the cracks and nobody knows which leads are hot. Currently you're handling this with spreadsheets, manual emails, and memory. What matters most to you: <strong>fast to set up</strong>, <strong>simple to use</strong>, and <strong>automates manual work</strong>. If nothing changes: revenue stays flat and the team keeps burning time on busywork instead of selling. Hesitation about switching: the team tried a CRM two years ago and nobody used it after the first month. After committing: worried about outgrowing the setup or getting stuck if support is slow.</p>
+                                <p class="mind-map-summary-text"></p>
                             </div>
+                        </div>
+
+                        <div class="discovery-cta">
+                            <button class="discovery-cta-btn discovery-cta-btn--primary" id="getSolutionBtn">
+                                Get your Business Solution
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            <button class="discovery-cta-btn discovery-cta-btn--secondary" id="mapToZohoBtn">
+                                Map your Solution to Zoho Tools
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </button>
                         </div>
                     </div>
 
@@ -376,7 +385,7 @@
                     <!-- Q8: Bigin vs CRM -->
                     <div class="question-card" data-question="crm-fit">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s3">Step 1 of 5</span>
+                            <span class="stage-badge stage-badge--s2">Step 2 of 3</span>
                             <h1>How complex is your sales process?</h1>
                             <p class="question-subtitle">This helps us recommend the right CRM fit for your team.</p>
                         </div>
@@ -423,7 +432,7 @@
                     <!-- Q9: Forms & Lead Capture -->
                     <div class="question-card" data-question="forms">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s3">Step 2 of 5</span>
+                            <span class="stage-badge stage-badge--s2">Step 4 of 7</span>
                             <h1>How do leads reach you today?</h1>
                             <p class="question-subtitle">We'll recommend the right capture tools based on your channels.</p>
                         </div>
@@ -444,7 +453,7 @@
                     <!-- Q10: Email Marketing -->
                     <div class="question-card" data-question="email-fit">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s3">Step 3 of 5</span>
+                            <span class="stage-badge stage-badge--s2">Step 5 of 7</span>
                             <h1>What does your email outreach look like?</h1>
                             <p class="question-subtitle">This determines whether you need Campaigns, Marketing Automation, or both.</p>
                         </div>
@@ -503,7 +512,7 @@
                     <!-- Q11: Quotes & Invoices -->
                     <div class="question-card" data-question="billing-fit">
                         <div class="question-header">
-                            <span class="stage-badge stage-badge--s3">Step 4 of 5</span>
+                            <span class="stage-badge stage-badge--s2">Step 6 of 7</span>
                             <h1>How do you handle quotes and invoices?</h1>
                             <p class="question-subtitle">We'll map you to the right billing tools in Zoho.</p>
                         </div>
@@ -560,13 +569,11 @@
                     </div>
 
                     <!-- Q12: Roadmap Output -->
-                    <div class="question-card active" data-question="roadmap">
+                    <div class="question-card" data-question="roadmap">
                         <div class="roadmap-doc-header">
                             <img class="roadmap-doc-logo" src="logo.png" alt="Zoho">
                             <span class="roadmap-doc-date">Prepared March 18, 2026</span>
                         </div>
-
-                        <p class="roadmap-salutation" id="roadmapSalutation"></p>
 
                         <div class="question-header">
                             <h1>Zoho One Concierge</h1>
@@ -727,6 +734,7 @@
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 

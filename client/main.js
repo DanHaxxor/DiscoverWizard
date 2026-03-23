@@ -3,14 +3,13 @@ const wizardState = {
     currentStage: 1,
     currentStep: 0,
     answers: {},
-    totalStages: 3,
+    totalStages: 2,
 };
 
 // Question keys per stage
 const stageQuestions = {
-    1: ['intent', 'relationship', 'access'],
-    2: ['areas', 'process', 'priorities', 'worries', 'confirm'],
-    3: ['crm-fit', 'forms', 'email-fit', 'billing-fit', 'roadmap'],
+    1: ['intent', 'areas', 'confirm'],
+    2: ['relationship', 'crm-fit', 'roadmap'],
 };
 
 // Human-readable labels for chip values
@@ -46,6 +45,7 @@ const progressFill = document.getElementById('progressFill');
 const wizardContent = document.getElementById('wizardContent');
 const nextBtn = document.getElementById('nextBtn');
 const backBtn = document.getElementById('backBtn');
+const wizardNav = document.getElementById('wizardNav');
 
 // ── Helpers ───────────────────────────────────────
 function currentQuestions() {
@@ -184,13 +184,14 @@ function showQuestion(questionKey) {
     // Special step handling
     if (questionKey === 'confirm') {
         renderMindMap();
-        nextBtn.disabled = false;
-        nextBtn.textContent = 'Build My Roadmap';
+        wizardNav.style.display = 'none';
     } else if (questionKey === 'roadmap') {
+        wizardNav.style.display = 'none';
         renderRoadmap();
         nextBtn.disabled = false;
         nextBtn.textContent = 'Finish';
     } else {
+        wizardNav.style.display = 'flex';
         nextBtn.innerHTML = 'Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
     }
 
@@ -387,18 +388,12 @@ nextBtn.addEventListener('click', () => {
     if (nextBtn.disabled) return;
 
     if (wizardState.currentStep < currentQuestions().length - 1) {
-        // Next question within current stage
         wizardState.currentStep++;
         showQuestion(currentQuestionKey());
         updateProgress();
     } else if (wizardState.currentStage < wizardState.totalStages) {
-        // Advance to next stage
-        wizardState.currentStage++;
-        wizardState.currentStep = 0;
-        showQuestion(currentQuestionKey());
-        updateProgress();
+        goToStage(wizardState.currentStage + 1);
     } else {
-        // All stages complete — wizard finished
         console.log('Wizard complete:', wizardState.answers);
         nextBtn.disabled = true;
         nextBtn.textContent = 'Complete';
@@ -858,13 +853,32 @@ function renderRoadmapSummary(selectedAreas, proc, integrations) {
     `;
 }
 
+// ── Stage Navigation Helper ──────────────────────
+function goToStage(stageNumber, step = 0) {
+    wizardState.currentStage = stageNumber;
+    wizardState.currentStep = step;
+    showQuestion(currentQuestionKey());
+    updateProgress();
+}
+
+// ── Discovery CTA Buttons ────────────────────────
+document.getElementById('getSolutionBtn').addEventListener('click', () => {
+    const btn = document.getElementById('getSolutionBtn');
+    const mindMap = document.getElementById('mindMap');
+    btn.style.display = 'none';
+    mindMap.classList.add('mind-map--expanded');
+});
+
+document.getElementById('mapToZohoBtn').addEventListener('click', () => {
+    goToStage(2);
+});
+
 backBtn.addEventListener('click', () => {
     if (wizardState.currentStep > 0) {
         wizardState.currentStep--;
         showQuestion(currentQuestionKey());
         updateProgress();
     } else if (wizardState.currentStage > 1) {
-        // Go back to last question of previous stage
         wizardState.currentStage--;
         const prevQuestions = currentQuestions();
         wizardState.currentStep = prevQuestions.length - 1;
@@ -873,26 +887,166 @@ backBtn.addEventListener('click', () => {
     }
 });
 
-// ── Print Results ────────────────────────────────
+// ── Print Results (via hidden iframe — no popup blocker) ──
+function buildPrintHtml() {
+    const emailInput = document.getElementById('roadmapEmail');
+    const email = emailInput ? emailInput.value.trim() : '';
+    const header = document.querySelector('[data-question="roadmap"] .question-header');
+    const roadmap = document.getElementById('roadmapOutput');
+    if (!header || !roadmap) return null;
+
+    let salutation = '';
+    if (email) {
+        const name = email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        salutation = '<p class="salutation">Prepared for ' + escapeHtml(name) + '</p>';
+    }
+
+    const dateEl = document.querySelector('.roadmap-doc-date');
+    const dateText = dateEl ? dateEl.textContent : '';
+
+    // Summary paragraphs
+    let summaryHtml = '';
+    header.querySelectorAll('.roadmap-summary-text').forEach(p => {
+        summaryHtml += '<p>' + p.innerHTML + '</p>';
+    });
+
+    // Walk roadmap children and build clean HTML
+    let bodyHtml = '';
+    const roadmapClone = roadmap.cloneNode(true);
+    const cta = roadmapClone.querySelector('.roadmap-email-cta');
+    if (cta) cta.remove();
+
+    roadmapClone.querySelectorAll('.roadmap-phase').forEach(node => {
+        const num = node.querySelector('.roadmap-phase-num');
+        const title = node.querySelector('.roadmap-phase-title');
+        const sub = node.querySelector('.roadmap-phase-subtitle');
+        const why = node.querySelector('.roadmap-phase-rationale');
+        const apps = node.querySelectorAll('.roadmap-app');
+        const n = num ? num.textContent.trim() : '1';
+
+        let appsHtml = '';
+        if (apps.length) {
+            appsHtml = '<div class="apps">' + Array.from(apps).map(a => '<span class="app">' + a.textContent + '</span>').join('') + '</div>';
+        }
+
+        bodyHtml += '<div class="phase">'
+            + '<div class="phase-head"><span class="phase-num phase-num--' + n + '">' + n + '</span><span class="phase-title">' + (title ? title.textContent : '') + '</span></div>'
+            + (sub ? '<div class="phase-sub">' + sub.textContent + '</div>' : '')
+            + (why ? '<div class="phase-why">' + why.innerHTML + '</div>' : '')
+            + appsHtml
+            + '</div>';
+    });
+
+    roadmapClone.querySelectorAll('.roadmap-section').forEach(node => {
+        const isWorries = node.classList.contains('roadmap-section--worries');
+        const label = node.querySelector('.roadmap-section-label');
+        let inner = '';
+
+        if (isWorries) {
+            node.querySelectorAll('.roadmap-worry-item').forEach(item => {
+                const tag = item.querySelector('.roadmap-worry-tag');
+                const resp = item.querySelector('.roadmap-worry-response p');
+                inner += '<div class="worry">'
+                    + (tag ? '<div class="worry-tag">' + tag.textContent + '</div>' : '')
+                    + (resp ? '<p>' + resp.innerHTML + '</p>' : '')
+                    + '</div>';
+            });
+        } else if (node.querySelector('.roadmap-resources')) {
+            inner = '<div class="resources">';
+            node.querySelectorAll('.roadmap-resource-link').forEach(link => {
+                inner += '<span class="resource">' + link.textContent.trim() + '</span>';
+            });
+            inner += '</div>';
+        } else {
+            const content = node.querySelector('.roadmap-section-content');
+            if (content) inner = '<div class="section-body">' + content.innerHTML + '</div>';
+        }
+
+        bodyHtml += '<div class="section' + (isWorries ? ' worries' : '') + '">'
+            + (label ? '<div class="section-label">' + label.textContent + '</div>' : '')
+            + inner + '</div>';
+    });
+
+    return `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Zoho One Concierge</title>
+<style>
+@page { size: letter; margin: 0.65in 0.75in; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; color: #1a1a1a; font-size: 10pt; line-height: 1.5; padding: 0; }
+
+.header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2pt solid #1a1a1a; padding-bottom: 8pt; margin-bottom: 14pt; }
+.header img { height: 22pt; }
+.header span { font-size: 7.5pt; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.salutation { font-size: 10.5pt; font-weight: 600; color: #333; margin: 0 0 4pt; }
+
+h1 { font-size: 20pt; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 8pt; }
+.summary { margin-bottom: 18pt; }
+.summary p { font-size: 9.5pt; line-height: 1.6; color: #444; margin-bottom: 5pt; }
+.summary p strong { color: #1a1a1a; }
+
+.phase { border: 1px solid #d0d0d0; border-radius: 4pt; padding: 10pt 14pt; margin-bottom: 8pt; break-inside: avoid; page-break-inside: avoid; }
+.phase-head { display: flex; align-items: center; gap: 6pt; margin-bottom: 4pt; }
+.phase-num { width: 20pt; height: 20pt; border-radius: 50%; font-size: 8.5pt; font-weight: 700; color: white; text-align: center; line-height: 20pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.phase-num--1 { background: #d42a2a; }
+.phase-num--2 { background: #0b6ee8; }
+.phase-num--3 { background: #2ea64b; }
+.phase-title { font-size: 11.5pt; font-weight: 700; }
+.phase-sub { font-size: 7.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #777; margin-bottom: 4pt; }
+.phase-why { font-size: 9pt; line-height: 1.55; color: #444; margin-bottom: 6pt; }
+.apps { display: flex; flex-wrap: wrap; gap: 4pt; }
+.app { font-size: 8pt; font-weight: 600; padding: 3pt 8pt; border: 1px solid #bbb; border-radius: 3pt; background: #f5f5f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.section { border: 1px solid #d0d0d0; border-radius: 4pt; padding: 10pt 14pt; margin-bottom: 8pt; break-inside: avoid; page-break-inside: avoid; }
+.section-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 4pt; margin-bottom: 8pt; }
+.section-body { font-size: 9pt; line-height: 1.55; color: #333; }
+.section-body div { margin-bottom: 3pt; }
+
+.worries { background: #fef9f2; border-color: #d9c9a8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.worries .section-label { color: #7a6030; border-bottom-color: #e0d0b4; }
+.worry { padding: 6pt 0; }
+.worry:first-child { padding-top: 0; }
+.worry:last-child { padding-bottom: 0; }
+.worry + .worry { border-top: 1px solid #e0d0b4; }
+.worry-tag { font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #8b6524; margin-bottom: 3pt; }
+.worry p { font-size: 8.5pt; line-height: 1.5; color: #333; }
+
+.resources { display: flex; gap: 5pt; flex-wrap: wrap; }
+.resource { font-size: 8pt; font-weight: 600; padding: 4pt 10pt; border: 1px solid #bbb; border-radius: 3pt; color: #333; }
+
+.footer { margin-top: 18pt; padding-top: 8pt; border-top: 1px solid #ddd; font-size: 7pt; color: #999; text-align: center; }
+</style></head><body>
+<div class="header"><img src="logo.png" alt="Zoho"><span>${escapeHtml(dateText)}</span></div>
+${salutation}
+<h1>Zoho One Concierge</h1>
+<div class="summary">${summaryHtml}</div>
+${bodyHtml}
+<div class="footer">Generated by Zoho One Concierge</div>
+</body></html>`;
+}
+
 document.addEventListener('click', (e) => {
     if (!e.target.closest('#roadmapEmailBtn')) return;
 
-    const emailInput = document.getElementById('roadmapEmail');
-    const salutation = document.getElementById('roadmapSalutation');
-    const email = emailInput ? emailInput.value.trim() : '';
+    const html = buildPrintHtml();
+    if (!html) return;
 
-    if (salutation) {
-        if (email) {
-            const name = email.split('@')[0]
-                .replace(/[._-]/g, ' ')
-                .replace(/\b\w/g, c => c.toUpperCase());
-            salutation.textContent = 'Prepared for ' + name;
-            salutation.style.display = 'block';
-        } else {
-            salutation.textContent = '';
-            salutation.style.display = 'none';
-        }
-    }
+    // Remove any previous print iframe
+    const old = document.getElementById('printFrame');
+    if (old) old.remove();
 
-    window.print();
+    const iframe = document.createElement('iframe');
+    iframe.id = 'printFrame';
+    iframe.style.cssText = 'position:fixed;top:-10000px;left:-10000px;width:0;height:0;border:none;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    iframe.onload = () => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    };
 });

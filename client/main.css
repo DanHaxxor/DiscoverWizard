@@ -172,6 +172,7 @@ body {
 .wizard-content {
     position: relative;
     min-height: 355px;
+    overflow-y: auto;
 }
 
 .question-card {
@@ -390,11 +391,18 @@ body {
     filter: grayscale(0.08);
 }
 
-/* ── Stage 2 badge variant ────────────────────────── */
+/* ── Stage 1 badge variant (Discovery) ────────────── */
+.stage-badge--s1 {
+    color: #064b98;
+    background: #e6f1ff;
+    border-color: #c5defc;
+}
+
+/* ── Stage 2 badge variant (Zoho Solution) ────────── */
 .stage-badge--s2 {
-    color: #7c4d0a;
-    background: #fef6e6;
-    border-color: #f5e1b0;
+    color: #1a6b2d;
+    background: #e8f7ec;
+    border-color: #b4dfc0;
 }
 
 /* ── Chip Grid (multi-select) ─────────────────────── */
@@ -604,6 +612,17 @@ body {
 }
 
 /* ── Mind Map Summary ─────────────────────────────── */
+.mind-map--expanded .mind-map-summary {
+    background: #f0f7ff;
+    border-color: var(--brand-blue);
+    animation: expandIn 0.3s ease;
+}
+
+@keyframes expandIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .mind-map-summary {
     padding: 1rem 1.15rem;
     background: #f7f9fd;
@@ -663,13 +682,6 @@ body {
 .mind-map-worry--status-quo { border-left-color: var(--brand-red); }
 .mind-map-worry--adoption { border-left-color: #d97706; }
 .mind-map-worry--post-sale { border-left-color: #7c3aed; }
-
-/* ── Stage 3 badge variant ────────────────────────── */
-.stage-badge--s3 {
-    color: #1a6b2d;
-    background: #e8f7ec;
-    border-color: #b4dfc0;
-}
 
 .option-icon--green {
     background: #e8f7ec;
@@ -1236,187 +1248,54 @@ body {
     }
 }
 
-/* ── Salutation (print only) ────────────────────── */
-.roadmap-salutation {
-    display: none;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--text);
-    padding: 0;
-    margin: 0;
+/* ── Discovery CTA ────────────────────────────────── */
+.discovery-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
 }
 
-/* ── Print Styles ───────────────────────────────── */
-@media print {
-    *,
-    *::before,
-    *::after {
-        box-shadow: none !important;
-    }
-
-    body {
-        background: white;
-        padding: 0;
-        font-size: 11pt;
-    }
-
-    .page-shell {
-        min-height: 0;
-        max-width: none;
-    }
-
-    .wizard-container {
-        grid-template-columns: 1fr;
-        max-width: none;
-        gap: 0;
-    }
-
-    .brand-panel,
-    .brand-panel--hidden,
-    .progress-bar,
-    .wizard-nav,
-    .roadmap-email-cta {
-        display: none !important;
-    }
-
-    .wizard-panel {
-        border: none;
-        border-radius: 0;
-        padding: 0;
-    }
-
-    .question-card {
-        display: none !important;
-    }
-
-    .question-card[data-question="roadmap"] {
-        display: flex !important;
-    }
-
-    /* Salutation visible in print */
-    .roadmap-salutation {
-        display: block !important;
-        font-size: 12pt;
-        margin-bottom: 0.25rem;
-    }
-
-    /* Document header */
-    .roadmap-doc-header {
-        padding-bottom: 0.75rem;
-        margin-bottom: 1rem;
-        border-bottom: 2pt solid #122033;
-    }
-
-    .roadmap-doc-logo {
-        height: 28px;
-    }
-
-    .roadmap-doc-date {
-        font-size: 8pt;
-    }
-
-    /* Title */
-    .question-card[data-question="roadmap"] .question-header h1 {
-        font-size: 20pt;
-    }
-
-    .roadmap-summary-text {
-        font-size: 10pt;
-        line-height: 1.6;
-    }
-
-    /* Phases */
-    .roadmap-phase {
-        padding: 0.6rem 0.75rem;
-        border: 1px solid #ccc;
-        break-inside: avoid;
-    }
-
-    .roadmap-phase-num {
-        width: 22px;
-        height: 22px;
-        line-height: 22px;
-        font-size: 9pt;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    .roadmap-phase-title {
-        font-size: 11pt;
-    }
-
-    .roadmap-phase-subtitle {
-        font-size: 8pt;
-    }
-
-    .roadmap-phase-rationale {
-        font-size: 9pt;
-        line-height: 1.5;
-    }
-
-    .roadmap-app {
-        font-size: 8pt;
-        padding: 0.2rem 0.5rem;
-        border: 1px solid #999;
-        background: #f5f5f5 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    .roadmap-connector {
-        height: 12px;
-        background: #999;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    /* Sections */
-    .roadmap-section {
-        padding: 0.6rem 0.75rem;
-        border: 1px solid #ccc;
-        break-inside: avoid;
-    }
-
-    .roadmap-section-label {
-        font-size: 8pt;
-    }
-
-    .roadmap-section-content {
-        font-size: 9pt;
-        line-height: 1.5;
-    }
-
-    /* Honest Assessment */
-    .roadmap-section--worries {
-        background: #fdf8f0 !important;
-        border-color: #d9c9a8;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        break-before: auto;
-    }
-
-    .roadmap-worry-tag {
-        font-size: 7pt;
-    }
-
-    .roadmap-worry-response p {
-        font-size: 9pt;
-        line-height: 1.5;
-    }
-
-    .roadmap-worry-arrow {
-        display: none;
-    }
-
-    /* Resources */
-    .roadmap-resource-link {
-        font-size: 9pt;
-        border: 1px solid #ccc;
-        padding: 0.3rem 0.5rem;
-    }
-
-    /* Page breaks */
-    .roadmap {
-        gap: 0.75rem;
-    }
+.discovery-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.75rem;
+    border: none;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition);
 }
+
+.discovery-cta-btn:hover {
+    transform: translateY(-2px);
+}
+
+.discovery-cta-btn--primary {
+    background: var(--brand-blue);
+    color: white;
+    box-shadow: 0 14px 22px rgba(11, 94, 232, 0.25);
+}
+
+.discovery-cta-btn--primary:hover {
+    background: #0952c6;
+    box-shadow: 0 18px 26px rgba(11, 94, 232, 0.32);
+}
+
+.discovery-cta-btn--secondary {
+    background: transparent;
+    color: var(--brand-green);
+    border: 2px solid var(--brand-green);
+    box-shadow: none;
+}
+
+.discovery-cta-btn--secondary:hover {
+    background: var(--brand-green);
+    color: white;
+    box-shadow: 0 14px 22px rgba(46, 166, 75, 0.2);
+}
+
