@@ -1742,6 +1742,66 @@ body {
     line-height: 1.6;
 }
 
+/* ── Discovery CTA ────────────────────────────────── */
+.discovery-cta {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.discovery-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.75rem;
+    border: none;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 200ms cubic-bezier(0.33, 1, 0.68, 1),
+                box-shadow 200ms cubic-bezier(0.33, 1, 0.68, 1),
+                background 200ms cubic-bezier(0.33, 1, 0.68, 1),
+                color 200ms cubic-bezier(0.33, 1, 0.68, 1),
+                border-color 200ms cubic-bezier(0.33, 1, 0.68, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.discovery-cta-btn:hover {
+    transform: translateY(-1px);
+}
+
+.discovery-cta-btn:active {
+    transform: translateY(0px) scale(0.97);
+    transition-duration: 80ms;
+}
+
+.discovery-cta-btn svg {
+    transition: transform 200ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.discovery-cta-btn:hover svg {
+    transform: translateX(2px);
+}
+
+.discovery-cta-btn--secondary {
+    background: transparent;
+    color: var(--brand-green);
+    border: 1.5px solid var(--brand-green);
+    box-shadow: none;
+}
+
+.discovery-cta-btn--secondary:hover {
+    background: rgba(46, 166, 75, 0.06);
+    color: #1a7a34;
+    border-color: #1a7a34;
+    box-shadow: 0 2px 8px rgba(46, 166, 75, 0.1);
+}
+
 @media (max-width: 980px) {
     body {
         padding: 1.35rem;
@@ -2185,89 +2245,6 @@ body {
     }
 }
 
-/* ── Discovery CTA ────────────────────────────────── */
-.discovery-cta {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding-top: 0.5rem;
-}
-
-.discovery-cta-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.85rem 1.75rem;
-    border: none;
-    border-radius: 100px;
-    font-family: inherit;
-    font-size: 0.92rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 200ms cubic-bezier(0.33, 1, 0.68, 1),
-                box-shadow 200ms cubic-bezier(0.33, 1, 0.68, 1),
-                background 200ms cubic-bezier(0.33, 1, 0.68, 1),
-                color 200ms cubic-bezier(0.33, 1, 0.68, 1),
-                border-color 200ms cubic-bezier(0.33, 1, 0.68, 1);
-    -webkit-tap-highlight-color: transparent;
-}
-
-.discovery-cta-btn:hover {
-    transform: translateY(-1px);
-}
-
-.discovery-cta-btn:active {
-    transform: translateY(0px) scale(0.97);
-    transition-duration: 80ms;
-}
-
-.discovery-cta-btn svg {
-    transition: transform 200ms cubic-bezier(0.33, 1, 0.68, 1);
-}
-
-.discovery-cta-btn:hover svg {
-    transform: translateX(2px);
-}
-
-.discovery-cta-btn--primary {
-    background: var(--brand-blue);
-    color: white;
-    box-shadow: 0 4px 12px rgba(11, 94, 232, 0.18),
-                0 12px 24px rgba(11, 94, 232, 0.15);
-    position: relative;
-    overflow: hidden;
-}
-
-.discovery-cta-btn--primary::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-    pointer-events: none;
-    border-radius: inherit;
-}
-
-.discovery-cta-btn--primary:hover {
-    background: #0952c6;
-    box-shadow: 0 6px 16px rgba(11, 94, 232, 0.24),
-                0 16px 28px rgba(11, 94, 232, 0.18);
-}
-
-.discovery-cta-btn--secondary {
-    background: transparent;
-    color: var(--brand-green);
-    border: 1.5px solid var(--brand-green);
-    box-shadow: none;
-}
-
-.discovery-cta-btn--secondary:hover {
-    background: rgba(46, 166, 75, 0.06);
-    color: #258c3e;
-    border-color: #258c3e;
-    box-shadow: 0 2px 8px rgba(46, 166, 75, 0.1);
-}
 
 /* ── Micro-interaction: stage badge entrance ─────── */
 .stage-badge {

@@ -1312,13 +1312,6 @@ function goToStage(stageNumber, step = 0) {
 }
 
 // ── Discovery CTA Buttons ────────────────────────
-document.getElementById('getSolutionBtn').addEventListener('click', () => {
-    const btn = document.getElementById('getSolutionBtn');
-    const mindMap = document.getElementById('mindMap');
-    btn.style.display = 'none';
-    mindMap.classList.add('mind-map--expanded');
-});
-
 document.getElementById('mapToZohoBtn').addEventListener('click', () => {
     goToStage(2);
 });
