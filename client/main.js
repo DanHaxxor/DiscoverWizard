@@ -647,55 +647,6 @@ const areaDescriptions = {
     'collaboration': 'Keep your team aligned with shared files, messaging, and real-time updates.',
 };
 
-// ── Mind Map Helpers ──────────────────────────────
-function buildMindMapSummary(a, areasList, proc, prioritiesList) {
-    const parts = [];
-    const ind = a.industry;
-    if (ind?.categoryLabel) {
-        const showSub = ind.subIndustry && ind.subIndustry !== ind.categoryLabel;
-        const indText = showSub
-            ? `<strong>${escapeHtml(ind.categoryLabel)}</strong> (${escapeHtml(ind.subIndustry)})`
-            : `<strong>${escapeHtml(ind.categoryLabel)}</strong>`;
-        parts.push(`Your industry: ${indText}.`);
-    }
-    if (areasList.length > 0) {
-        parts.push(`You're looking for help with <strong>${joinList(areasList)}</strong>.`);
-    }
-    if (proc.who) parts.push(`This involves <strong>${escapeHtml(proc.who)}</strong>.`);
-    if (proc.what) parts.push(`Right now, ${escapeHtml(proc.what)}.`);
-    if (proc.why) parts.push(`The main driver: ${escapeHtml(proc.why)}.`);
-    if (proc.how) parts.push(`Currently you're handling this with ${escapeHtml(proc.how)}.`);
-    if (prioritiesList.length > 0) {
-        parts.push(`What matters most to you: <strong>${joinList(prioritiesList)}</strong>.`);
-    }
-    const worries = a.worries || {};
-    if (worries['status-quo']) parts.push(`If nothing changes: ${escapeHtml(worries['status-quo'])}.`);
-    if (worries.adoption) parts.push(`Hesitation about switching: ${escapeHtml(worries.adoption)}.`);
-    if (worries['post-sale']) parts.push(`After committing: ${escapeHtml(worries['post-sale'])}.`);
-    return parts.length > 0 ? parts.join(' ') : 'No details provided yet.';
-}
-
-function buildIndustrySection(ind) {
-    if (!ind?.categoryLabel) return '';
-    const showSub = ind.subIndustry && ind.subIndustry !== ind.categoryLabel;
-    const subHtml = showSub ? `<span class="industry-selected-sub">${escapeHtml(ind.subIndustry)}</span>` : '';
-    return `<div class="mind-map-section">
-        <div class="mind-map-section-header">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            <span>Industry</span>
-        </div>
-        <div class="industry-selected-preview">
-            <div class="industry-selected-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            </div>
-            <div class="industry-selected-text">
-                <span class="industry-selected-name">${escapeHtml(ind.categoryLabel)}</span>
-                ${subHtml}
-            </div>
-        </div>
-    </div>`;
-}
-
 // ── Tool category mapping (platform-agnostic) ────
 const areaToolCategories = {
     'lead-management': { category: 'CRM & Lead Management', desc: 'A system to capture, track, and follow up with every lead automatically.' },
@@ -714,7 +665,7 @@ const areaToolCategories = {
     'collaboration': { category: 'Team Collaboration', desc: 'Messaging, shared files, and real-time updates to keep everyone aligned.' },
 };
 
-// ── Mind Map Rendering ────────────────────────────
+// ── Mind Map (Whiteboard) Rendering ──────────────
 function renderMindMap() {
     const map = document.getElementById('mindMap');
     const a = wizardState.answers;
@@ -722,114 +673,142 @@ function renderMindMap() {
     const worries = a.worries || {};
     const ind = a.industry;
     const selectedAreas = a.areas || [];
+    const priorities = (a.priorities || []).map(v => priorityLabels[v] || v);
 
-    // ── Section 1: Here's what we heard you need to do ──
-    const needsItems = selectedAreas.map(v => `
-        <div class="mind-map-area-card">
-            <div class="mind-map-area-icon">${areaIcons[v] || ''}</div>
-            <div class="mind-map-area-detail">
-                <span class="mind-map-area-name">${areaLabels[v] || v}</span>
-                <span class="mind-map-area-desc">${areaDescriptions[v] || ''}</span>
+    // ── Identity bar ──
+    const identityHtml = buildBoardIdentity(ind, proc);
+
+    // ── Need cards ──
+    const needsHtml = selectedAreas.map(v => `
+        <div class="need-card">
+            <div class="need-card-icon">${areaIcons[v] || ''}</div>
+            <div class="need-card-text">
+                <span class="need-card-name">${areaLabels[v] || v}</span>
+                <span class="need-card-desc">${areaDescriptions[v] || ''}</span>
             </div>
         </div>
     `).join('');
 
-    // ── Section 2: Problems you're encountering ──
-    const problemItems = [];
-    if (proc.why) {
-        problemItems.push(`<div class="summary-insight summary-insight--pain"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>${escapeHtml(proc.why)}</span></div>`);
-    }
-    if (proc.what) {
-        problemItems.push(`<div class="summary-insight summary-insight--process"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>${escapeHtml(proc.what)}</span></div>`);
-    }
-    if (worries['status-quo']) {
-        problemItems.push(`<div class="summary-insight summary-insight--risk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>If nothing changes: ${escapeHtml(worries['status-quo'])}</span></div>`);
-    }
-    if (worries.adoption) {
-        problemItems.push(`<div class="summary-insight summary-insight--caution"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Hesitation: ${escapeHtml(worries.adoption)}</span></div>`);
-    }
-    if (worries['post-sale']) {
-        problemItems.push(`<div class="summary-insight summary-insight--caution"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>After committing: ${escapeHtml(worries['post-sale'])}</span></div>`);
-    }
+    // ── Problem stickies ──
+    const problemStickies = buildProblemStickies(proc, worries);
 
-    // ── Section 3: Software you're already using ──
-    const currentToolsHtml = proc.how
-        ? `<div class="summary-current-tools"><p class="summary-current-tools-text">${escapeHtml(proc.how)}</p></div>`
-        : '<span class="mind-map-branch-value">Not specified</span>';
+    // ── Current tools sticky ──
+    const toolsStickyHtml = proc.how
+        ? `<div class="sticky sticky--gray"><div class="sticky-label">Current tools</div><div class="sticky-text">${escapeHtml(proc.how)}</div></div>`
+        : '';
 
-    // ── Section 4: Types of tools that could help ──
-    const toolCategories = selectedAreas
-        .map(v => areaToolCategories[v])
-        .filter(Boolean);
-    // Deduplicate by category name
-    const seen = new Set();
-    const uniqueTools = toolCategories.filter(t => {
-        if (seen.has(t.category)) return false;
-        seen.add(t.category);
-        return true;
-    });
-    const toolsHtml = uniqueTools.map(t => `
-        <div class="summary-tool-card">
-            <span class="summary-tool-name">${escapeHtml(t.category)}</span>
-            <span class="summary-tool-desc">${escapeHtml(t.desc)}</span>
-        </div>
-    `).join('');
+    // ── Tool category chips ──
+    const toolChips = buildToolChips(selectedAreas);
 
-    // ── Section 5: Best place to start ──
-    const startArea = selectedAreas[0];
-    const startLabel = areaLabels[startArea] || '';
-    const priorities = (a.priorities || []).map(v => priorityLabels[v] || v);
-    let startRationale = '';
-    if (startLabel) {
-        startRationale = `Based on what you've told us, <strong>${startLabel.toLowerCase()}</strong> is your most pressing need.`;
-        if (proc.why) {
-            startRationale += ` You said: "${escapeHtml(proc.why)}" — solving this first creates the foundation everything else builds on.`;
-        }
-        if (priorities.length > 0) {
-            startRationale += ` Your priorities (<strong>${joinList(priorities)}</strong>) reinforce starting here.`;
-        }
-    }
+    // ── Start here banner ──
+    const startHtml = buildStartBanner(selectedAreas, proc, priorities);
 
-    // ── Industry badge ──
-    const industryHtml = buildIndustrySection(ind);
-
-    // ── Assemble ──
+    // ── Assemble the board ──
     map.innerHTML = `
-        ${industryHtml}
+    <div class="board">
+        ${identityHtml}
 
-        <div class="mind-map-section">
-            <h2 class="mind-map-section-heading">Here's what we heard you need to do</h2>
-            <div class="mind-map-area-cards">${needsItems || '<span class="mind-map-branch-value">None selected</span>'}</div>
-        </div>
-
-        ${problemItems.length > 0 ? `
-        <div class="mind-map-section">
-            <h2 class="mind-map-section-heading">Here's some of the problems you're encountering</h2>
-            <div class="summary-insights">${problemItems.join('')}</div>
-        </div>` : ''}
-
-        <div class="mind-map-section">
-            <h2 class="mind-map-section-heading">Here's the software you're already using</h2>
-            ${currentToolsHtml}
-        </div>
-
-        ${uniqueTools.length > 0 ? `
-        <div class="mind-map-section">
-            <h2 class="mind-map-section-heading">Here are some types of tools that could help</h2>
-            <div class="summary-tool-cards">${toolsHtml}</div>
-        </div>` : ''}
-
-        ${startRationale ? `
-        <div class="mind-map-section mind-map-section--start">
-            <h2 class="mind-map-section-heading">Here's where we think is the best place to start — and why</h2>
-            <div class="summary-start-box">
-                <div class="summary-start-icon">${areaIcons[startArea] || ''}</div>
-                <div class="summary-start-content">
-                    <span class="summary-start-label">${escapeHtml(startLabel)}</span>
-                    <p class="summary-start-rationale">${startRationale}</p>
+        <div class="board-columns">
+            <!-- LEFT COLUMN: Where you are today -->
+            <div class="board-col">
+                <div class="cluster">
+                    <div class="cluster-label"><span class="cluster-label-dot" style="background:#ef4444"></span> Where you are today</div>
+                    ${toolsStickyHtml}
+                    ${problemStickies}
                 </div>
             </div>
-        </div>` : ''}
+
+            <!-- RIGHT COLUMN: What you need -->
+            <div class="board-col">
+                <div class="cluster">
+                    <div class="cluster-label"><span class="cluster-label-dot" style="background:#3b82f6"></span> What you need to do</div>
+                    <div class="need-cards">${needsHtml || '<div class="sticky sticky--gray"><div class="sticky-text">No areas selected yet.</div></div>'}</div>
+                </div>
+            </div>
+        </div>
+
+        ${toolChips ? `
+        <div class="board-divider">
+            <span class="board-divider-line"></span>
+            <span class="board-divider-label">Types of tools that could help</span>
+            <span class="board-divider-line"></span>
+        </div>
+        <div class="tool-chips">${toolChips}</div>` : ''}
+
+        ${startHtml}
+    </div>
+    `;
+}
+
+function buildBoardIdentity(ind, proc) {
+    const parts = [];
+    if (ind?.categoryLabel) parts.push(ind.categoryLabel);
+    if (ind?.subIndustry && ind.subIndustry !== ind.categoryLabel) parts.push(ind.subIndustry);
+    if (proc.who) parts.push(proc.who);
+    if (parts.length === 0) return '';
+    return `
+        <div class="board-identity">
+            <div class="board-identity-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="board-identity-text">
+                <span class="board-identity-label">${escapeHtml(parts[0])}</span>
+                ${parts.length > 1 ? `<span class="board-identity-sub">${parts.slice(1).map(p => escapeHtml(p)).join(' · ')}</span>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function buildProblemStickies(proc, worries) {
+    const stickies = [];
+    if (proc.why) {
+        stickies.push(`<div class="sticky sticky--red"><div class="sticky-label">The core problem</div><div class="sticky-text">${escapeHtml(proc.why)}</div></div>`);
+    }
+    if (proc.what) {
+        stickies.push(`<div class="sticky sticky--yellow"><div class="sticky-label">Current process</div><div class="sticky-text">${escapeHtml(proc.what)}</div></div>`);
+    }
+    if (worries['status-quo']) {
+        stickies.push(`<div class="sticky sticky--red"><div class="sticky-label">If nothing changes</div><div class="sticky-text">${escapeHtml(worries['status-quo'])}</div></div>`);
+    }
+    if (worries.adoption) {
+        stickies.push(`<div class="sticky sticky--purple"><div class="sticky-label">Hesitation</div><div class="sticky-text">${escapeHtml(worries.adoption)}</div></div>`);
+    }
+    if (worries['post-sale']) {
+        stickies.push(`<div class="sticky sticky--purple"><div class="sticky-label">After committing</div><div class="sticky-text">${escapeHtml(worries['post-sale'])}</div></div>`);
+    }
+    return stickies.join('');
+}
+
+function buildToolChips(selectedAreas) {
+    const seen = new Set();
+    const chips = selectedAreas
+        .map(v => areaToolCategories[v])
+        .filter(Boolean)
+        .filter(t => !seen.has(t.category) && seen.add(t.category))
+        .map(t => `<span class="tool-chip"><span class="tool-chip-dot"></span>${escapeHtml(t.category)}</span>`)
+        .join('');
+    return chips;
+}
+
+function buildStartBanner(selectedAreas, proc, priorities) {
+    const startArea = selectedAreas[0];
+    if (!startArea) return '';
+    const label = areaLabels[startArea] || '';
+    let rationale = `Based on what you told us, <strong>${label.toLowerCase()}</strong> is the highest-impact place to begin.`;
+    if (proc.why) {
+        rationale += ` You said: "${escapeHtml(proc.why)}" — fixing this first unlocks everything downstream.`;
+    }
+    if (priorities.length > 0) {
+        rationale += ` Your priorities (<strong>${joinList(priorities)}</strong>) point here too.`;
+    }
+    return `
+        <div class="start-banner">
+            <div class="start-banner-icon">${areaIcons[startArea] || ''}</div>
+            <div class="start-banner-content">
+                <span class="start-banner-label">${escapeHtml(label)}</span>
+                <p class="start-banner-rationale">${rationale}</p>
+            </div>
+        </div>
     `;
 }
 
