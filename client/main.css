@@ -2109,10 +2109,10 @@ body {
 }
 
 .diagnosis-cta-btn--primary {
-    background: var(--brand-red);
+    background: var(--brand-green);
     color: white;
-    box-shadow: 0 4px 12px rgba(228, 56, 34, 0.2),
-                0 12px 24px rgba(228, 56, 34, 0.18);
+    box-shadow: 0 4px 12px rgba(46, 166, 75, 0.2),
+                0 12px 24px rgba(46, 166, 75, 0.18);
     position: relative;
     overflow: hidden;
     width: 100%;
@@ -2128,9 +2128,9 @@ body {
 }
 
 .diagnosis-cta-btn--primary:hover {
-    background: #d02020;
-    box-shadow: 0 6px 16px rgba(228, 56, 34, 0.28),
-                0 16px 28px rgba(228, 56, 34, 0.22);
+    background: #1a7a34;
+    box-shadow: 0 6px 16px rgba(46, 166, 75, 0.28),
+                0 16px 28px rgba(46, 166, 75, 0.22);
 }
 
 .diagnosis-secondary-actions {
@@ -2655,6 +2655,27 @@ body {
     }
 }
 
+
+/* ── Powered By Badge ────────────────────────────── */
+.powered-by {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0 0.75rem;
+}
+
+.powered-by-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    letter-spacing: 0.04em;
+}
+
+.powered-by-logo {
+    height: 22px;
+    width: auto;
+    object-fit: contain;
+}
 
 /* ── Micro-interaction: stage badge entrance ─────── */
 .stage-badge {

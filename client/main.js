@@ -253,8 +253,12 @@ function bindFreeTextInput() {
     if (!input) return;
 
     input.addEventListener('input', () => {
-        wizardState.answers['free-text'] = input.value.trim();
-        // Free text is always skippable — button stays enabled
+        const val = input.value.trim();
+        wizardState.answers['free-text'] = val;
+        // Required — must have content to proceed
+        if (currentQuestionKey() === 'free-text') {
+            nextBtn.disabled = !val;
+        }
     });
 }
 
@@ -410,9 +414,7 @@ function showQuestion(questionKey) {
     // Determine button state
     const answer = wizardState.answers[questionKey];
     if (questionKey === 'free-text') {
-        // Free text is always skippable
-        nextBtn.disabled = false;
-        nextBtn.innerHTML = (answer ? 'Continue' : 'Skip') + ' <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+        nextBtn.disabled = !answer;
     } else if (questionKey === 'industry') {
         nextBtn.disabled = !answer?.subIndustry;
     } else if (questionKey === 'diagnosis') {
@@ -547,12 +549,10 @@ function renderDiagnosis() {
             <p class="diagnosis-section-text">${severityStatement}</p>
         </div>
 
-        ${freeText ? `
         <div class="diagnosis-section diagnosis-section--quote">
             <div class="diagnosis-section-label">In Your Words</div>
             <blockquote class="diagnosis-quote">"${escapeHtml(freeText)}"</blockquote>
         </div>
-        ` : ''}
 
         <div class="diagnosis-section diagnosis-section--roadmap">
             <div class="diagnosis-section-label">Solution Roadmap</div>
