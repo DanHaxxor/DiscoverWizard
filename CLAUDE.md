@@ -37,38 +37,102 @@ AI role is strictly limited: AI parses free-text input into structured tags (JSO
 
 ---
 
-## Wizard Flow
+## Phase I — Platform-Agnostic Business Diagnostic
 
-### Step 1 — User Identification and Journey Stage
+Phase I collects 9 questions across three mini-phases and returns a platform-agnostic diagnostic report. Zoho is never mentioned in Phase I questions or output. The diagnostic output contains:
 
-Classify the user into one of four journey stages via opening questions or existing account data:
+- **Problem statement** (1–2 sentences)
+- **Root cause** (1–2 sentences)
+- **Severity statement** (plain language, 2 sentences — urgency + consequence of inaction)
+- **Solution roadmap**: process steps first, then one sentence naming the category of tool that would support it — no brand names ever
 
-- **New prospect**: No existing Zoho relationship. Discovery-level guidance.
-- **Evaluating buyer**: Aware of Zoho, comparing options. Solution-level clarity.
-- **Current/returning customer**: Already subscribed. Optimization or expansion guidance.
-- **Advanced/technical user**: Comfortable with ecosystem. Deeper integrations, automations, customization.
+The report is shareable and downloadable. It ends with a single button: **"Explore this solution in Zoho →"**
 
-Classification sets the tone, depth, and output type for the rest of the flow.
+### Mini-phase 1 — Demographics (3 structured questions)
 
-### Step 2 — Progressive Discovery (4 stages, adaptive)
+**D1 & D2 — Industry and Sub-industry**
+Use the existing exhaustive industry and sub-industry dropdown already built into the platform. Do not redesign or replace these.
 
-- **Stage 1 — Context**: Role, team size/structure, industry.
-- **Stage 2 — Business Activities**: Users select from a defined set of activities representing real workflows (see Activity-to-Product Mapping below). Multiple selections drive integrated solution recommendations.
-- **Stage 3 — Current Pain Points**: Where they're struggling with existing business software.
-- **Stage 4 — Priorities**: Cost, speed, integration, simplicity, or scalability.
+**D3 — How many people work at your company?**
+- Just me
+- 2–10
+- 11–50
+- 51–200
+- 201–500
+- 500+
 
-Each stage adapts based on journey classification. New prospects see broader/simpler questions. Advanced users skip basics and go straight to integration/customization territory.
+**D4 — What best describes your role?**
+- Owner / Founder
+- Executive or Director
+- Manager or Team Lead
+- Individual Contributor
+- Evaluating on behalf of someone else → triggers a follow-up: "What's their role?" (same four options above)
 
-### Step 3 — Output
+Role determines output framing: decision makers (Owner, Executive, Manager) get a report written to act on; everyone else gets a report written to bring to leadership.
 
-Based on collected data, the wizard maps to one or more output types:
+### Mini-phase 2 — Pain Points (3 structured + 1 free text)
 
-- **Product combinations**: Recommended set of Zoho tools that work together.
-- **Solution overviews**: End-to-end view of how Zoho addresses their business challenge.
-- **Introductory content**: Guides, videos, walkthroughs for newer users.
-- **Advanced content**: Deep dives on integrations, APIs, automation recipes, power-user practices.
+**PP1 — Where is your operation breaking down most?** (branch selector — answer determines PP2, PP3, PP4 language)
+- Sales process
+- Customer service
+- Internal ops & admin
+- Marketing & lead generation
 
-A single user can receive multiple output types simultaneously.
+**PP2 — How are you handling this today?** (branched by PP1)
+
+| Sales process | Customer service | Internal ops | Marketing |
+|---|---|---|---|
+| Spreadsheets and email — that's basically it | Shared email inbox | Mostly email and chat messages | Scattered across social, email, and ads with no unified view |
+| A CRM we're not really using well | A helpdesk tool we've outgrown | Spreadsheets multiple people try to maintain | Running campaigns but can't tell what's actually working |
+| Mostly in people's heads | Phone calls and manual notes | Meetings that could have been a process | We know we need to do more but don't know where to start |
+| Multiple tools that don't connect to each other | No real system — it's reactive | Everyone has their own system | A marketing tool we've outgrown or barely use |
+
+**PP3 — What do you think is really driving this?** (branched by PP1)
+
+| Sales process | Customer service | Internal ops | Marketing |
+|---|---|---|---|
+| No visibility into where things stand | No single place to see all customer issues | Lack of ownership — nobody's accountable | No way to track what's generating leads vs. wasting budget |
+| Leads go cold because follow-up is inconsistent | Too much depends on individual people | Too many tools that don't connect | Campaigns go out but there's no follow-through to sales |
+| Proposals take too long or get lost | No process for escalation or follow-through | Processes exist but aren't enforced | Content and messaging are inconsistent across channels |
+| We don't know what's working and what isn't | We can't tell what's resolved and what isn't | The way we work hasn't changed even though the team has | We're guessing instead of using data |
+
+**PP4 — How would you describe your challenge in your own words?** (free text, AI parsed)
+
+Placeholders branched by PP1:
+- Sales: "Tell us what's happening — e.g., we lose track of leads after the first call and nobody owns follow-up..."
+- Customer service: "Tell us what's happening — e.g., customers have to repeat themselves every time they contact us..."
+- Internal ops: "Tell us what's happening — e.g., approvals get stuck and nobody knows where things stand..."
+- Marketing: "Tell us what's happening — e.g., we spend money on ads but have no idea which ones actually turn into customers..."
+
+AI tagger parses free text into three signals:
+- **Root cause type**: `process_issue` | `people_issue` | `tool_issue` | `visibility_issue`
+- **Problem pattern**: `adoption_failure` | `inconsistent_execution` | `missing_ownership` | `bottleneck` | `communication_breakdown`
+- **Urgency signal**: `active_loss` | `slow_bleed` | `risk_flag`
+
+### Mini-phase 3 — Impact & Urgency (2 structured questions)
+
+**IU1 — How is this problem showing up in your business?**
+- Lost revenue or missed deals
+- Wasted time and labor costs
+- Customer churn or complaints
+- Team frustration and turnover risk
+- General inefficiency — things take longer than they should
+
+**IU2 — How pressured do you feel to solve this?**
+- Critical — it's affecting us right now
+- High — we need a solution within weeks
+- Medium — important but not on fire
+- Low — planning ahead
+
+### What the diagnosis prompt receives
+
+All answers as labeled key-value pairs, plus the three AI-parsed tags from PP4. Industry and sub-industry from the existing dropdowns are passed as-is. Role (D4) determines output framing.
+
+---
+
+## Phase II — Zoho Solution Mapping (future)
+
+After Phase I diagnostic, the "Explore this solution in Zoho →" button transitions to Phase II, which maps the platform-agnostic diagnosis to specific Zoho products using the four-layer intelligence model (Input → Signals → Patterns → Bundles). Phase II is a separate implementation phase.
 
 ---
 
