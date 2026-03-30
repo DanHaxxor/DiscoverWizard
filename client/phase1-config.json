@@ -1,0 +1,275 @@
+{
+  "version": "1.0.0",
+  "phase": "phase1-business-diagnostic",
+
+  "visuals": {
+    "phases": {
+      "demographics": {
+        "tone": "calm",
+        "alt": "Profile cards being filled in - getting to know your business context",
+        "ariaDescription": "Three organized profile cards with checkmarks representing the process of understanding your business"
+      },
+      "pain": {
+        "tone": "tension",
+        "alt": "Two disconnected systems with a broken link between them",
+        "ariaDescription": "Two separate system boxes with a broken connection showing business friction and disconnection"
+      },
+      "impact": {
+        "tone": "urgent",
+        "alt": "A declining bar chart with an alert badge and clock",
+        "ariaDescription": "A bar chart trending downward with an alert triangle and a clock indicating time-sensitive urgency"
+      },
+      "results": {
+        "tone": "resolved",
+        "alt": "A checklist document with completed items and a forward arrow",
+        "ariaDescription": "A document with completed checklist items and a forward arrow indicating a clear action path ahead"
+      }
+    },
+    "branches": {
+      "sales": {
+        "tone": "tension",
+        "alt": "A sales funnel with leads entering at top and a win at the bottom",
+        "ariaDescription": "A funnel showing leads entering at the top with a star representing a closed deal at the bottom"
+      },
+      "service": {
+        "tone": "tension",
+        "alt": "Stacked support tickets with chat bubbles and a resolve checkmark",
+        "ariaDescription": "A stack of support tickets with a resolution checkmark and chat bubbles indicating customer inquiries"
+      },
+      "ops": {
+        "tone": "tension",
+        "alt": "A central workflow node connected to surrounding process boxes",
+        "ariaDescription": "A flowchart with a highlighted central gear node connected to input and output process boxes"
+      },
+      "marketing": {
+        "tone": "tension",
+        "alt": "A megaphone broadcasting to a lead network with an upward trend bar chart",
+        "ariaDescription": "A megaphone with sound waves reaching a network of leads, with a rising bar chart showing growth potential"
+      }
+    }
+  },
+
+  "questions": [
+    {
+      "id": "D1",
+      "category": "demographics",
+      "type": "select",
+      "label": "Which industry are you in?",
+      "source": "existing-platform-dropdown",
+      "notes": "Use existing exhaustive industry dropdown; do not redesign."
+    },
+    {
+      "id": "D2",
+      "category": "demographics",
+      "type": "select",
+      "label": "Which sub-industry best fits your business?",
+      "source": "existing-platform-dropdown",
+      "notes": "Use existing exhaustive sub-industry dropdown; do not redesign."
+    },
+    {
+      "id": "D3",
+      "category": "demographics",
+      "type": "single_choice",
+      "label": "How many people work at your company?",
+      "options": ["Just me", "2-10", "11-50", "51-200", "201-500", "500+"]
+    },
+    {
+      "id": "D4",
+      "category": "demographics",
+      "type": "single_choice",
+      "label": "What best describes your role?",
+      "options": [
+        "Owner / Founder",
+        "Executive or Director",
+        "Manager or Team Lead",
+        "Individual Contributor",
+        "Evaluating on behalf of someone else"
+      ],
+      "followup": {
+        "condition": { "equals": "Evaluating on behalf of someone else" },
+        "question": {
+          "id": "D4A",
+          "type": "single_choice",
+          "label": "What is their role?",
+          "options": [
+            "Owner / Founder",
+            "Executive or Director",
+            "Manager or Team Lead",
+            "Individual Contributor"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PP1",
+      "category": "pain_points",
+      "type": "single_choice",
+      "label": "Where is your operation breaking down most?",
+      "options": [
+        "Sales process",
+        "Customer service",
+        "Internal ops & admin",
+        "Marketing & lead generation"
+      ],
+      "controls_branch": ["PP2", "PP3", "PP4"]
+    },
+    {
+      "id": "PP2",
+      "category": "pain_points",
+      "type": "single_choice_branch",
+      "label": "How are you handling this today?",
+      "branch_source": "PP1"
+    },
+    {
+      "id": "PP3",
+      "category": "pain_points",
+      "type": "single_choice_branch",
+      "label": "What do you think is really driving this?",
+      "branch_source": "PP1"
+    },
+    {
+      "id": "PP4",
+      "category": "pain_points",
+      "type": "free_text_branch",
+      "label": "How would you describe your challenge in your own words?",
+      "branch_source": "PP1",
+      "ai_parse": {
+        "enabled": true,
+        "tags": {
+          "root_cause_type": ["process_issue", "people_issue", "tool_issue", "visibility_issue"],
+          "problem_pattern": ["adoption_failure", "inconsistent_execution", "missing_ownership", "bottleneck", "communication_breakdown"],
+          "urgency_signal": ["active_loss", "slow_bleed", "risk_flag"]
+        },
+        "fallback": "continue_without_ai_tags"
+      }
+    },
+    {
+      "id": "IU1",
+      "category": "impact_urgency",
+      "type": "single_choice",
+      "label": "How is this problem showing up in your business?",
+      "options": [
+        "Lost revenue or missed deals",
+        "Wasted time and labor costs",
+        "Customer churn or complaints",
+        "Team frustration and turnover risk",
+        "General inefficiency - things take longer than they should"
+      ]
+    },
+    {
+      "id": "IU2",
+      "category": "impact_urgency",
+      "type": "single_choice",
+      "label": "How pressured do you feel to solve this?",
+      "options": [
+        "Critical - it's affecting us right now",
+        "High - we need a solution within weeks",
+        "Medium - important but not on fire",
+        "Low - planning ahead"
+      ]
+    }
+  ],
+
+  "branching": {
+    "PP2": {
+      "Sales process": [
+        "Spreadsheets and email - that's basically it",
+        "A CRM we're not really using well",
+        "Mostly in people's heads",
+        "Multiple tools that don't connect to each other"
+      ],
+      "Customer service": [
+        "Shared email inbox",
+        "A helpdesk tool we've outgrown",
+        "Phone calls and manual notes",
+        "No real system - it's reactive"
+      ],
+      "Internal ops & admin": [
+        "Mostly email and chat messages",
+        "Spreadsheets multiple people try to maintain",
+        "Meetings that could have been a process",
+        "Everyone has their own system"
+      ],
+      "Marketing & lead generation": [
+        "Scattered across social, email, and ads with no unified view",
+        "Running campaigns but can't tell what's actually working",
+        "We know we need to do more but don't know where to start",
+        "A marketing tool we've outgrown or barely use"
+      ]
+    },
+    "PP3": {
+      "Sales process": [
+        "No visibility into where things stand",
+        "Leads go cold because follow-up is inconsistent",
+        "Proposals take too long or get lost",
+        "We don't know what's working and what isn't"
+      ],
+      "Customer service": [
+        "No single place to see all customer issues",
+        "Too much depends on individual people",
+        "No process for escalation or follow-through",
+        "We can't tell what's resolved and what isn't"
+      ],
+      "Internal ops & admin": [
+        "Lack of ownership - nobody's accountable",
+        "Too many tools that don't connect",
+        "Processes exist but aren't enforced",
+        "The way we work hasn't changed even though the team has"
+      ],
+      "Marketing & lead generation": [
+        "No way to track what's generating leads vs. wasting budget",
+        "Campaigns go out but there's no follow-through to sales",
+        "Content and messaging are inconsistent across channels",
+        "We're guessing instead of using data"
+      ]
+    },
+    "PP4Placeholders": {
+      "Sales process": "Tell us what's happening - e.g., we lose track of leads after the first call and nobody owns follow-up...",
+      "Customer service": "Tell us what's happening - e.g., customers have to repeat themselves every time they contact us...",
+      "Internal ops & admin": "Tell us what's happening - e.g., approvals get stuck and nobody knows where things stand...",
+      "Marketing & lead generation": "Tell us what's happening - e.g., we spend money on ads but have no idea which ones actually turn into customers..."
+    }
+  },
+
+  "answerSignalMappings": {
+    "IU1": {
+      "Lost revenue or missed deals": [
+        { "signal": "revenue_impact", "weight": 1.0 },
+        { "signal": "urgency_business_loss", "weight": 0.8 }
+      ],
+      "Wasted time and labor costs": [
+        { "signal": "efficiency_impact", "weight": 1.0 }
+      ],
+      "Customer churn or complaints": [
+        { "signal": "customer_experience_impact", "weight": 1.0 },
+        { "signal": "retention_risk", "weight": 0.9 }
+      ],
+      "Team frustration and turnover risk": [
+        { "signal": "team_burnout_risk", "weight": 1.0 }
+      ],
+      "General inefficiency - things take longer than they should": [
+        { "signal": "operational_inefficiency", "weight": 1.0 }
+      ]
+    },
+    "IU2": {
+      "Critical - it's affecting us right now": [
+        { "signal": "urgency_critical", "weight": 1.0 }
+      ],
+      "High - we need a solution within weeks": [
+        { "signal": "urgency_high", "weight": 1.0 }
+      ],
+      "Medium - important but not on fire": [
+        { "signal": "urgency_medium", "weight": 1.0 }
+      ],
+      "Low - planning ahead": [
+        { "signal": "urgency_low", "weight": 1.0 }
+      ]
+    }
+  },
+
+  "outputFraming": {
+    "decision_maker_roles": ["Owner / Founder", "Executive or Director", "Manager or Team Lead"],
+    "non_decision_maker_roles": ["Individual Contributor", "Evaluating on behalf of someone else"],
+    "rule": "Decision makers get act-now framing. Others get bring-to-leadership framing."
+  }
+}

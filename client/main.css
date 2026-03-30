@@ -39,7 +39,8 @@ html {
 
 body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f8fafc;
+    background: linear-gradient(135deg, #e8b0b0 0%, #b0dbbe 33%, #a3c4f0 66%, #ddd09a 100%);
+    background-attachment: fixed;
     color: var(--text);
     min-height: 100vh;
     position: relative;
@@ -49,7 +50,7 @@ body {
 .page-shell {
     width: 100%;
     min-height: calc(100vh - 5rem);
-    max-width: 1120px;
+    max-width: 780px;
     margin: 0 auto;
     display: grid;
     place-items: center;
@@ -58,95 +59,19 @@ body {
 .wizard-container {
     width: 100%;
     display: grid;
-    grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.5fr);
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
 }
 
-.brand-panel {
-    position: relative;
-    background:
-        radial-gradient(circle, #cbd5e1 1px, transparent 1px);
-    background-size: 22px 22px;
-    background-color: #f8fafc;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-xl);
-    color: var(--text);
-    padding: clamp(2rem, 2.5vw, 2.75rem);
-    box-shadow: var(--shadow-soft);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1.25rem;
-    overflow: hidden;
-}
-
-.brand-panel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-xl);
-    box-shadow: inset 0 2px 20px rgba(100, 116, 139, 0.08);
-    pointer-events: none;
-}
-
-.brand-mark {
-    width: max-content;
-    display: inline-flex;
-    align-items: center;
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    backdrop-filter: none;
-}
-
-.brand-logo {
-    display: block;
-    width: clamp(110px, 15vw, 148px);
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
-}
-
-.brand-kicker {
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--accent);
-    background: var(--accent-light);
-    width: max-content;
-    padding: 0.25rem 0.65rem;
-    border-radius: 6px;
-    border: 1px solid rgba(79, 70, 229, 0.12);
-}
-
-.brand-panel h2 {
-    font-family: 'Outfit', sans-serif;
-    font-size: clamp(1.3rem, 1.9vw, 1.75rem);
-    line-height: 1.2;
-    font-weight: 700;
-    color: var(--text);
-    max-width: 20ch;
-}
-
-.brand-copy {
-    font-size: 0.9rem;
-    line-height: 1.65;
-    color: var(--text-soft);
-    max-width: 30ch;
-}
 
 .wizard-panel {
     background: var(--panel);
     border-radius: var(--radius-xl);
-    border: 1.5px solid var(--border);
-    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
     gap: 1.75rem;
-    padding: clamp(1.5rem, 2.5vw, 2.25rem);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 .progress-bar {
@@ -1277,23 +1202,16 @@ body {
     color: white;
 }
 
-/* ── Summary Layout (brand panel hidden) ─────────── */
-.wizard-container:has(.brand-panel--hidden) {
-    grid-template-columns: 1fr;
+/* ── Summary Layout ─────────── */
+.wizard-container.summary-active {
     max-width: 940px;
 }
 
-.brand-panel--hidden {
-    display: none;
-}
-
-.wizard-container:has(.brand-panel--hidden) .wizard-panel {
+.wizard-container.summary-active .wizard-panel {
     padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1.75rem, 4vw, 3.5rem);
-    border: 1.5px solid var(--border);
-    box-shadow: var(--shadow-card);
 }
 
-.wizard-container:has(.brand-panel--hidden) .progress-bar {
+.wizard-container.summary-active .progress-bar {
     display: none;
 }
 
@@ -1980,28 +1898,10 @@ body {
 /* Roadmap variant */
 .diagnosis-section--roadmap {
     gap: 1rem;
-    background:
-        radial-gradient(circle, #cbd5e1 1px, transparent 1px);
-    background-size: 22px 22px;
-    background-color: #f8fafc;
-    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
     border-radius: 16px;
     padding: 1.5rem 1.35rem;
-    position: relative;
-}
-
-.diagnosis-section--roadmap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    box-shadow: inset 0 2px 20px rgba(100, 116, 139, 0.08);
-    pointer-events: none;
-}
-
-.diagnosis-section--roadmap > * {
-    position: relative;
-    z-index: 1;
 }
 
 /* ── Roadmap Steps ──────────────────────────────── */
@@ -2111,26 +2011,13 @@ body {
 .diagnosis-cta-btn--primary {
     background: var(--brand-green);
     color: white;
-    box-shadow: 0 4px 12px rgba(46, 166, 75, 0.2),
-                0 12px 24px rgba(46, 166, 75, 0.18);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(46, 166, 75, 0.22);
     width: 100%;
-}
-
-.diagnosis-cta-btn--primary::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%);
-    pointer-events: none;
-    border-radius: inherit;
 }
 
 .diagnosis-cta-btn--primary:hover {
     background: #1a7a34;
-    box-shadow: 0 6px 16px rgba(46, 166, 75, 0.28),
-                0 16px 28px rgba(46, 166, 75, 0.22);
+    box-shadow: 0 3px 12px rgba(46, 166, 75, 0.3);
 }
 
 .diagnosis-secondary-actions {
@@ -2157,7 +2044,7 @@ body {
     transform: none;
 }
 
-@media (max-width: 980px) {
+@media screen and (max-width: 980px) {
     body {
         padding: 1.35rem;
     }
@@ -2168,16 +2055,7 @@ body {
     }
 
     .wizard-container {
-        grid-template-columns: 1fr;
-        max-width: 760px;
-    }
-
-    .brand-panel {
-        min-height: 210px;
-    }
-
-    .brand-copy {
-        max-width: 46ch;
+        max-width: 100%;
     }
 
     .roadmap {
@@ -2209,7 +2087,7 @@ body {
     }
 }
 
-@media (max-width: 620px) {
+@media screen and (max-width: 620px) {
     body {
         padding: 0.8rem;
     }
@@ -2348,7 +2226,11 @@ body {
     .question-subtitle {
         font-size: 0.92rem;
     }
+}
 
+/* ── Small screen wizard adjustments ── */
+
+@media screen and (max-width: 720px) {
     .wizard-panel {
         padding: 1.15rem;
         gap: 1.2rem;
@@ -2357,35 +2239,6 @@ body {
 
     .question-card[data-question="roadmap"] .question-header {
         padding-bottom: 0.9rem;
-    }
-
-    /* Collapse brand panel to compact horizontal header on mobile */
-    .brand-panel {
-        padding: 1rem 1.15rem;
-        gap: 0.6rem;
-        min-height: 0;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-start;
-    }
-
-    .brand-panel h2 {
-        font-size: 1.05rem;
-        max-width: none;
-    }
-
-    .brand-copy {
-        display: none;
-    }
-
-    .brand-kicker {
-        font-size: 0.65rem;
-        padding: 0.2rem 0.5rem;
-    }
-
-    .brand-logo {
-        width: 100px;
     }
 
     .wizard-content {
@@ -2659,20 +2512,22 @@ body {
 /* ── Powered By Badge ────────────────────────────── */
 .powered-by {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0 0 0.75rem;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0 0 1rem;
 }
 
 .powered-by-text {
-    font-size: 0.82rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-soft);
     letter-spacing: 0.04em;
 }
 
 .powered-by-logo {
-    height: 22px;
+    height: 48px;
     width: auto;
     object-fit: contain;
 }
@@ -2704,5 +2559,311 @@ body {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+/* ── Print styles ────────────────────────────────── */
+@media print {
+    @page {
+        margin: 1.8cm 2.2cm 2cm 2.2cm;
+        size: A4 portrait;
+    }
+
+    /* ── Reset everything for paper ── */
+    * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    html {
+        font-size: 11pt;
+    }
+
+    body {
+        background: white !important;
+        padding: 0;
+        margin: 0;
+        font-size: 11pt;
+        color: #1a1a1a;
+        line-height: 1.6;
+    }
+
+    /* ── Hide everything except the report ── */
+    .powered-by,
+    .wizard-header,
+    .wizard-nav,
+    .brand-panel,
+    .phase-visual,
+    .progress-bar,
+    .stage-badge,
+    .diagnosis-actions {
+        display: none !important;
+    }
+
+    /* ── Full-width layout ── */
+    .page-shell {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-height: auto;
+        padding: 0;
+        margin: 0;
+    }
+
+    .wizard-container {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        gap: 0;
+    }
+
+    .wizard-panel {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        background: white;
+        width: 100%;
+    }
+
+    .wizard-content {
+        padding: 0;
+    }
+
+    /* ── Show only the diagnosis card ── */
+    .question-card {
+        display: none !important;
+    }
+
+    .question-card[data-question="diagnosis"] {
+        display: block !important;
+        padding: 0;
+        background: white;
+        box-shadow: none;
+        border: none;
+    }
+
+    /* ── Document Header ── */
+    .diagnosis-doc-header {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        justify-content: space-between;
+        padding-bottom: 14pt;
+        margin-bottom: 18pt;
+        border-bottom: 2pt solid #1a1a1a;
+        gap: 0;
+    }
+
+    .diagnosis-doc-label {
+        background: none !important;
+        border: none !important;
+        padding: 0;
+        border-radius: 0;
+        font-family: 'Outfit', sans-serif;
+        font-size: 16pt;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #1a1a1a;
+    }
+
+    .diagnosis-doc-date {
+        font-size: 9pt;
+        font-weight: 600;
+        color: #666;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    /* ── Report layout ── */
+    .diagnosis-report {
+        display: flex;
+        flex-direction: column;
+        gap: 16pt;
+    }
+
+    /* ── Context Bar ── */
+    .diagnosis-context-bar {
+        display: flex;
+        align-items: center;
+        gap: 6pt;
+        padding: 8pt 12pt;
+        background: #f5f5f5 !important;
+        border: 0.75pt solid #ccc;
+        border-radius: 0;
+        font-size: 9pt;
+        font-weight: 600;
+        color: #444;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .diagnosis-context-bar svg {
+        display: none;
+    }
+
+    /* ── Sections — base ── */
+    .diagnosis-section {
+        border: none;
+        border-radius: 0;
+        break-inside: avoid;
+        padding: 0;
+        background: white;
+        gap: 4pt;
+    }
+
+    .diagnosis-section-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 8pt;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #666;
+        padding-bottom: 4pt;
+        margin-bottom: 2pt;
+        border-bottom: 0.75pt solid #ddd;
+    }
+
+    .diagnosis-section-text {
+        font-size: 10.5pt;
+        line-height: 1.65;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    .diagnosis-section-text strong {
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    /* ── Severity variant ── */
+    .diagnosis-section--severity {
+        background: white;
+        border-left: 3.5pt solid #333 !important;
+        padding-left: 12pt;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .diagnosis-section--severity .diagnosis-section-label {
+        color: #333;
+        border-bottom-color: #ccc;
+    }
+
+    /* ── Quote variant ── */
+    .diagnosis-section--quote {
+        background: white;
+        border: none;
+        border-style: none;
+    }
+
+    .diagnosis-quote {
+        font-size: 10.5pt;
+        line-height: 1.65;
+        color: #444;
+        font-style: italic;
+        margin: 0;
+        padding-left: 10pt;
+        border-left: 2.5pt solid #999;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* ── Roadmap variant ── */
+    .diagnosis-section--roadmap {
+        background: white;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        gap: 10pt;
+        page-break-inside: auto;
+        page-break-before: auto;
+    }
+
+    .diagnosis-section--roadmap .diagnosis-section-label {
+        margin-bottom: 4pt;
+    }
+
+    /* ── Roadmap Steps ── */
+    .diagnosis-roadmap-step {
+        display: flex;
+        gap: 10pt;
+        padding: 10pt 12pt;
+        background: #fafafa !important;
+        border: 0.75pt solid #ddd;
+        border-radius: 0;
+        break-inside: avoid;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .diagnosis-roadmap-num {
+        width: 22pt;
+        height: 22pt;
+        min-width: 22pt;
+        border-radius: 999px;
+        background: #1a1a1a !important;
+        color: white !important;
+        font-family: 'Outfit', sans-serif;
+        font-size: 9pt;
+        font-weight: 700;
+        line-height: 22pt;
+        text-align: center;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .diagnosis-roadmap-content h4 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 10.5pt;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0 0 2pt 0;
+        line-height: 1.3;
+    }
+
+    .diagnosis-roadmap-content p {
+        font-size: 9.5pt;
+        line-height: 1.55;
+        color: #444;
+        margin: 0;
+    }
+
+    .diagnosis-tool-category {
+        display: inline-block;
+        margin-top: 3pt;
+        padding: 2pt 8pt;
+        background: white !important;
+        border: 0.75pt solid #999;
+        border-radius: 0;
+        font-size: 8pt;
+        font-weight: 600;
+        color: #444;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* ── Frame Note ── */
+    .diagnosis-frame-note {
+        background: #f5f5f5 !important;
+        border: 0.75pt solid #ccc;
+        border-radius: 0;
+        color: #333;
+        font-size: 8.5pt;
+        text-align: center;
+        padding: 6pt 10pt;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    /* ── Links ── */
+    a {
+        color: #1a1a1a;
+        text-decoration: underline;
+    }
+
+    /* ── Page break helpers ── */
+    h1, h2, h3, h4 {
+        page-break-after: avoid;
     }
 }

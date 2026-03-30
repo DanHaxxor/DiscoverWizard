@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "phase": "phase1-business-diagnostic",
+  "source": "mirrored-from-client-phase1-config",
+  "notes": "Keep this file aligned with client/phase1-config.json for server-side scoring and report generation.",
+  "imports": {
+    "primary": "./phase1-config.json"
+  }
+}
