@@ -263,33 +263,162 @@ function bindFreeTextInput() {
     });
 }
 
-// ── Industry Select Binding ──────────────────────
-function bindIndustrySelects() {
-    const industrySelect = document.getElementById('industrySelect');
-    const subIndustrySelect = document.getElementById('subIndustrySelect');
-    const subIndustryField = document.getElementById('subIndustryField');
-    if (!industrySelect || !subIndustrySelect) return;
+// ── Custom Select Component ─────────────────────
+function initCustomSelect(el, initialOptions, onChange) {
+    const trigger = el.querySelector('.custom-select__trigger');
+    const valueEl = el.querySelector('.custom-select__value');
+    const searchInput = el.querySelector('.custom-select__search');
+    const optionsList = el.querySelector('.custom-select__options');
+    const placeholder = valueEl.dataset.placeholder;
+    let items = [];
+    let highlightIdx = -1;
+    let selectedValue = null;
 
-    Object.entries(industryData).forEach(([key, data]) => {
-        const opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = data.label;
-        industrySelect.appendChild(opt);
+    function setOptions(newOptions) {
+        items = newOptions;
+        renderOptions('');
+    }
+
+    function renderOptions(filter) {
+        const lowerFilter = filter.toLowerCase();
+        const filtered = items.filter(item => item.label.toLowerCase().includes(lowerFilter));
+        highlightIdx = -1;
+
+        if (filtered.length === 0) {
+            optionsList.innerHTML = '<li class="custom-select__no-results">No results found</li>';
+            return;
+        }
+
+        optionsList.innerHTML = filtered.map((item, i) =>
+            `<li class="custom-select__option${item.value === selectedValue ? ' selected' : ''}" data-value="${escapeHtml(item.value)}" data-index="${i}" role="option">${escapeHtml(item.label)}</li>`
+        ).join('');
+    }
+
+    function open() {
+        el.classList.add('open');
+        el.setAttribute('aria-expanded', 'true');
+        searchInput.value = '';
+        renderOptions('');
+        requestAnimationFrame(() => searchInput.focus());
+    }
+
+    function close() {
+        el.classList.remove('open');
+        el.setAttribute('aria-expanded', 'false');
+        highlightIdx = -1;
+    }
+
+    function selectItem(value) {
+        const item = items.find(i => i.value === value);
+        if (!item) return;
+        selectedValue = value;
+        valueEl.textContent = item.label;
+        valueEl.classList.remove('is-placeholder');
+        close();
+        if (onChange) onChange(value, item.label);
+    }
+
+    function reset() {
+        selectedValue = null;
+        valueEl.textContent = placeholder;
+        valueEl.classList.add('is-placeholder');
+    }
+
+    function updateHighlight(optEls) {
+        optEls.forEach((o, i) => o.classList.toggle('highlighted', i === highlightIdx));
+        if (highlightIdx >= 0 && optEls[highlightIdx]) {
+            optEls[highlightIdx].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    // Toggle on trigger click
+    trigger.addEventListener('click', () => {
+        el.classList.contains('open') ? close() : open();
     });
 
-    industrySelect.addEventListener('change', () => {
-        const key = industrySelect.value;
+    // Option click
+    optionsList.addEventListener('click', (e) => {
+        const opt = e.target.closest('.custom-select__option');
+        if (opt?.dataset.value !== undefined) {
+            selectItem(opt.dataset.value);
+        }
+    });
+
+    // Search filtering
+    searchInput.addEventListener('input', () => {
+        renderOptions(searchInput.value);
+    });
+
+    // Keyboard navigation
+    el.addEventListener('keydown', (e) => {
+        if (!el.classList.contains('open')) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                open();
+            }
+            return;
+        }
+
+        const optEls = optionsList.querySelectorAll('.custom-select__option:not(.custom-select__no-results)');
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            highlightIdx = Math.min(highlightIdx + 1, optEls.length - 1);
+            updateHighlight(optEls);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            highlightIdx = Math.max(highlightIdx - 1, 0);
+            updateHighlight(optEls);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (highlightIdx >= 0 && optEls[highlightIdx]) {
+                selectItem(optEls[highlightIdx].dataset.value);
+            }
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            close();
+            el.focus();
+        }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+        if (!el.contains(e.target)) close();
+    });
+
+    // Initial state
+    valueEl.classList.add('is-placeholder');
+    if (initialOptions.length) setOptions(initialOptions);
+
+    return { setOptions, selectItem, reset, close };
+}
+
+// ── Industry Select Binding ──────────────────────
+function bindIndustrySelects() {
+    const industryEl = document.getElementById('industrySelect');
+    const subIndustryEl = document.getElementById('subIndustrySelect');
+    const subIndustryField = document.getElementById('subIndustryField');
+    if (!industryEl || !subIndustryEl) return;
+
+    const subSelect = initCustomSelect(subIndustryEl, [], (value) => {
+        if (wizardState.answers.industry) {
+            wizardState.answers.industry.subIndustry = value;
+        }
+        nextBtn.disabled = false;
+    });
+
+    const industryOptions = Object.entries(industryData).map(([key, data]) => ({
+        value: key,
+        label: data.label,
+    }));
+
+    initCustomSelect(industryEl, industryOptions, (key) => {
         const data = industryData[key];
         if (!data) return;
 
-        subIndustrySelect.innerHTML = '<option value="" disabled selected>Select a sub-industry…</option>';
-        data.subs.forEach(sub => {
-            const opt = document.createElement('option');
-            opt.value = sub;
-            opt.textContent = sub;
-            subIndustrySelect.appendChild(opt);
-        });
-
+        const subOptions = data.subs.map(sub => ({ value: sub, label: sub }));
+        subSelect.setOptions(subOptions);
+        subSelect.reset();
         subIndustryField.style.display = 'flex';
 
         wizardState.answers.industry = {
@@ -299,19 +428,12 @@ function bindIndustrySelects() {
         };
 
         if (data.subs.length === 1) {
-            subIndustrySelect.value = data.subs[0];
+            subSelect.selectItem(data.subs[0]);
             wizardState.answers.industry.subIndustry = data.subs[0];
             nextBtn.disabled = false;
         } else {
             nextBtn.disabled = true;
         }
-    });
-
-    subIndustrySelect.addEventListener('change', () => {
-        if (wizardState.answers.industry) {
-            wizardState.answers.industry.subIndustry = subIndustrySelect.value;
-        }
-        nextBtn.disabled = false;
     });
 }
 
