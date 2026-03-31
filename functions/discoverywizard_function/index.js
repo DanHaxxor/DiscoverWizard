@@ -1,12 +1,5 @@
 'use strict';
 
-const { IncomingMessage, ServerResponse } = require("http");
-
-/**
- * 
- * @param {IncomingMessage} req 
- * @param {ServerResponse} res 
- */
 module.exports = (req, res) => {
 	var url = req.url;
 
