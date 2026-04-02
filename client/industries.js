@@ -1,0 +1,323 @@
+// ── Industry & Sub-industry Data ──────────────────
+const INDUSTRIES = [
+    {
+        name: 'Advocacy & Membership Groups',
+        subs: [
+            'Business, Professional, Labor, & Political Organizations',
+            'Civic & Social Organizations',
+            'Social Advocacy Organizations',
+        ],
+    },
+    {
+        name: 'Agriculture',
+        subs: [
+            'Animal Farming & Wildlife Harvesting',
+            'Crop Production',
+            'Forestry & Logging',
+        ],
+    },
+    {
+        name: 'Business Consulting & Development',
+        subs: [
+            'Business Administration & Management Consultants',
+            'Human Resources Consultants',
+            'Marketing Consultants',
+            'Misc. Consulting Services',
+            'Process & Logistics Consultants',
+        ],
+    },
+    {
+        name: 'Construction',
+        subs: [
+            'Commercial/Government Building Construction',
+            'Heavy & Civil Engineering Construction',
+            'Residential Building Construction',
+            'Specialty Trade Contractors',
+        ],
+    },
+    {
+        name: 'Eating & Drinking Establishments',
+        subs: [
+            'Bars & Pubs',
+            'Caterers & Food Trucks',
+            'Restaurants & Cafeterias',
+        ],
+    },
+    {
+        name: 'Education & Training',
+        subs: [
+            'Arts, Recreation, & Skills Instruction',
+            'Business Courses & Professional Training',
+            'Colleges, Universities, & Professional Schools',
+            'Elementary & Secondary Schools',
+            'Junior Colleges',
+            'Technical & Trade Schools',
+            'Testing, Guidance Counseling, & Other Educational Support Services',
+        ],
+    },
+    {
+        name: 'Engineering & Technical Services',
+        subs: [
+            'Architectural & Engineering Services',
+            'Interior, Industrial, & Graphic Design Services',
+            'Misc. Technical Services',
+            'R&D Services',
+            'Technical Consulting Services',
+        ],
+    },
+    {
+        name: 'Entertainment & Recreation',
+        subs: [
+            'Amusement Parks & Arcades',
+            'Cultural, Historical, & Nature Sites',
+            'Event Promoters',
+            'Gambling Industries',
+            'Independent Artists',
+            'Leisure/Recreational Facilities & Services',
+            'Performing Arts Companies',
+            'Spectator Sports',
+            'Talent Agents & Managers',
+        ],
+    },
+    {
+        name: 'Facility & Operational Support Services',
+        subs: [
+            'Building & Residential Maintenance Services',
+            'Full-Service Facility Management',
+            'Investigation, Security, & Alarm Services',
+            'Misc. Facility & Operational Support Services',
+        ],
+    },
+    {
+        name: 'Finance',
+        subs: [
+            'Banking & Lending',
+            'Funds, Trusts, & Employee Benefits',
+            'Monetary Authorities \u2014 Central Bank',
+            'Securities, Commodities, & Investing',
+        ],
+    },
+    {
+        name: 'Government',
+        subs: [
+            'Administration of Economic Programs',
+            'Administration of Environmental Quality Programs',
+            'Administration of Housing Programs, Urban Planning, & Community Development',
+            'Administration of Human Resource Programs',
+            'Executive, Legislative, & Other General Government Support',
+            'Justice, Public Order, & Safety Activities',
+            'National Security & International Affairs',
+            'Space Research & Technology',
+        ],
+    },
+    {
+        name: 'Healthcare',
+        subs: [
+            'Home Health Care Services',
+            'Hospitals',
+            'Medical & Diagnostic Laboratories',
+            'Misc. Outpatient Services',
+            'Non-Physician Outpatient Clinics',
+            'Nursing & Residential Care Facilities',
+            'Outpatient Care Centers',
+            'Outpatient Dentist Offices',
+            'Outpatient Physician Offices',
+        ],
+    },
+    {
+        name: 'Holding Companies & Corporate Management',
+        subs: [
+            'Holding Companies & Corporate Management',
+        ],
+    },
+    {
+        name: 'Hospitality & Lodging',
+        subs: [
+            'Boarding Houses, Dorms, & Workers\u2019 Accommodations',
+            'Hotels & Motels (incl. Casino Hotels)',
+            'RV Parks & Recreational Camps',
+        ],
+    },
+    {
+        name: 'Insurance',
+        subs: [
+            'Insurance Agencies & Brokerages',
+            'Insurance Carriers',
+            'Supplementary Insurance Services',
+        ],
+    },
+    {
+        name: 'Manufacturing',
+        subs: [
+            'Aerospace Manufacturing',
+            'Apparel & Textile Manufacturing',
+            'Beverage Manufacturing',
+            'Cement & Concrete Manufacturing',
+            'Chemical Manufacturing',
+            'Clay & Ceramic Manufacturing',
+            'Computer & Electronics Manufacturing',
+            'Electrical & Lighting Equipment Manufacturing',
+            'Food Manufacturing',
+            'Furniture & Furnishings Manufacturing',
+            'Glass Manufacturing',
+            'Household Appliance Manufacturing',
+            'Leather Product Manufacturing (Real & Synthetic)',
+            'Machinery Manufacturing',
+            'Medical Equipment & Supplies Manufacturing',
+            'Metal Production & Fabrication',
+            'Misc. Nonmetallic Mineral Product Manufacturing',
+            'Misc. Specialty Product Manufacturing',
+            'Motor Vehicle Manufacturing',
+            'Paper Manufacturing',
+            'Petroleum & Coal Product Manufacturing',
+            'Pharmaceutical & Medicine Manufacturing',
+            'Plastic & Rubber Product Manufacturing',
+            'Printing (Books, Clothing, Etc.)',
+            'Tobacco Product Manufacturing',
+            'Train, Ship, & Misc. Transportation Manufacturing',
+            'Wood & Lumber Product Manufacturing',
+        ],
+    },
+    {
+        name: 'Media',
+        subs: [
+            'Digital Media & Content Providers',
+            'Libraries & Archives',
+            'Motion Picture & Video Industry',
+            'Music & Audio Recording Industry',
+            'Print Media Publishing Industry',
+            'Radio & TV Stations',
+        ],
+    },
+    {
+        name: 'Personal Services',
+        subs: [
+            'Beauty, Grooming, & Wellness Services',
+            'Death Care Services',
+            'Drycleaning & Laundry Services',
+            'Misc. Personal Services',
+            'Private Households',
+        ],
+    },
+    {
+        name: 'Professional & Administrative Services',
+        subs: [
+            'Accounting & Payroll Services',
+            'Advertising & PR',
+            'Business Support Services',
+            'Legal Services',
+            'Misc. Professional Services',
+            'Office Operations & Administration',
+            'Staffing & HR Services',
+            'Translation & Interpretation Services',
+            'Travel Arrangement & Reservation Services',
+        ],
+    },
+    {
+        name: 'Real Estate',
+        subs: [
+            'Property Mgmt, Appraisal, & Misc. Real Estate Services',
+            'Real Estate Agents & Brokers',
+            'Real Estate Lessors & Operators',
+        ],
+    },
+    {
+        name: 'Religious Organizations',
+        subs: [
+            'Religious Organizations',
+        ],
+    },
+    {
+        name: 'Repair & Maintenance',
+        subs: [
+            'Automotive Repair & Maintenance',
+            'Electronic & Precision Equipment Repair',
+            'Commercial Machinery Repair & Maintenance',
+            'Personal & Household Goods Repair',
+        ],
+    },
+    {
+        name: 'Retail Trade',
+        subs: [
+            'Auto Dealers & Parts',
+            'Building Material & Garden Supply Stores',
+            'Clothing & Accessories Stores',
+            'Electronics & Appliance Stores',
+            'Food & Beverage Stores',
+            'Furniture & Home Furnishing Stores',
+            'Gas Stations',
+            'General Merchandise Stores',
+            'Health & Personal Care Stores',
+            'Misc. Retail',
+            'Nonstore Retailers (Online, Catalog, etc.)',
+            'Sporting Goods, Hobby, Book, & Music Stores',
+        ],
+    },
+    {
+        name: 'Social Assistance & Nonprofits',
+        subs: [
+            'Child Day Care Services',
+            'Community Food, Housing, & Emergency Relief',
+            'Individual & Family Services',
+            'Vocational Rehabilitation Services',
+        ],
+    },
+    {
+        name: 'Technology & Software',
+        subs: [
+            'Custom Software Development',
+            'Data Processing & Hosting',
+            'IT Consulting & Systems Integration',
+            'SaaS & Software Products',
+            'Cybersecurity Services',
+        ],
+    },
+    {
+        name: 'Telecommunications',
+        subs: [
+            'Cable & Satellite Distribution',
+            'Internet Service Providers',
+            'Wired Telecommunications Carriers',
+            'Wireless Telecommunications Carriers',
+        ],
+    },
+    {
+        name: 'Transportation & Warehousing',
+        subs: [
+            'Air Transportation',
+            'Couriers & Messengers',
+            'Ground Passenger Transportation',
+            'Pipeline Transportation',
+            'Rail Transportation',
+            'Scenic & Sightseeing Transportation',
+            'Support Activities for Transportation',
+            'Truck Transportation',
+            'Warehousing & Storage',
+            'Water Transportation',
+        ],
+    },
+    {
+        name: 'Utilities',
+        subs: [
+            'Electric Power Generation & Distribution',
+            'Natural Gas Distribution',
+            'Water, Sewage, & Other Systems',
+        ],
+    },
+    {
+        name: 'Waste Management & Remediation',
+        subs: [
+            'Hazardous Waste Treatment & Disposal',
+            'Remediation & Environmental Cleanup',
+            'Waste Collection & Recycling',
+        ],
+    },
+    {
+        name: 'Wholesale Trade',
+        subs: [
+            'Durable Goods Wholesalers',
+            'Electronic Markets & Agents/Brokers',
+            'Nondurable Goods Wholesalers',
+        ],
+    },
+];
