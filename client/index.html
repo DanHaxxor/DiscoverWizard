@@ -32,46 +32,7 @@
             </div>
         </main>
 
-        <!-- Page 2: Company Size -->
-        <main class="page" id="pageCompanySize">
-            <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">How many people work at your company?</h2>
-                <div class="radio-group" id="companySizeGroup">
-                    <label class="radio-option fade-in" style="--delay: 0.5s">
-                        <input type="radio" name="companySize" value="solo">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Just me</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.65s">
-                        <input type="radio" name="companySize" value="2-10">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">2 – 10</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.8s">
-                        <input type="radio" name="companySize" value="11-50">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">11 – 50</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.95s">
-                        <input type="radio" name="companySize" value="51-200">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">51 – 200</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 1.1s">
-                        <input type="radio" name="companySize" value="201-500">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">201 – 500</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 1.25s">
-                        <input type="radio" name="companySize" value="500+">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">500+</span>
-                    </label>
-                </div>
-            </div>
-        </main>
-
-        <!-- Page 3: Industry -->
+        <!-- Q1: Industry -->
         <main class="page" id="pageIndustry">
             <div class="question-content question-content--wide">
                 <h2 class="question-title fade-in" style="--delay: 0.3s">What industry are you in?</h2>
@@ -117,184 +78,186 @@
             </div>
         </main>
 
-        <!-- Page 4: Role -->
+        <!-- Q2: Software Users -->
+        <main class="page" id="pageUsers">
+            <div class="question-content">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">How many people will be using the software?</h2>
+                <div class="radio-group" id="usersGroup">
+                    <label class="radio-option fade-in" style="--delay: 0.5s">
+                        <input type="radio" name="users" value="just-me">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Just me</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.6s">
+                        <input type="radio" name="users" value="2-5">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">2 – 5</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.7s">
+                        <input type="radio" name="users" value="6-15">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">6 – 15</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.8s">
+                        <input type="radio" name="users" value="16-50">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">16 – 50</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.9s">
+                        <input type="radio" name="users" value="51-200">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">51 – 200</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 1.0s">
+                        <input type="radio" name="users" value="200+">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">200+</span>
+                    </label>
+                </div>
+            </div>
+        </main>
+
+        <!-- Q3: Role -->
         <main class="page" id="pageRole">
             <div class="question-content">
                 <h2 class="question-title fade-in" style="--delay: 0.3s">What best describes your role?</h2>
                 <div class="radio-group" id="roleGroup">
                     <label class="radio-option fade-in" style="--delay: 0.5s">
-                        <input type="radio" name="role" value="owner">
+                        <input type="radio" name="role" value="user">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Owner / Founder</span>
+                        <span class="radio-label">User</span>
                     </label>
                     <label class="radio-option fade-in" style="--delay: 0.65s">
-                        <input type="radio" name="role" value="executive">
+                        <input type="radio" name="role" value="system-admin">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Executive or Director</span>
+                        <span class="radio-label">System Admin</span>
                     </label>
                     <label class="radio-option fade-in" style="--delay: 0.8s">
-                        <input type="radio" name="role" value="manager">
+                        <input type="radio" name="role" value="team-manager">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Manager or Team Lead</span>
+                        <span class="radio-label">Team Manager</span>
                     </label>
                     <label class="radio-option fade-in" style="--delay: 0.95s">
-                        <input type="radio" name="role" value="ic">
+                        <input type="radio" name="role" value="owner-operator">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Individual Contributor</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 1.1s">
-                        <input type="radio" name="role" value="evaluator">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Evaluating on behalf of someone else</span>
+                        <span class="radio-label">Owner / Operator</span>
                     </label>
                 </div>
             </div>
         </main>
 
-        <!-- Page 4b: Evaluator follow-up -->
-        <main class="page" id="pageEvaluatorRole">
+        <!-- Q4: B2B -->
+        <main class="page" id="pageB2B">
             <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">What's their role?</h2>
-                <p class="question-subtitle fade-in" style="--delay: 0.5s">The person you're evaluating for.</p>
-                <div class="radio-group" id="evaluatorRoleGroup">
-                    <label class="radio-option fade-in" style="--delay: 0.65s">
-                        <input type="radio" name="evaluatorRole" value="owner">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Owner / Founder</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.8s">
-                        <input type="radio" name="evaluatorRole" value="executive">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Executive or Director</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.95s">
-                        <input type="radio" name="evaluatorRole" value="manager">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Manager or Team Lead</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 1.1s">
-                        <input type="radio" name="evaluatorRole" value="ic">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Individual Contributor</span>
-                    </label>
-                </div>
-            </div>
-        </main>
-
-        <!-- Page 5: Breakdown Area (PP1) -->
-        <main class="page" id="pageBreakdown">
-            <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">Where is your operation breaking down most?</h2>
-                <div class="radio-group" id="breakdownGroup">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">Who are your customers?</h2>
+                <div class="radio-group" id="b2bGroup">
                     <label class="radio-option fade-in" style="--delay: 0.5s">
-                        <input type="radio" name="breakdown" value="sales">
+                        <input type="radio" name="b2b" value="b2b">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Sales process</span>
+                        <span class="radio-label">Other businesses (B2B)</span>
                     </label>
                     <label class="radio-option fade-in" style="--delay: 0.65s">
-                        <input type="radio" name="breakdown" value="service">
+                        <input type="radio" name="b2b" value="b2c">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Customer service</span>
+                        <span class="radio-label">Consumers (B2C)</span>
                     </label>
                     <label class="radio-option fade-in" style="--delay: 0.8s">
-                        <input type="radio" name="breakdown" value="ops">
+                        <input type="radio" name="b2b" value="both">
                         <span class="radio-control"></span>
-                        <span class="radio-label">Internal ops & admin</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.95s">
-                        <input type="radio" name="breakdown" value="marketing">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Marketing & lead generation</span>
+                        <span class="radio-label">Both</span>
                     </label>
                 </div>
             </div>
         </main>
 
-        <!-- Page 6: Current Handling (PP2) — dynamically populated -->
-        <main class="page" id="pageHandling">
-            <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">How are you handling this today?</h2>
-                <div class="radio-group" id="handlingGroup"></div>
-            </div>
-        </main>
-
-        <!-- Page 7: Root Cause (PP3) — dynamically populated -->
-        <main class="page" id="pageRootCause">
-            <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">What do you think is really driving this?</h2>
-                <div class="radio-group" id="rootCauseGroup"></div>
-            </div>
-        </main>
-
-        <!-- Page 8: Free Text (PP4) -->
-        <main class="page" id="pageFreeText">
+        <!-- Q5: Products/Services -->
+        <main class="page" id="pageProducts">
             <div class="question-content question-content--wide">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">How would you describe your challenge in your own words?</h2>
-                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="freeTextInput" rows="5" placeholder=""></textarea>
-                <button class="btn-continue fade-in" style="--delay: 0.9s" id="freeTextNext">Continue</button>
+                <h2 class="question-title fade-in" style="--delay: 0.3s">What products or services does your company offer?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="productsInput" rows="4" placeholder="e.g., SaaS platform for project management, commercial HVAC installation, online tutoring..."></textarea>
+                <button class="btn-continue fade-in" style="--delay: 0.9s" id="productsNext">Continue</button>
             </div>
         </main>
 
-        <!-- Page 9: Impact (IU1) -->
-        <main class="page" id="pageImpact">
-            <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">How is this problem showing up in your business?</h2>
-                <div class="radio-group" id="impactGroup">
-                    <label class="radio-option fade-in" style="--delay: 0.5s">
-                        <input type="radio" name="impact" value="lost-revenue">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Lost revenue or missed deals</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.65s">
-                        <input type="radio" name="impact" value="wasted-time">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Wasted time and labor costs</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.8s">
-                        <input type="radio" name="impact" value="customer-churn">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Customer churn or complaints</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 0.95s">
-                        <input type="radio" name="impact" value="team-frustration">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Team frustration and turnover risk</span>
-                    </label>
-                    <label class="radio-option fade-in" style="--delay: 1.1s">
-                        <input type="radio" name="impact" value="general-inefficiency">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">General inefficiency — things take longer than they should</span>
-                    </label>
-                </div>
+        <!-- Q6: Current Software -->
+        <main class="page" id="pageCurrentSoftware">
+            <div class="question-content question-content--wide">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">What software are you currently using?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="currentSoftwareInput" rows="4" placeholder="e.g., QuickBooks, Salesforce, Google Sheets, Slack, Mailchimp..."></textarea>
+                <button class="btn-continue fade-in" style="--delay: 0.9s" id="currentSoftwareNext">Continue</button>
             </div>
         </main>
 
-        <!-- Page 10: Urgency (IU2) -->
-        <main class="page" id="pageUrgency">
-            <div class="question-content">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">How pressured do you feel to solve this?</h2>
-                <div class="radio-group" id="urgencyGroup">
-                    <label class="radio-option fade-in" style="--delay: 0.5s">
-                        <input type="radio" name="urgency" value="critical">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Critical — it's affecting us right now</span>
+        <!-- Q7: Replace vs Keep -->
+        <main class="page" id="pageReplaceKeep">
+            <div class="question-content question-content--wide">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">Which software are you open to replacing? Which will remain in place?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="replaceKeepInput" rows="4" placeholder="e.g., Open to replacing Mailchimp and our CRM. Keeping QuickBooks and Slack."></textarea>
+                <button class="btn-continue fade-in" style="--delay: 0.9s" id="replaceKeepNext">Continue</button>
+            </div>
+        </main>
+
+        <!-- Q8: Pain Points (multi-select) -->
+        <main class="page" id="pagePainPoints">
+            <div class="question-content question-content--wide">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">What are your biggest pain points?</h2>
+                <p class="question-subtitle fade-in" style="--delay: 0.5s">Select all that apply.</p>
+                <div class="checkbox-group" id="painPointsGroup">
+                    <label class="checkbox-option fade-in" style="--delay: 0.6s">
+                        <input type="checkbox" name="painPoints" value="manual-data-entry">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Manual data entry</span>
                     </label>
-                    <label class="radio-option fade-in" style="--delay: 0.65s">
-                        <input type="radio" name="urgency" value="high">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">High — we need a solution within weeks</span>
+                    <label class="checkbox-option fade-in" style="--delay: 0.7s">
+                        <input type="checkbox" name="painPoints" value="lack-visibility">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Lack of visibility into team activities</span>
                     </label>
-                    <label class="radio-option fade-in" style="--delay: 0.8s">
-                        <input type="radio" name="urgency" value="medium">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Medium — important but not on fire</span>
+                    <label class="checkbox-option fade-in" style="--delay: 0.8s">
+                        <input type="checkbox" name="painPoints" value="lack-structure">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Lack of structure</span>
                     </label>
-                    <label class="radio-option fade-in" style="--delay: 0.95s">
-                        <input type="radio" name="urgency" value="low">
-                        <span class="radio-control"></span>
-                        <span class="radio-label">Low — planning ahead</span>
+                    <label class="checkbox-option fade-in" style="--delay: 0.9s">
+                        <input type="checkbox" name="painPoints" value="lack-process">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Lack of process</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 1.0s">
+                        <input type="checkbox" name="painPoints" value="too-many-spreadsheets">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Too many spreadsheets</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 1.1s">
+                        <input type="checkbox" name="painPoints" value="integration-issues">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Integration issues between tools</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 1.2s">
+                        <input type="checkbox" name="painPoints" value="no-automation">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Manual processes (no automation)</span>
                     </label>
                 </div>
+                <button class="btn-continue fade-in" style="--delay: 1.4s" id="painPointsNext">Continue</button>
+            </div>
+        </main>
+
+        <!-- Q9: Requirements -->
+        <main class="page" id="pageRequirements">
+            <div class="question-content question-content--wide">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">Any specific requirements?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="requirementsInput" rows="4" placeholder="e.g., Must integrate with QuickBooks, needs mobile access, HIPAA compliance required..."></textarea>
+                <button class="btn-continue fade-in" style="--delay: 0.9s" id="requirementsNext">Continue</button>
+            </div>
+        </main>
+
+        <!-- Q10: Biggest Worry -->
+        <main class="page" id="pageWorry">
+            <div class="question-content question-content--wide">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">What is the biggest worry for your team or organization?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="worryInput" rows="4" placeholder="e.g., We're growing fast and our current tools can't keep up..."></textarea>
+                <button class="btn-continue fade-in" style="--delay: 0.9s" id="worryNext">Continue</button>
             </div>
         </main>
     </div>

@@ -4,69 +4,6 @@ const state = {
     answers: {},
 };
 
-// ── Branched Options Data ─────────────────────────
-
-const PP2_OPTIONS = {
-    sales: [
-        { value: 'spreadsheets', label: "Spreadsheets and email — that's basically it" },
-        { value: 'underused-crm', label: "A CRM we're not really using well" },
-        { value: 'in-heads', label: "Mostly in people's heads" },
-        { value: 'fragmented-tools', label: "Multiple tools that don't connect to each other" },
-    ],
-    service: [
-        { value: 'shared-inbox', label: 'Shared email inbox' },
-        { value: 'outgrown-helpdesk', label: "A helpdesk tool we've outgrown" },
-        { value: 'phone-manual', label: 'Phone calls and manual notes' },
-        { value: 'no-system', label: "No real system — it's reactive" },
-    ],
-    ops: [
-        { value: 'email-chat', label: 'Mostly email and chat messages' },
-        { value: 'shared-spreadsheets', label: 'Spreadsheets multiple people try to maintain' },
-        { value: 'meeting-heavy', label: 'Meetings that could have been a process' },
-        { value: 'everyone-own-system', label: 'Everyone has their own system' },
-    ],
-    marketing: [
-        { value: 'scattered', label: 'Scattered across social, email, and ads with no unified view' },
-        { value: 'no-attribution', label: "Running campaigns but can't tell what's actually working" },
-        { value: 'dont-know-start', label: "We know we need to do more but don't know where to start" },
-        { value: 'outgrown-tool', label: "A marketing tool we've outgrown or barely use" },
-    ],
-};
-
-const PP3_OPTIONS = {
-    sales: [
-        { value: 'no-visibility', label: 'No visibility into where things stand' },
-        { value: 'inconsistent-followup', label: 'Leads go cold because follow-up is inconsistent' },
-        { value: 'slow-proposals', label: 'Proposals take too long or get lost' },
-        { value: 'no-insight', label: "We don't know what's working and what isn't" },
-    ],
-    service: [
-        { value: 'no-single-view', label: 'No single place to see all customer issues' },
-        { value: 'people-dependent', label: 'Too much depends on individual people' },
-        { value: 'no-escalation', label: 'No process for escalation or follow-through' },
-        { value: 'cant-tell-status', label: "We can't tell what's resolved and what isn't" },
-    ],
-    ops: [
-        { value: 'no-ownership', label: "Lack of ownership — nobody's accountable" },
-        { value: 'tools-disconnected', label: "Too many tools that don't connect" },
-        { value: 'not-enforced', label: "Processes exist but aren't enforced" },
-        { value: 'outgrown-ways', label: "The way we work hasn't changed even though the team has" },
-    ],
-    marketing: [
-        { value: 'no-tracking', label: "No way to track what's generating leads vs. wasting budget" },
-        { value: 'no-followthrough', label: "Campaigns go out but there's no follow-through to sales" },
-        { value: 'inconsistent-messaging', label: 'Content and messaging are inconsistent across channels' },
-        { value: 'guessing', label: "We're guessing instead of using data" },
-    ],
-};
-
-const PP4_PLACEHOLDERS = {
-    sales: "Tell us what's happening — e.g., we lose track of leads after the first call and nobody owns follow-up...",
-    service: "Tell us what's happening — e.g., customers have to repeat themselves every time they contact us...",
-    ops: "Tell us what's happening — e.g., approvals get stuck and nobody knows where things stand...",
-    marketing: "Tell us what's happening — e.g., we spend money on ads but have no idea which ones actually turn into customers...",
-};
-
 // ── Page Navigation ───────────────────────────────
 
 function showPage(targetId) {
@@ -93,48 +30,32 @@ function showPage(targetId) {
     }, { once: true });
 }
 
-// ── Helper: build radio options into a group ──────
+// ── Helper: auto-advance on radio select ──────────
 
-function buildRadioGroup(groupEl, name, options, onSelect) {
-    groupEl.innerHTML = '';
-    options.forEach((opt, i) => {
-        const label = document.createElement('label');
-        label.className = 'radio-option fade-in';
-        label.style.setProperty('--delay', `${0.5 + i * 0.15}s`);
-        label.innerHTML = `
-            <input type="radio" name="${name}" value="${opt.value}">
-            <span class="radio-control"></span>
-            <span class="radio-label">${opt.label}</span>
-        `;
-        groupEl.appendChild(label);
+function radioAdvance(groupId, key, nextPageId) {
+    document.getElementById(groupId).addEventListener('change', (e) => {
+        state.answers[key] = e.target.value;
+        setTimeout(() => showPage(nextPageId), 350);
     });
-
-    groupEl.addEventListener('change', (e) => {
-        onSelect(e.target.value);
-    }, { once: true });
 }
 
-// ── Page 1: Landing ──────────────────────────────
+// ── Helper: advance on button click ───────────────
 
-document.getElementById('getStartedBtn').addEventListener('click', () => {
-    showPage('pageCompanySize');
-});
+function buttonAdvance(btnId, inputId, key, nextPageId) {
+    document.getElementById(btnId).addEventListener('click', () => {
+        state.answers[key] = document.getElementById(inputId).value;
+        showPage(nextPageId);
+    });
+}
 
-// ── Page 2: Company Size → Industry ──────────────
+// ── Searchable Select Component ───────────────────
 
-document.getElementById('companySizeGroup').addEventListener('change', (e) => {
-    state.answers.companySize = e.target.value;
-    setTimeout(() => showPage('pageIndustry'), 350);
-});
-
-// ── Page 3: Industry → Role ──────────────────────
-
-// Searchable Select Component
 function initSearchSelect(containerEl, items, onSelect) {
     const trigger = containerEl.querySelector('.search-select__trigger');
     const valueEl = containerEl.querySelector('.search-select__value');
     const searchInput = containerEl.querySelector('.search-select__search');
     const optionsList = containerEl.querySelector('.search-select__options');
+    const backdrop = containerEl.querySelector('.search-select__backdrop');
     const placeholder = valueEl.dataset.placeholder;
 
     let selected = null;
@@ -179,20 +100,14 @@ function initSearchSelect(containerEl, items, onSelect) {
         containerEl.classList.remove('open');
     }
 
-    const backdrop = containerEl.querySelector('.search-select__backdrop');
-
     trigger.addEventListener('click', () => {
         containerEl.classList.contains('open') ? close() : open();
     });
 
     searchInput.addEventListener('input', () => render(searchInput.value));
 
-    // Close on backdrop tap (mobile bottom sheet)
-    if (backdrop) {
-        backdrop.addEventListener('click', close);
-    }
+    if (backdrop) backdrop.addEventListener('click', close);
 
-    // Close on outside click (desktop floating dropdown)
     document.addEventListener('click', (e) => {
         if (!containerEl.contains(e.target)) close();
     });
@@ -201,19 +116,30 @@ function initSearchSelect(containerEl, items, onSelect) {
         if (e.key === 'Escape') close();
     });
 
-    return { reset() {
-        selected = null;
-        valueEl.textContent = placeholder;
-        valueEl.classList.remove('has-value');
-    }};
+    return {
+        reset() {
+            selected = null;
+            valueEl.textContent = placeholder;
+            valueEl.classList.remove('has-value');
+        }
+    };
 }
 
-const industryNames = INDUSTRIES.map(i => i.name);
+// ═══════════════════════════════════════════════════
+// FLOW WIRING
+// ═══════════════════════════════════════════════════
+
+// Landing → Industry
+document.getElementById('getStartedBtn').addEventListener('click', () => {
+    showPage('pageIndustry');
+});
+
+// Q1: Industry → Users
 const subField = document.getElementById('subIndustryField');
 
 initSearchSelect(
     document.getElementById('industrySelect'),
-    industryNames,
+    INDUSTRIES.map(i => i.name),
     (industryName) => {
         state.answers.industry = industryName;
         const match = INDUSTRIES.find(i => i.name === industryName);
@@ -233,80 +159,43 @@ initSearchSelect(
 
             initSearchSelect(subContainer, match.subs, (subName) => {
                 state.answers.subIndustry = subName;
-                setTimeout(() => showPage('pageRole'), 350);
+                setTimeout(() => showPage('pageUsers'), 350);
             });
         }
     }
 );
 
-// ── Page 4: Role → Breakdown or Evaluator ────────
+// Q2: Users → Role
+radioAdvance('usersGroup', 'users', 'pageRole');
 
-document.getElementById('roleGroup').addEventListener('change', (e) => {
-    state.answers.role = e.target.value;
-    if (e.target.value === 'evaluator') {
-        setTimeout(() => showPage('pageEvaluatorRole'), 350);
-    } else {
-        setTimeout(() => showPage('pageBreakdown'), 350);
-    }
+// Q3: Role → B2B
+radioAdvance('roleGroup', 'role', 'pageB2B');
+
+// Q4: B2B → Products
+radioAdvance('b2bGroup', 'b2b', 'pageProducts');
+
+// Q5: Products → Current Software
+buttonAdvance('productsNext', 'productsInput', 'products', 'pageCurrentSoftware');
+
+// Q6: Current Software → Replace/Keep
+buttonAdvance('currentSoftwareNext', 'currentSoftwareInput', 'currentSoftware', 'pageReplaceKeep');
+
+// Q7: Replace/Keep → Pain Points
+buttonAdvance('replaceKeepNext', 'replaceKeepInput', 'replaceKeep', 'pagePainPoints');
+
+// Q8: Pain Points → Requirements
+document.getElementById('painPointsNext').addEventListener('click', () => {
+    const checked = document.querySelectorAll('#painPointsGroup input:checked');
+    state.answers.painPoints = Array.from(checked).map(cb => cb.value);
+    showPage('pageRequirements');
 });
 
-// ── Page 4b: Evaluator Role → Breakdown ──────────
+// Q9: Requirements → Worry
+buttonAdvance('requirementsNext', 'requirementsInput', 'requirements', 'pageWorry');
 
-document.getElementById('evaluatorRoleGroup').addEventListener('change', (e) => {
-    state.answers.evaluatorRole = e.target.value;
-    setTimeout(() => showPage('pageBreakdown'), 350);
-});
-
-// ── Page 5: Breakdown → Handling (branched) ──────
-
-document.getElementById('breakdownGroup').addEventListener('change', (e) => {
-    state.answers.breakdown = e.target.value;
-    const branch = e.target.value;
-
-    // Build PP2 options based on branch
-    buildRadioGroup(
-        document.getElementById('handlingGroup'),
-        'handling',
-        PP2_OPTIONS[branch],
-        (value) => {
-            state.answers.handling = value;
-            setTimeout(() => showPage('pageRootCause'), 350);
-        }
-    );
-
-    // Pre-build PP3 options based on same branch
-    buildRadioGroup(
-        document.getElementById('rootCauseGroup'),
-        'rootCause',
-        PP3_OPTIONS[branch],
-        (value) => {
-            state.answers.rootCause = value;
-            document.getElementById('freeTextInput').placeholder = PP4_PLACEHOLDERS[branch];
-            setTimeout(() => showPage('pageFreeText'), 350);
-        }
-    );
-
-    setTimeout(() => showPage('pageHandling'), 350);
-});
-
-// ── Page 8: Free Text → Impact ───────────────────
-
-document.getElementById('freeTextNext').addEventListener('click', () => {
-    state.answers.freeText = document.getElementById('freeTextInput').value;
-    showPage('pageImpact');
-});
-
-// ── Page 9: Impact → Urgency ─────────────────────
-
-document.getElementById('impactGroup').addEventListener('change', (e) => {
-    state.answers.impact = e.target.value;
-    setTimeout(() => showPage('pageUrgency'), 350);
-});
-
-// ── Page 10: Urgency → Summary (future) ──────────
-
-document.getElementById('urgencyGroup').addEventListener('change', (e) => {
-    state.answers.urgency = e.target.value;
-    // Summary page will be wired here
+// Q10: Worry → Summary (future)
+document.getElementById('worryNext').addEventListener('click', () => {
+    state.answers.worry = document.getElementById('worryInput').value;
     console.log('Phase I complete:', state.answers);
+    // Summary page will be wired here
 });
