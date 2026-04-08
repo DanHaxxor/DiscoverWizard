@@ -37,6 +37,35 @@
             </div>
         </main>
 
+        <!-- Journey Stage (new) -->
+        <main class="page" id="pageJourneyStage">
+            <div class="question-content">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">Where are you in your Zoho journey?</h2>
+                <div class="radio-group" id="journeyStageGroup">
+                    <label class="radio-option fade-in" style="--delay: 0.5s">
+                        <input type="radio" name="journeyStage" value="prospect">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Just exploring — I want to understand what's out there</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.65s">
+                        <input type="radio" name="journeyStage" value="evaluating">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Evaluating options — I'm comparing solutions before deciding</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.8s">
+                        <input type="radio" name="journeyStage" value="customer">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Already a Zoho customer — I want to get more out of what I have</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.95s">
+                        <input type="radio" name="journeyStage" value="advanced">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">I know Zoho well — I need integrations, automations, or advanced setup</span>
+                    </label>
+                </div>
+            </div>
+        </main>
+
         <!-- Q1: Industry -->
         <main class="page" id="pageIndustry">
             <div class="question-content question-content--wide">
@@ -187,7 +216,7 @@
         <!-- Q6: Current Software -->
         <main class="page" id="pageCurrentSoftware">
             <div class="question-content question-content--wide">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">What software are you currently using?</h2>
+                <h2 class="question-title fade-in" style="--delay: 0.3s" id="currentSoftwareTitle">What software are you currently using?</h2>
                 <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="currentSoftwareInput" rows="4" placeholder="e.g., QuickBooks for accounting, Excel for tracking..."></textarea>
                 <button class="btn-continue fade-in" style="--delay: 0.9s" id="currentSoftwareNext">Continue</button>
             </div>
@@ -202,49 +231,118 @@
             </div>
         </main>
 
-        <!-- Q8: Pain Points (multi-select) -->
-        <main class="page" id="pagePainPoints">
-            <div class="question-content question-content--wide">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">What are your biggest pain points?</h2>
-                <p class="question-subtitle fade-in" style="--delay: 0.5s">Select all that apply.</p>
-                <div class="checkbox-group" id="painPointsGroup">
-                    <label class="checkbox-option fade-in" style="--delay: 0.6s">
-                        <input type="checkbox" name="painPoints" value="manual-data-entry">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Manual data entry</span>
+        <!-- Breakdown Area (replaces pagePainPoints) -->
+        <main class="page" id="pageBreakdown">
+            <div class="question-content">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">Where is your operation breaking down most right now?</h2>
+                <p class="question-subtitle fade-in" style="--delay: 0.5s">Pick the one that's causing the most friction.</p>
+                <div class="radio-group" id="breakdownGroup">
+                    <label class="radio-option fade-in" style="--delay: 0.6s">
+                        <input type="radio" name="breakdownArea" value="sales">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Sales process</span>
                     </label>
-                    <label class="checkbox-option fade-in" style="--delay: 0.7s">
-                        <input type="checkbox" name="painPoints" value="lack-visibility">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Lack of visibility into team activities</span>
+                    <label class="radio-option fade-in" style="--delay: 0.7s">
+                        <input type="radio" name="breakdownArea" value="service">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Customer service</span>
                     </label>
-                    <label class="checkbox-option fade-in" style="--delay: 0.8s">
-                        <input type="checkbox" name="painPoints" value="lack-structure">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Lack of structure</span>
+                    <label class="radio-option fade-in" style="--delay: 0.8s">
+                        <input type="radio" name="breakdownArea" value="ops">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Internal ops & admin</span>
                     </label>
-                    <label class="checkbox-option fade-in" style="--delay: 0.9s">
-                        <input type="checkbox" name="painPoints" value="lack-process">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Lack of process</span>
-                    </label>
-                    <label class="checkbox-option fade-in" style="--delay: 1.0s">
-                        <input type="checkbox" name="painPoints" value="too-many-spreadsheets">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Too many spreadsheets</span>
-                    </label>
-                    <label class="checkbox-option fade-in" style="--delay: 1.1s">
-                        <input type="checkbox" name="painPoints" value="integration-issues">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Integration issues between tools</span>
-                    </label>
-                    <label class="checkbox-option fade-in" style="--delay: 1.2s">
-                        <input type="checkbox" name="painPoints" value="no-automation">
-                        <span class="checkbox-control"></span>
-                        <span class="checkbox-label">Manual processes (no automation)</span>
+                    <label class="radio-option fade-in" style="--delay: 0.9s">
+                        <input type="radio" name="breakdownArea" value="marketing">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Marketing & lead generation</span>
                     </label>
                 </div>
-                <button class="btn-continue fade-in" style="--delay: 1.4s" id="painPointsNext">Continue</button>
+            </div>
+        </main>
+
+        <!-- How are you handling it (branched by breakdownArea) -->
+        <main class="page" id="pageHandlingIt">
+            <div class="question-content">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">How are you handling this today?</h2>
+                <div class="radio-group" id="handlingItGroup">
+                    <!-- Options injected dynamically by JS based on breakdownArea -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Root Cause (branched by breakdownArea) -->
+        <main class="page" id="pageRootCause">
+            <div class="question-content">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">What do you think is really driving this?</h2>
+                <div class="radio-group" id="rootCauseGroup">
+                    <!-- Options injected dynamically by JS based on breakdownArea -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Impact (multi-select) -->
+        <main class="page" id="pageImpact">
+            <div class="question-content question-content--wide">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">How is this showing up in your business?</h2>
+                <p class="question-subtitle fade-in" style="--delay: 0.5s">Select all that apply.</p>
+                <div class="checkbox-group" id="impactGroup">
+                    <label class="checkbox-option fade-in" style="--delay: 0.6s">
+                        <input type="checkbox" name="impact" value="revenue_loss">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Lost revenue or missed deals</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 0.7s">
+                        <input type="checkbox" name="impact" value="time_waste">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Wasted time and labor costs</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 0.8s">
+                        <input type="checkbox" name="impact" value="customer_churn">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Customer churn or complaints</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 0.9s">
+                        <input type="checkbox" name="impact" value="team_friction">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">Team frustration or turnover risk</span>
+                    </label>
+                    <label class="checkbox-option fade-in" style="--delay: 1.0s">
+                        <input type="checkbox" name="impact" value="general_inefficiency">
+                        <span class="checkbox-control"></span>
+                        <span class="checkbox-label">General inefficiency — things take longer than they should</span>
+                    </label>
+                </div>
+                <button class="btn-continue fade-in" style="--delay: 1.2s" id="impactNext">Continue</button>
+            </div>
+        </main>
+
+        <!-- Urgency -->
+        <main class="page" id="pageUrgency">
+            <div class="question-content">
+                <h2 class="question-title fade-in" style="--delay: 0.3s">How pressured do you feel to solve this?</h2>
+                <div class="radio-group" id="urgencyGroup">
+                    <label class="radio-option fade-in" style="--delay: 0.5s">
+                        <input type="radio" name="urgency" value="critical">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Critical — it's affecting us right now</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.65s">
+                        <input type="radio" name="urgency" value="high">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">High — we need a solution within weeks</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.8s">
+                        <input type="radio" name="urgency" value="medium">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Medium — important but not on fire</span>
+                    </label>
+                    <label class="radio-option fade-in" style="--delay: 0.95s">
+                        <input type="radio" name="urgency" value="low">
+                        <span class="radio-control"></span>
+                        <span class="radio-label">Low — planning ahead</span>
+                    </label>
+                </div>
             </div>
         </main>
 
@@ -269,13 +367,21 @@
         <!-- Summary Page -->
         <main class="page summary-page" id="pageSummary">
             <div class="summary-container">
+
+                <!-- Flag banner — conditional, rendered by JS -->
+                <div class="summary-flag-banner" id="summaryFlagBanner" style="display:none"></div>
+
+                <!-- Header -->
                 <div class="summary-header fade-in" style="--delay: 0.2s">
-                    <h2 class="summary-title">Business Summary</h2>
-                    <p class="summary-subtitle">Based on your answers, here is our diagnosis and recommended path forward.</p>
+                    <h2 class="summary-title">Your Solution Blueprint</h2>
+                    <p class="summary-subtitle" id="summarySubtitle"></p>
+                    <div class="zoho-one-badge" id="zohoOneBadge" style="display:none">
+                        &#10022; Zoho One covers this
+                    </div>
                 </div>
 
-                <!-- Section 1: Business Profile -->
-                <section class="summary-section fade-in" style="--delay: 0.4s">
+                <!-- Business Profile -->
+                <section class="summary-section fade-in" style="--delay: 0.4s" id="sectionProfile">
                     <h3 class="section-heading">Your Biz Summary</h3>
                     <div class="summary-card">
                         <div class="profile-grid">
@@ -303,72 +409,41 @@
                     </div>
                 </section>
 
-                <!-- Section 2: The Why -->
-                <section class="summary-section fade-in" style="--delay: 0.6s">
-                    <h3 class="section-heading">Your Why</h3>
+                <!-- Primary Recommendation -->
+                <section class="summary-section fade-in" style="--delay: 0.6s" id="sectionPrimary">
+                    <h3 class="section-heading" id="primaryPatternName"></h3>
                     <div class="summary-card">
-                        <div class="pain-points-list" id="sumPainPoints">
-                            <!-- Badges injected here -->
-                        </div>
-                        <div class="profile-item full-width mt-4" style="border-top: 1px solid var(--border); padding-top: 1rem;">
-                            <span class="profile-label">Biggest Worry</span>
-                            <p class="profile-value text-body setup-text" id="sumWorry">--</p>
-                        </div>
+                        <p class="text-body" id="primaryExplanation"></p>
+                        <div class="business-outcome" id="primaryOutcome"></div>
                     </div>
                 </section>
 
-                <!-- Section 3: Departmental Matrix -->
-                <section class="summary-section fade-in" style="--delay: 0.8s">
-                    <h3 class="section-heading">Your Needs Mapped</h3>
-                    <div class="summary-card p-0 overflow-hidden">
-                        <div class="needs-mapped-table">
-                            <div class="needs-row needs-header-row">
-                                <div class="needs-cell">Sales</div>
-                                <div class="needs-cell">Marketing</div>
-                                <div class="needs-cell">Service</div>
-                            </div>
-                            <div class="needs-row needs-detail-row">
-                                <div class="needs-cell" id="sumNeedsSales">--</div>
-                                <div class="needs-cell" id="sumNeedsMarketing">--</div>
-                                <div class="needs-cell" id="sumNeedsService">--</div>
-                            </div>
-                            <div class="needs-row needs-admin-row">
-                                <div class="needs-cell full-span">
-                                    <strong style="font-weight: 700; color: var(--text);">Admin & Operations:</strong> <span class="text-body" id="sumNeedsAdmin">--</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Primary Bundle -->
+                <section class="summary-section fade-in" style="--delay: 0.8s" id="sectionPrimaryBundle">
+                    <h3 class="section-heading">Your Starting Stack</h3>
+                    <div class="tools-list" id="primaryBundleList"></div>
                 </section>
 
-                <!-- Section 4: Recommended Tools -->
-                <section class="summary-section fade-in" style="--delay: 1.0s">
-                    <h3 class="section-heading">Tools that Address Needs</h3>
-                    <div class="tools-list" id="sumToolsList">
-                        <!-- Tools injected dynamically -->
-                    </div>
-                    <div class="summary-card mt-4">
-                        <div class="profile-item">
-                            <span class="profile-label">How tools work</span>
-                            <p class="text-body mt-2" id="sumToolsDescription">--</p>
-                        </div>
-                    </div>
+                <!-- Supporting Bundle -->
+                <section class="summary-section fade-in" style="--delay: 1.0s" id="sectionSupportingBundle" style="display:none">
+                    <h3 class="section-heading">Also Consider</h3>
+                    <div class="tools-list tools-list--secondary" id="supportingBundleList"></div>
                 </section>
 
-                <!-- Section 5: Feedback -->
-                <section class="summary-section fade-in" style="--delay: 1.2s">
-                    <h3 class="section-heading">Your Feedback</h3>
-                    <div class="summary-card p-0 overflow-hidden">
-                        <iframe title="Concierge Feedback" aria-label="Concierge Feedback" style="height:800px;width:100%;border:none;display:block;" src="https://forms.zohopublic.in/zohocorporation/form/ConciergeFeedback/formperma/Cilh6FwRXaTiSehIJ21Hob5q2LmIsP_PTngpynF2yfw"></iframe>
-                    </div>
+                <!-- Alternate Paths -->
+                <section class="summary-section fade-in" style="--delay: 1.2s" id="sectionAlternatePaths" style="display:none">
+                    <h3 class="section-heading">Alternate Paths</h3>
+                    <div id="alternatePathsList"></div>
                 </section>
 
+                <!-- Actions -->
                 <div class="priority-action-wrapper fade-in" style="--delay: 1.4s; text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
-                    <button class="btn-priority" id="btnPriority">Priority</button>
+                    <button class="btn-priority" id="btnPriority">View Rollout Plan</button>
                     <button class="btn-start" style="margin-left: 1rem;" id="btnStartOver">Start Over</button>
                 </div>
             </div>
         </main>
+
         <!-- Bottom Navigation -->
         <nav class="wizard-nav" id="wizardNav" style="display: none;">
             <button class="wizard-nav__btn" id="btnBack" aria-label="Go back">
@@ -383,6 +458,7 @@
     </div>
 
     <script src="industries.js"></script>
+    <script src="scoring-engine.js"></script>
     <script src="main.js"></script>
 </body>
 
