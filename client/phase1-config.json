@@ -49,7 +49,7 @@
       "category": "context",
       "type": "free_text",
       "label": "What software are you currently using?",
-      "placeholder": "e.g., QuickBooks, Salesforce, Google Sheets, Slack, Mailchimp..."
+      "placeholder": "e.g., QuickBooks for accounting, Excel for tracking..."
     },
     {
       "id": "Q7",
@@ -57,7 +57,7 @@
       "category": "context",
       "type": "free_text",
       "label": "Which software are you open to replacing? Which will remain in place?",
-      "placeholder": "e.g., Open to replacing Mailchimp and our CRM. Keeping QuickBooks and Slack."
+      "placeholder": "e.g., Open to replacing Excel, must keep QuickBooks..."
     },
     {
       "id": "Q8",
@@ -81,16 +81,16 @@
       "page": "pageRequirements",
       "category": "requirements",
       "type": "free_text",
-      "label": "Any specific requirements?",
-      "placeholder": "e.g., Must integrate with QuickBooks, needs mobile access, HIPAA compliance required..."
+      "label": "Do you have any specific requirements?",
+      "placeholder": "e.g., Must integrate with Stripe, needs offline mobile app..."
     },
     {
       "id": "Q10",
-      "page": "pageWorry",
+      "page": "pageBiggestWorry",
       "category": "impact",
       "type": "free_text",
-      "label": "What is the biggest worry for your team or organization?",
-      "placeholder": "e.g., We're growing fast and our current tools can't keep up..."
+      "label": "What is the biggest worry for your team/org?",
+      "placeholder": "e.g., Adoption from the team, data security, migrating historical data..."
     }
   ]
 }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Business Diagnostic</title>
+    <title>Solutions Stack</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,11 @@
 
 <body>
     <div class="page-shell">
+        <div class="wizard-header fade-in" style="--delay: 0s">
+            <div class="progress-bar-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+            </div>
+        </div>
         <div class="powered-by fade-in" style="--delay: 0s">
             <span class="powered-by-text">Powered by</span>
             <a href="https://www.zoho.com" target="_blank" rel="noopener noreferrer">
@@ -25,7 +30,7 @@
         <main class="page active" id="pageLanding">
             <div class="landing-content">
                 <p class="landing-greeting fade-in" style="--delay: 0.4s">Welcome to</p>
-                <h1 class="landing-title fade-in" style="--delay: 0.9s">Solution <span class="amp">&amp;</span> Stack</h1>
+                <h1 class="landing-title fade-in" style="--delay: 0.9s">Solutions Stack</h1>
                 <div class="landing-divider fade-in" style="--delay: 1.5s"></div>
                 <p class="landing-subtitle fade-in" style="--delay: 1.9s">Your business runs on a dozen moving pieces. We help you find the ones that aren't keeping up.</p>
                 <button class="btn-start fade-in" style="--delay: 2.5s" id="getStartedBtn">Get Started</button>
@@ -183,16 +188,16 @@
         <main class="page" id="pageCurrentSoftware">
             <div class="question-content question-content--wide">
                 <h2 class="question-title fade-in" style="--delay: 0.3s">What software are you currently using?</h2>
-                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="currentSoftwareInput" rows="4" placeholder="e.g., QuickBooks, Salesforce, Google Sheets, Slack, Mailchimp..."></textarea>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="currentSoftwareInput" rows="4" placeholder="e.g., QuickBooks for accounting, Excel for tracking..."></textarea>
                 <button class="btn-continue fade-in" style="--delay: 0.9s" id="currentSoftwareNext">Continue</button>
             </div>
         </main>
 
-        <!-- Q7: Replace vs Keep -->
+        <!-- Q7: Replace or Keep? -->
         <main class="page" id="pageReplaceKeep">
             <div class="question-content question-content--wide">
                 <h2 class="question-title fade-in" style="--delay: 0.3s">Which software are you open to replacing? Which will remain in place?</h2>
-                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="replaceKeepInput" rows="4" placeholder="e.g., Open to replacing Mailchimp and our CRM. Keeping QuickBooks and Slack."></textarea>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="replaceKeepInput" rows="4" placeholder="e.g., Open to replacing Excel, must keep QuickBooks..."></textarea>
                 <button class="btn-continue fade-in" style="--delay: 0.9s" id="replaceKeepNext">Continue</button>
             </div>
         </main>
@@ -246,20 +251,127 @@
         <!-- Q9: Requirements -->
         <main class="page" id="pageRequirements">
             <div class="question-content question-content--wide">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">Any specific requirements?</h2>
-                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="requirementsInput" rows="4" placeholder="e.g., Must integrate with QuickBooks, needs mobile access, HIPAA compliance required..."></textarea>
+                <h2 class="question-title fade-in" style="--delay: 0.3s">Do you have any specific requirements?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="requirementsInput" rows="4" placeholder="e.g., Must integrate with Stripe, needs offline mobile app..."></textarea>
                 <button class="btn-continue fade-in" style="--delay: 0.9s" id="requirementsNext">Continue</button>
             </div>
         </main>
 
         <!-- Q10: Biggest Worry -->
-        <main class="page" id="pageWorry">
+        <main class="page" id="pageBiggestWorry">
             <div class="question-content question-content--wide">
-                <h2 class="question-title fade-in" style="--delay: 0.3s">What is the biggest worry for your team or organization?</h2>
-                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="worryInput" rows="4" placeholder="e.g., We're growing fast and our current tools can't keep up..."></textarea>
-                <button class="btn-continue fade-in" style="--delay: 0.9s" id="worryNext">Continue</button>
+                <h2 class="question-title fade-in" style="--delay: 0.3s">What is the biggest worry for your team/org?</h2>
+                <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="biggestWorryInput" rows="4" placeholder="e.g., Adoption from the team, data security, migrating historical data..."></textarea>
+                <button class="btn-continue fade-in" style="--delay: 0.9s" id="biggestWorryNext">Finish</button>
             </div>
         </main>
+
+        <!-- Summary Page -->
+        <main class="page summary-page" id="pageSummary">
+            <div class="summary-container">
+                <div class="summary-header fade-in" style="--delay: 0.2s">
+                    <h2 class="summary-title">Business Summary</h2>
+                    <p class="summary-subtitle">Based on your answers, here is our diagnosis and recommended path forward.</p>
+                </div>
+
+                <!-- Section 1: Business Profile -->
+                <section class="summary-section fade-in" style="--delay: 0.4s">
+                    <h3 class="section-heading">Your Biz Summary</h3>
+                    <div class="summary-card">
+                        <div class="profile-grid">
+                            <div class="profile-item">
+                                <span class="profile-label">Industry</span>
+                                <strong class="profile-value" id="sumIndustry">--</strong>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Company Size</span>
+                                <strong class="profile-value" id="sumUsers">--</strong>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Role</span>
+                                <strong class="profile-value" id="sumRole">--</strong>
+                            </div>
+                            <div class="profile-item">
+                                <span class="profile-label">Customer Type</span>
+                                <strong class="profile-value" id="sumB2B">--</strong>
+                            </div>
+                        </div>
+                        <div class="profile-item full-width mt-4">
+                            <span class="profile-label">Products & Services</span>
+                            <p class="profile-value text-body" id="sumProducts">--</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: The Why -->
+                <section class="summary-section fade-in" style="--delay: 0.6s">
+                    <h3 class="section-heading">Your Why</h3>
+                    <div class="summary-card">
+                        <div class="pain-points-list" id="sumPainPoints">
+                            <!-- Badges injected here -->
+                        </div>
+                        <div class="profile-item full-width mt-4" style="border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <span class="profile-label">Biggest Worry</span>
+                            <p class="profile-value text-body setup-text" id="sumWorry">--</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Departmental Matrix -->
+                <section class="summary-section fade-in" style="--delay: 0.8s">
+                    <h3 class="section-heading">Your Needs Mapped</h3>
+                    <div class="summary-card p-0 overflow-hidden">
+                        <div class="needs-mapped-table">
+                            <div class="needs-row needs-header-row">
+                                <div class="needs-cell">Sales</div>
+                                <div class="needs-cell">Marketing</div>
+                                <div class="needs-cell">Service</div>
+                            </div>
+                            <div class="needs-row needs-detail-row">
+                                <div class="needs-cell" id="sumNeedsSales">--</div>
+                                <div class="needs-cell" id="sumNeedsMarketing">--</div>
+                                <div class="needs-cell" id="sumNeedsService">--</div>
+                            </div>
+                            <div class="needs-row needs-admin-row">
+                                <div class="needs-cell full-span">
+                                    <strong style="font-weight: 700; color: var(--text);">Admin & Operations:</strong> <span class="text-body" id="sumNeedsAdmin">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Recommended Tools -->
+                <section class="summary-section fade-in" style="--delay: 1.0s">
+                    <h3 class="section-heading">Tools that Address Needs</h3>
+                    <div class="tools-list" id="sumToolsList">
+                        <!-- Tools injected dynamically -->
+                    </div>
+                    <div class="summary-card mt-4">
+                        <div class="profile-item">
+                            <span class="profile-label">How tools work</span>
+                            <p class="text-body mt-2" id="sumToolsDescription">--</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="priority-action-wrapper fade-in" style="--delay: 1.2s; text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
+                    <button class="btn-priority" id="btnPriority">Priority</button>
+                    <button class="btn-start" style="margin-left: 1rem;" id="btnStartOver">Start Over</button>
+                </div>
+            </div>
+        </main>
+        <!-- Bottom Navigation -->
+        <nav class="wizard-nav" id="wizardNav" style="display: none;">
+            <button class="wizard-nav__btn" id="btnBack" aria-label="Go back">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Back</span>
+            </button>
+            <button class="wizard-nav__btn" id="btnForward" aria-label="Go forward" disabled>
+                <span>Next</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </nav>
     </div>
 
     <script src="industries.js"></script>
