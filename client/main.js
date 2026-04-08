@@ -367,31 +367,79 @@ var BREAKDOWN_SIGNAL_MAP = {
 };
 
 var APPROACH_SIGNAL_MAP = {
+    // Sales
     "Spreadsheets and email — that's basically it":
-        { spreadsheet_replacement: 0.6, data_entry_automation: 0.5 },
-    "Spreadsheets multiple people try to maintain":
         { spreadsheet_replacement: 0.6, data_entry_automation: 0.5 },
     "A CRM we're not really using well":
         { crm_adoption_needed: 0.7 },
+    "Mostly in people's heads":
+        { crm_needed: 0.7, process_definition_needed: 0.6 },
     "Multiple tools that don't connect":
         { integration_needed: 0.6, unified_platform_needed: 0.5 },
-    "No real system — it's reactive":
-        { integration_needed: 0.6, unified_platform_needed: 0.5 },
+    // Service
+    "Shared email inbox":
+        { helpdesk_needed: 0.7, workflow_automation: 0.5 },
+    "A helpdesk tool we've outgrown":
+        { helpdesk_needed: 0.6, integration_needed: 0.5 },
     "Phone calls and manual notes":
-        { data_entry_automation: 0.6, helpdesk_needed: 0.5 }
+        { data_entry_automation: 0.6, helpdesk_needed: 0.5 },
+    "No real system — it's reactive":
+        { process_definition_needed: 0.6, helpdesk_needed: 0.5 },
+    // Ops
+    "Mostly email and chat messages":
+        { collaboration_needed: 0.6, process_definition_needed: 0.5 },
+    "Spreadsheets multiple people try to maintain":
+        { spreadsheet_replacement: 0.6, data_entry_automation: 0.5 },
+    "Meetings that could have been a process":
+        { workflow_automation: 0.6, process_definition_needed: 0.6 },
+    "Everyone has their own system":
+        { unified_platform_needed: 0.6, integration_needed: 0.5 },
+    // Marketing
+    "Scattered across social, email, and ads with no unified view":
+        { marketing_automation_needed: 0.6, integration_needed: 0.5 },
+    "Running campaigns but can't tell what's actually working":
+        { reporting_needed: 0.6, analytics_needed: 0.5 },
+    "We know we need to do more but don't know where to start":
+        { marketing_automation_needed: 0.5, email_campaigns_needed: 0.5 },
+    "A marketing tool we've outgrown or barely use":
+        { marketing_automation_needed: 0.6, integration_needed: 0.5 }
 };
 
 var ROOT_CAUSE_SIGNAL_MAP = {
+    // Sales
     "No visibility into where things stand":
-        { reporting_needed: 0.7, dashboard_needed: 0.6 },
-    "We can't tell what's resolved and what isn't":
         { reporting_needed: 0.7, dashboard_needed: 0.6 },
     "Leads go cold because follow-up is inconsistent":
         { followup_automation_needed: 0.8 },
-    "Too many tools that don't connect":
-        { integration_needed: 0.7 },
+    "Proposals take too long or get lost":
+        { workflow_automation: 0.6, data_entry_automation: 0.5 },
+    "We don't know what's working and what isn't":
+        { reporting_needed: 0.7, analytics_needed: 0.6 },
+    // Service
+    "No single place to see all customer issues":
+        { helpdesk_needed: 0.7, dashboard_needed: 0.6 },
+    "Too much depends on individual people":
+        { process_definition_needed: 0.7, workflow_automation: 0.5 },
+    "No process for escalation or follow-through":
+        { workflow_automation: 0.7, approval_flows_needed: 0.6 },
+    "We can't tell what's resolved and what isn't":
+        { reporting_needed: 0.7, dashboard_needed: 0.6 },
+    // Ops
     "Lack of ownership — nobody's accountable":
         { process_definition_needed: 0.7, approval_flows_needed: 0.6 },
+    "Too many tools that don't connect":
+        { integration_needed: 0.7 },
+    "Processes exist but aren't enforced":
+        { workflow_automation: 0.7, process_definition_needed: 0.6 },
+    "The way we work hasn't changed even though the team has":
+        { process_definition_needed: 0.6, collaboration_needed: 0.5 },
+    // Marketing
+    "No way to track what's generating leads vs. wasting budget":
+        { reporting_needed: 0.8, analytics_needed: 0.6 },
+    "Campaigns go out but there's no follow-through to sales":
+        { crm_needed: 0.6, followup_automation_needed: 0.6 },
+    "Content and messaging are inconsistent across channels":
+        { marketing_automation_needed: 0.6, social_media_needed: 0.5 },
     "We're guessing instead of using data":
         { reporting_needed: 0.8, dashboard_needed: 0.7 }
 };
