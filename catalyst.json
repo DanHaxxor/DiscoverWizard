@@ -3,8 +3,8 @@
     "targets": [
       "discoverywizard_function"
     ],
-    "ignore": [],
-    "source": "functions"
+    "source": "functions",
+    "ignore": []
   },
   "client": {
     "source": "client"
