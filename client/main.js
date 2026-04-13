@@ -647,9 +647,45 @@ bwInput.addEventListener('input', validateBw);
 bwBtn.addEventListener('click', function () {
     if (!bwBtn.disabled) {
         state.answers.biggestWorry = bwInput.value;
-        generateSummary();
+        showLoadingState();
+        parseFreeTextSignals(state.answers.biggestWorry)
+            .then(function (aiSignals) {
+                if (aiSignals) state.answers.aiSignals = aiSignals;
+            })
+            .catch(function () { /* degrade silently per CLAUDE.md */ })
+            .then(function () { generateSummary(); });
     }
 });
+
+// ── AI free-text parsing (Qwen via Catalyst QuickML) ──
+// Returns tags on success, null on any failure — scoring works without it.
+function parseFreeTextSignals(text) {
+    if (!text || !text.trim()) return Promise.resolve(null);
+
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 5000);
+
+    return fetch('/server/discowizard_function/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_input: text }),
+        signal: controller.signal
+    })
+        .then(function (resp) {
+            clearTimeout(timer);
+            if (!resp.ok) return null;
+            return resp.json();
+        })
+        .then(function (body) {
+            if (!body || body.status !== 'success') return null;
+            return body.data || null;
+        })
+        .catch(function (err) {
+            clearTimeout(timer);
+            console.warn('AI signal parse failed, continuing without it:', err && err.message);
+            return null;
+        });
+}
 
 // ── Summary Constants ─────────────────────────────
 

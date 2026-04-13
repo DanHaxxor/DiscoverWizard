@@ -1,0 +1,15 @@
+{
+	"deployment": {
+		"name": "discowizard_function",
+		"stack": "node20",
+		"type": "advancedio",
+		"env_variables": {
+			"LLM_API_URL": "https://api.catalyst.zoho.com/quickml/v2/project/24095000000137016/llm/chat",
+			"LLM_MODEL": "crm-di-qwen_text_14b-fp8-it",
+			"CATALYST_ORG_ID": "854436641"
+		}
+	},
+	"execution": {
+		"main": "index.js"
+	}
+}

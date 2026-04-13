@@ -1,10 +1,10 @@
 {
   "functions": {
     "targets": [
-      "discoverywizard_function"
+      "discowizard_function"
     ],
-    "source": "functions",
-    "ignore": []
+    "ignore": [],
+    "source": "functions"
   },
   "client": {
     "source": "client"
