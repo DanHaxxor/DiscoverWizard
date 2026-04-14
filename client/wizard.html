@@ -28,7 +28,7 @@
         <div class="powered-by fade-in" style="--delay: 0s">
             <span class="powered-by-text">Powered by</span>
             <a href="https://www.zoho.com" target="_blank" rel="noopener noreferrer">
-                <img class="powered-by-logo" src="logo.png" alt="Zoho">
+                <img class="powered-by-logo" src="images/logo.png" alt="Zoho">
             </a>
         </div>
 
@@ -448,6 +448,50 @@
                     </div>
                 </section>
 
+                <!-- Reasoning / debug view — collapsible. Internal use. -->
+                <section class="summary-section fade-in" style="--delay: 0.55s" id="sectionReasoning">
+                    <details class="reasoning-card" id="reasoningDetails">
+                        <summary class="reasoning-summary">
+                            <span class="reasoning-summary-title">How we read your situation</span>
+                            <span class="reasoning-summary-hint">click to expand</span>
+                        </summary>
+
+                        <div class="reasoning-body">
+
+                            <div class="reasoning-section">
+                                <h4 class="profile-label">LLM's interpretation</h4>
+                                <blockquote class="reasoning-interpretation" id="reasoningInterpretation">--</blockquote>
+                            </div>
+
+                            <div class="reasoning-section">
+                                <h4 class="profile-label">What you told us</h4>
+                                <dl class="reasoning-inputs" id="reasoningInputs"></dl>
+                            </div>
+
+                            <div class="reasoning-section">
+                                <h4 class="profile-label">Your own words</h4>
+                                <div class="reasoning-quotes" id="reasoningQuotes"></div>
+                            </div>
+
+                            <div class="reasoning-section">
+                                <h4 class="profile-label">Signals the AI extracted</h4>
+                                <div class="reasoning-signals" id="reasoningSignals"></div>
+                            </div>
+
+                            <div class="reasoning-section">
+                                <h4 class="profile-label">Pattern matches (rule engine)</h4>
+                                <div class="reasoning-patterns" id="reasoningPatterns"></div>
+                            </div>
+
+                            <details class="reasoning-dev">
+                                <summary class="reasoning-dev-summary">Developer details</summary>
+                                <div class="reasoning-dev-body" id="reasoningDevDetails"></div>
+                            </details>
+
+                        </div>
+                    </details>
+                </section>
+
                 <!-- Primary Recommendation -->
                 <section class="summary-section fade-in" style="--delay: 0.6s" id="sectionPrimary">
                     <h3 class="section-heading" id="primaryPatternName"></h3>
@@ -498,6 +542,7 @@
 
     <script src="industries.js"></script>
     <script src="scoring-engine.js"></script>
+    <script src="reasoning-card.js"></script>
     <script src="main.js"></script>
 </body>
 

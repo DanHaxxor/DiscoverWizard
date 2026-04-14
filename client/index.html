@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiscoverWizard — Test Harness</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        /* Harness-only layout. Reuses reasoning-card + base styles from main.css. */
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; margin: 0; padding: 1.5rem; background: var(--bg); color: var(--text); }
+        .harness-container { max-width: 1100px; margin: 0 auto; }
+        .harness-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+        .harness-header h1 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; margin: 0; }
+        .harness-header .tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding: 0.2rem 0.6rem; border: 1px dashed var(--border); border-radius: 999px; }
+        .harness-section { background: var(--panel); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+        .harness-section h2 { font-family: 'Outfit', sans-serif; font-size: 1rem; margin: 0 0 0.75rem 0; }
+        .preset-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+        .preset-row select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); min-width: 280px; }
+        .field-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .field-grid label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8rem; color: var(--text-muted); }
+        .field-grid textarea { padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.9rem; min-height: 70px; resize: vertical; }
+        .btn-run { padding: 0.7rem 1.25rem; background: var(--accent, #5b8def); color: white; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+        .btn-run:disabled { opacity: 0.5; cursor: wait; }
+        .btn-secondary { padding: 0.5rem 0.9rem; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.85rem; cursor: pointer; }
+        .run-row { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; }
+        .status-line { font-size: 0.85rem; color: var(--text-muted); flex: 1; }
+        .status-error { color: #c0392b; font-weight: 600; }
+        #jsonEditor { width: 100%; min-height: 240px; font-family: Menlo, Consolas, monospace; font-size: 0.8rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); box-sizing: border-box; }
+        .json-toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        #jsonEditorWrap { display: none; margin-top: 0.5rem; }
+        #jsonEditorWrap.open { display: block; }
+    </style>
+</head>
+<body>
+    <div class="harness-container">
+
+        <div class="harness-header">
+            <h1>DiscoverWizard — Test Harness</h1>
+            <span class="tag">
+                Internal · not for production users
+                &nbsp;·&nbsp;
+                <a href="wizard.html" style="color: inherit; text-decoration: underline;">Open production wizard &rarr;</a>
+            </span>
+        </div>
+
+        <!-- Preset + free-text inputs -->
+        <div class="harness-section">
+            <h2>Scenario</h2>
+            <div class="preset-row">
+                <select id="presetSelect" aria-label="Preset scenario">
+                    <!-- Populated from PRESETS in JS -->
+                </select>
+                <button class="btn-secondary" id="loadPresetBtn" type="button">Load preset</button>
+                <button class="btn-secondary" id="toggleJsonBtn" type="button">Show JSON</button>
+            </div>
+
+            <div id="jsonEditorWrap">
+                <label for="jsonEditor" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.75rem;">Full <code>answers</code> object (editable) &mdash; this is what gets POSTed to the Catalyst function:</label>
+                <textarea id="jsonEditor" spellcheck="false"></textarea>
+            </div>
+
+            <h2 style="margin-top: 1.25rem;">Free-text inputs</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 0.75rem 0;">These are the fields the LLM actually parses. Structured answers come from the preset.</p>
+            <div class="field-grid">
+                <label>
+                    <span>Biggest worry (PP4)</span>
+                    <textarea id="inputBiggestWorry" placeholder="e.g. we lose track of leads after the first call and nobody owns follow-up"></textarea>
+                </label>
+                <label>
+                    <span>Requirements</span>
+                    <textarea id="inputRequirements" placeholder="What the user said they need"></textarea>
+                </label>
+                <label>
+                    <span>Current software</span>
+                    <textarea id="inputCurrentSoftware" placeholder="What they use today"></textarea>
+                </label>
+                <label>
+                    <span>Products &amp; services</span>
+                    <textarea id="inputProducts" placeholder="What they sell"></textarea>
+                </label>
+            </div>
+
+            <div class="run-row">
+                <button class="btn-run" id="runBtn" type="button">Run diagnostic &rarr;</button>
+                <span class="status-line" id="statusLine">Pick a preset and click Run.</span>
+            </div>
+        </div>
+
+        <!-- Reasoning card output (reuses markup + CSS from production) -->
+        <div class="summary-container" style="margin-top: 1rem;">
+            <section class="summary-section" id="sectionReasoning">
+                <details class="reasoning-card" id="reasoningDetails" open>
+                    <summary class="reasoning-summary">
+                        <span class="reasoning-summary-title">Reasoning output</span>
+                        <span class="reasoning-summary-hint">always expanded in harness</span>
+                    </summary>
+                    <div class="reasoning-body">
+                        <div class="reasoning-section">
+                            <h4 class="profile-label">LLM's interpretation</h4>
+                            <blockquote class="reasoning-interpretation" id="reasoningInterpretation">&mdash;</blockquote>
+                        </div>
+                        <div class="reasoning-section">
+                            <h4 class="profile-label">What you told us</h4>
+                            <dl class="reasoning-inputs" id="reasoningInputs"></dl>
+                        </div>
+                        <div class="reasoning-section">
+                            <h4 class="profile-label">Your own words</h4>
+                            <div class="reasoning-quotes" id="reasoningQuotes"></div>
+                        </div>
+                        <div class="reasoning-section">
+                            <h4 class="profile-label">Signals the AI extracted</h4>
+                            <div class="reasoning-signals" id="reasoningSignals"></div>
+                        </div>
+                        <div class="reasoning-section">
+                            <h4 class="profile-label">Pattern matches (rule engine)</h4>
+                            <div class="reasoning-patterns" id="reasoningPatterns"></div>
+                        </div>
+                        <details class="reasoning-dev" open>
+                            <summary class="reasoning-dev-summary">Developer details</summary>
+                            <div class="reasoning-dev-body" id="reasoningDevDetails"></div>
+                        </details>
+                    </div>
+                </details>
+            </section>
+        </div>
+
+    </div>
+
+    <script src="scoring-engine.js"></script>
+    <script src="reasoning-card.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        // ── Preset scenarios ────────────────────────────
+        // TODO(user): these are stubs. Tailor the structured-answer values
+        // (industry, size, urgency, etc.) and biggestWorry text to real
+        // iteration cases you care about. See client/knowledge-model.json for
+        // valid industry/signal values and CLAUDE.md for the answer-key vocabulary.
+        //
+        // `expected` = the tags YOU think the LLM should produce for this input.
+        // This is the calibration point for debugging. Valid values (per the
+        // LLM prompt schema in functions/discowizard_function/index.js):
+        //   root_cause_type: process | people | technology | data
+        //   problem_pattern: firefighting | leakage | bottleneck | visibility
+        //                    | adoption_failure | missing_ownership
+        //                    | communication_breakdown
+        //   urgency_signal:  low | medium | high
+        //
+        // Leave fields off `expected` to skip comparison for that tag.
+        var PRESETS = {
+            'sales-firefighting': {
+                label: 'Sales — firefighting / no follow-up ownership',
+                answers: {
+                    journeyStage: 'prospect',
+                    industry: 'Technology',
+                    subIndustry: 'SaaS',
+                    users: '11-50',
+                    role: 'Manager or Team Lead',
+                    b2b: 'b2b',
+                    breakdownArea: 'sales',
+                    currentApproach: 'A CRM we\u2019re not really using well',
+                    rootCause: 'Leads go cold because follow-up is inconsistent',
+                    impact: ['lost_revenue'],
+                    urgency: 'high',
+                    biggestWorry: 'We lose track of leads after the first call and nobody owns follow-up. Losing two deals a month to this.',
+                    requirements: 'Something the team will actually use — current CRM has low adoption.',
+                    currentSoftware: 'HubSpot free tier, Google Sheets for pipeline.',
+                    products: 'B2B analytics SaaS; mid-market customers.'
+                },
+                expected: {
+                    root_cause_type: 'people',
+                    problem_pattern: 'missing_ownership',
+                    urgency_signal: 'high'
+                }
+            },
+            'service-breakdown': {
+                label: 'Customer service — no single pane of glass',
+                answers: {
+                    journeyStage: 'prospect',
+                    industry: 'Retail',
+                    subIndustry: 'E-commerce',
+                    users: '11-50',
+                    role: 'Owner / Founder',
+                    b2b: 'b2c',
+                    breakdownArea: 'service',
+                    currentApproach: 'Shared email inbox',
+                    rootCause: 'No single place to see all customer issues',
+                    impact: ['customer_churn'],
+                    urgency: 'high',
+                    biggestWorry: 'Customers have to repeat themselves every time they contact us. We\u2019ve lost three big accounts this quarter.',
+                    requirements: 'A way to track every customer conversation in one place.',
+                    currentSoftware: 'Gmail, Intercom trial that we never configured.',
+                    products: 'Home goods direct-to-consumer.'
+                },
+                expected: {
+                    root_cause_type: 'technology',
+                    problem_pattern: 'visibility',
+                    urgency_signal: 'high'
+                }
+            },
+            'ops-bottleneck': {
+                label: 'Internal ops — approvals stuck, no ownership',
+                answers: {
+                    journeyStage: 'evaluating',
+                    industry: 'Professional Services',
+                    subIndustry: 'Consulting',
+                    users: '51-200',
+                    role: 'Executive or Director',
+                    b2b: 'b2b',
+                    breakdownArea: 'ops',
+                    currentApproach: 'Spreadsheets multiple people try to maintain',
+                    rootCause: 'Lack of ownership \u2014 nobody\u2019s accountable',
+                    impact: ['wasted_time', 'team_frustration'],
+                    urgency: 'medium',
+                    biggestWorry: 'Approvals get stuck and nobody knows where things stand. Clients are starting to notice the slowness.',
+                    requirements: 'Clear approval chain with audit trail.',
+                    currentSoftware: 'Excel, email, Monday.com.',
+                    products: 'Management consulting for mid-market.'
+                },
+                expected: {
+                    root_cause_type: 'process',
+                    problem_pattern: 'bottleneck',
+                    urgency_signal: 'medium'
+                }
+            },
+            'marketing-adoption-failure': {
+                label: 'Marketing — ran ads, can\u2019t measure impact',
+                answers: {
+                    journeyStage: 'prospect',
+                    industry: 'Technology',
+                    subIndustry: 'Software',
+                    users: '2-10',
+                    role: 'Owner / Founder',
+                    b2b: 'b2b',
+                    breakdownArea: 'marketing',
+                    currentApproach: 'Running campaigns but can\u2019t tell what\u2019s actually working',
+                    rootCause: 'No way to track what\u2019s generating leads vs. wasting budget',
+                    impact: ['wasted_time', 'general_inefficiency'],
+                    urgency: 'medium',
+                    biggestWorry: 'We spend money on ads but have no idea which ones actually turn into customers. Burning ~$4k/mo and can\u2019t justify it.',
+                    requirements: 'Attribution from ad click to closed deal.',
+                    currentSoftware: 'Google Ads, Mailchimp, HubSpot free.',
+                    products: 'Dev tools SaaS.'
+                },
+                expected: {
+                    root_cause_type: 'data',
+                    problem_pattern: 'visibility',
+                    urgency_signal: 'medium'
+                }
+            }
+        };
+
+        // ── State ───────────────────────────────────────
+        var knowledgeModel = null;
+
+        // ── Load knowledge model for pattern trace ──────
+        fetch('knowledge-model.json')
+            .then(function (r) { return r.json(); })
+            .then(function (km) { knowledgeModel = km; setStatus('Knowledge model loaded. Ready.'); })
+            .catch(function (e) {
+                setStatus('Knowledge model failed to load: ' + (e && e.message) + ' (pattern trace will be empty)', true);
+            });
+
+        // ── Populate preset dropdown ────────────────────
+        var presetSelect = document.getElementById('presetSelect');
+        Object.keys(PRESETS).forEach(function (key) {
+            var opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = PRESETS[key].label;
+            presetSelect.appendChild(opt);
+        });
+
+        function setStatus(text, isError) {
+            var el = document.getElementById('statusLine');
+            el.textContent = text;
+            el.classList.toggle('status-error', !!isError);
+        }
+
+        function loadPreset() {
+            var key = presetSelect.value;
+            var preset = PRESETS[key];
+            if (!preset) return;
+            var a = preset.answers;
+            document.getElementById('inputBiggestWorry').value = a.biggestWorry || '';
+            document.getElementById('inputRequirements').value = a.requirements || '';
+            document.getElementById('inputCurrentSoftware').value = a.currentSoftware || '';
+            document.getElementById('inputProducts').value = a.products || '';
+            document.getElementById('jsonEditor').value = JSON.stringify(a, null, 2);
+            setStatus('Preset loaded: ' + preset.label);
+        }
+
+        function currentAnswers() {
+            // If the JSON editor is non-empty, it wins (allows arbitrary edits).
+            var jsonText = document.getElementById('jsonEditor').value.trim();
+            var base = {};
+            if (jsonText) {
+                try { base = JSON.parse(jsonText); }
+                catch (e) {
+                    throw new Error('JSON editor contains invalid JSON: ' + e.message);
+                }
+            } else {
+                // Fall back to preset structured values
+                var preset = PRESETS[presetSelect.value];
+                base = preset ? Object.assign({}, preset.answers) : {};
+            }
+            // Free-text overrides always apply
+            base.biggestWorry = document.getElementById('inputBiggestWorry').value || base.biggestWorry || '';
+            base.requirements = document.getElementById('inputRequirements').value || base.requirements || '';
+            base.currentSoftware = document.getElementById('inputCurrentSoftware').value || base.currentSoftware || '';
+            base.products = document.getElementById('inputProducts').value || base.products || '';
+            return base;
+        }
+
+        function run() {
+            var btn = document.getElementById('runBtn');
+            var answers;
+            try { answers = currentAnswers(); }
+            catch (e) { setStatus(e.message, true); return; }
+
+            if (!answers.biggestWorry) {
+                setStatus('Biggest worry is required (the LLM needs text to parse).', true);
+                return;
+            }
+
+            btn.disabled = true;
+            setStatus('Running diagnostic\u2026');
+            var t0 = Date.now();
+
+            fetch('/server/discowizard_function/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answers: answers, attempt: 1 })
+            })
+                .then(function (resp) { return resp.json().then(function (body) { return { ok: resp.ok, body: body }; }); })
+                .then(function (r) {
+                    var wall = Date.now() - t0;
+                    if (!r.ok || !r.body || r.body.status !== 'success' || !r.body.data) {
+                        throw new Error((r.body && r.body.message) || 'Diagnostic returned no data');
+                    }
+                    var data = r.body.data;
+                    var debug = r.body._debug || null;
+
+                    // Merge LLM output back into answers so ReasoningCard.render can display it.
+                    var merged = Object.assign({}, answers, {
+                        aiSignals: data.parsedSignals,
+                        interpretation: data.interpretation,
+                        signalEvidence: data.signalEvidence,
+                        diagnostic: data.diagnostic
+                    });
+
+                    // Run the scoring engine so pattern trace renders (same path as main.js).
+                    var scoring = null;
+                    if (knowledgeModel && window.ScoringEngine) {
+                        try {
+                            scoring = window.ScoringEngine.score(merged, knowledgeModel, null);
+                        } catch (scErr) {
+                            console.warn('Scoring engine error:', scErr && scErr.message);
+                        }
+                    }
+
+                    var preset = PRESETS[presetSelect.value];
+                    var expected = preset ? preset.expected : null;
+
+                    window.ReasoningCard.render(merged, scoring, debug, knowledgeModel, expected);
+
+                    var matchSummary = '';
+                    if (expected) {
+                        var cmp = window.ReasoningCard.compareToExpected(data.parsedSignals, expected);
+                        if (cmp && cmp.total > 0) {
+                            var suffix = cmp.matches === cmp.total ? ' \u2713 all aligned' : ' \u2014 review highlighted signals';
+                            matchSummary = ' \u00b7 ' + cmp.matches + '/' + cmp.total + ' signals match expected' + suffix;
+                        }
+                    }
+                    setStatus('Done in ' + wall + 'ms (server ' + (debug ? debug.latencyMs + 'ms' : '\u2014') + ')' + matchSummary);
+                })
+                .catch(function (err) {
+                    setStatus('Error: ' + (err && err.message), true);
+                    console.error(err);
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                });
+        }
+
+        document.getElementById('loadPresetBtn').addEventListener('click', loadPreset);
+        document.getElementById('runBtn').addEventListener('click', run);
+        document.getElementById('toggleJsonBtn').addEventListener('click', function () {
+            document.getElementById('jsonEditorWrap').classList.toggle('open');
+        });
+
+        // Auto-load first preset so there's something to run immediately
+        if (presetSelect.options.length) {
+            presetSelect.selectedIndex = 0;
+            loadPreset();
+        }
+    })();
+    </script>
+</body>
+</html>

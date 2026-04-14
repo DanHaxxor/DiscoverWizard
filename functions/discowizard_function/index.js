@@ -16,6 +16,7 @@ module.exports = async (req, res) => {
   try { parsedBody = body ? JSON.parse(body) : {}; } catch (_e) { /* ignore */ }
 
   const answers = parsedBody.answers || {};
+  const attempt = parsedBody.attempt || 1;
   if (!answers || Object.keys(answers).length === 0) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'error', message: 'Missing required "answers" object in request body.' }));
@@ -42,6 +43,12 @@ Return ONLY valid JSON matching this exact schema. No markdown, no code fences, 
     "root_cause_type": "process | people | technology | data",
     "problem_pattern": "firefighting | leakage | bottleneck | visibility | adoption_failure | missing_ownership | communication_breakdown",
     "urgency_signal": "low | medium | high"
+  },
+  "interpretation": "1-2 sentences in plain English explaining how you read the situation. Written for a human reviewer to sanity-check. Reference the user's own words where useful. No brand names.",
+  "signalEvidence": {
+    "root_cause_type": "Direct quote or close paraphrase from the user's free-text that justifies this tag.",
+    "problem_pattern": "Direct quote or close paraphrase from the user's free-text that justifies this tag.",
+    "urgency_signal": "Direct quote or close paraphrase from the user's input that justifies this tag. May pull from structured urgency answer if free-text doesn't cover it."
   },
   "diagnostic": {
     "problemStatement": "1-2 sentences naming what's broken in plain language.",
@@ -99,6 +106,7 @@ ${JSON.stringify(answers, null, 2)}`;
     max_tokens: 1200
   };
 
+  const t0 = Date.now();
   try {
     const response = await fetch(llmUrl, {
       method: 'POST',
@@ -110,7 +118,8 @@ ${JSON.stringify(answers, null, 2)}`;
       body: JSON.stringify(data)
     });
 
-    console.log('QuickML status:', response.status);
+    const latencyMs = Date.now() - t0;
+    console.log('QuickML status:', response.status, 'latency:', latencyMs + 'ms');
     const rawText = await response.text();
     console.log('QuickML response:', rawText);
 
@@ -133,20 +142,38 @@ ${JSON.stringify(answers, null, 2)}`;
     const cleaned = modelOutput.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
     const parsed = JSON.parse(cleaned);
 
-    if (!parsed.parsedSignals || !parsed.diagnostic) {
+    if (!parsed.parsedSignals || !parsed.diagnostic || !parsed.interpretation || !parsed.signalEvidence) {
       res.writeHead(502, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'error', message: 'LLM output missing parsedSignals or diagnostic.', raw: cleaned }));
+      res.end(JSON.stringify({ status: 'error', message: 'LLM output missing parsedSignals, diagnostic, interpretation, or signalEvidence.', raw: cleaned }));
       return;
     }
 
     // Fire-and-forget: log to Data Store. Errors swallowed so response still returns.
+    // NOTE: `prompt`, `raw_response`, `latency_ms`, `interpretation`, `signal_evidence`
+    // columns must exist on the WizardSessions table in the Catalyst console before
+    // this deploy, or insertRow will reject the extra fields.
     logSession(app, {
       user_input: JSON.stringify(answers),
-      ai_signals: JSON.stringify(parsed)
+      ai_signals: JSON.stringify(parsed),
+      prompt: prompt,
+      raw_response: rawText,
+      latency_ms: latencyMs,
+      interpretation: parsed.interpretation,
+      signal_evidence: JSON.stringify(parsed.signalEvidence)
     });
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'success', data: parsed }));
+    res.end(JSON.stringify({
+      status: 'success',
+      data: parsed,
+      _debug: {
+        prompt: prompt,
+        rawResponse: rawText,
+        model: model,
+        latencyMs: latencyMs,
+        attempts: attempt
+      }
+    }));
 
   } catch (err) {
     console.error('Error:', err.message);

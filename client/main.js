@@ -658,9 +658,12 @@ bwBtn.addEventListener('click', function () {
     bwBtn.textContent = 'Analyzing...';
     showAnalyzingPage();
     generateDiagnostic(state.answers)
-        .then(function (data) {
-            state.answers.aiSignals = data.parsedSignals;
-            state.answers.diagnostic = data.diagnostic;
+        .then(function (result) {
+            state.answers.aiSignals = result.data.parsedSignals;
+            state.answers.diagnostic = result.data.diagnostic;
+            state.answers.interpretation = result.data.interpretation;
+            state.answers.signalEvidence = result.data.signalEvidence;
+            state.answers._debug = result.debug;
             stopAnalyzing();
             generateSummary();
         })
@@ -683,17 +686,17 @@ function generateDiagnostic(answers) {
     if (!answers || Object.keys(answers).length === 0) {
         return Promise.reject(new Error('No answers provided to diagnostic'));
     }
-    return attemptDiagnostic(answers, 1);
+    return attemptDiagnostic(answers, 1, 1);
 }
 
-function attemptDiagnostic(answers, attemptsLeft) {
+function attemptDiagnostic(answers, attemptsLeft, attemptNum) {
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, 30000);
 
     return fetch('/server/discowizard_function/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: answers }),
+        body: JSON.stringify({ answers: answers, attempt: attemptNum }),
         signal: controller.signal
     })
         .then(function (resp) {
@@ -704,16 +707,17 @@ function attemptDiagnostic(answers, attemptsLeft) {
             if (!r.ok || !r.body || r.body.status !== 'success' || !r.body.data) {
                 throw new Error((r.body && r.body.message) || 'Diagnostic returned no data');
             }
-            if (!r.body.data.parsedSignals || !r.body.data.diagnostic) {
-                throw new Error('Diagnostic response missing parsedSignals or diagnostic');
+            var d = r.body.data;
+            if (!d.parsedSignals || !d.diagnostic || !d.interpretation || !d.signalEvidence) {
+                throw new Error('Diagnostic response missing parsedSignals, diagnostic, interpretation, or signalEvidence');
             }
-            return r.body.data;
+            return { data: d, debug: r.body._debug || null };
         })
         .catch(function (err) {
             clearTimeout(timer);
             if (attemptsLeft > 0) {
                 console.warn('Diagnostic failed, retrying:', err && err.message);
-                return attemptDiagnostic(answers, attemptsLeft - 1);
+                return attemptDiagnostic(answers, attemptsLeft - 1, attemptNum + 1);
             }
             throw err;
         });
@@ -852,6 +856,13 @@ function generateSummary() {
             });
         }
 
+        // Render internal reasoning/debug card alongside the polished summary.
+        try {
+            renderReasoningCard(state.answers, result, state.answers._debug);
+        } catch (rcErr) {
+            console.warn('Reasoning card render failed:', rcErr && rcErr.message);
+        }
+
         renderScoredSummary(result);
     } catch (e) {
         console.error('Scoring engine error:', e);
@@ -918,6 +929,16 @@ function renderDiagnostic(d) {
         });
     }
 }
+
+// ── Reasoning / debug view ─────────────────────────
+// Renderer lives in client/reasoning-card.js (shared with the test harness).
+// Thin wrapper threads in the module-local knowledgeModel.
+function renderReasoningCard(answers, scoringResult, debug) {
+    if (window.ReasoningCard && typeof window.ReasoningCard.render === 'function') {
+        window.ReasoningCard.render(answers, scoringResult, debug, knowledgeModel);
+    }
+}
+
 
 function showLoadingState() {
     populateBusinessProfile();
