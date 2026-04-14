@@ -60,12 +60,12 @@ Business context:
 ${JSON.stringify(answers, null, 2)}`;
 
   const llmUrl = process.env.LLM_API_URL;
-  const orgId = process.env.ZOHO_ORG_ID;
+  const orgId = process.env.CATALYST_ORG_ID;
   const model = process.env.LLM_MODEL || 'crm-di-qwen_text_14b-fp8-it';
 
   const missing = [];
   if (!llmUrl) missing.push('LLM_API_URL');
-  if (!orgId) missing.push('ZOHO_ORG_ID');
+  if (!orgId) missing.push('CATALYST_ORG_ID');
   if (!process.env.CLIENT_ID) missing.push('CLIENT_ID');
   if (!process.env.CLIENT_SECRET) missing.push('CLIENT_SECRET');
   if (!process.env.REFRESH_TOKEN) missing.push('REFRESH_TOKEN');

@@ -1,9 +1,0 @@
-{
-	"name": "discoverywizard_function",
-	"version": "1.0.0",
-	"main": "index.js",
-	"author": "daniel.g@zohocorp.com",
-	"dependencies": {
-		"zcatalyst-sdk-node": "latest"
-	}
-}

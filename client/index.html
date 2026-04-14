@@ -15,8 +15,14 @@
 <body>
     <div class="page-shell">
         <div class="wizard-header fade-in" style="--delay: 0s">
-            <div class="progress-bar-container" id="progressContainer" style="display: none;">
-                <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+            <div class="progress-wrap" id="progressContainer" style="display: none;">
+                <div class="progress-meta">
+                    <span class="progress-label" id="progressLabel">Step 1</span>
+                    <span class="progress-percent" id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
             </div>
         </div>
         <div class="powered-by fade-in" style="--delay: 0s">
@@ -361,6 +367,16 @@
                 <h2 class="question-title fade-in" style="--delay: 0.3s">What is the biggest worry for your team/org?</h2>
                 <textarea class="free-text-input fade-in" style="--delay: 0.6s" id="biggestWorryInput" rows="4" placeholder="e.g., Adoption from the team, data security, migrating historical data..."></textarea>
                 <button class="btn-continue fade-in" style="--delay: 0.9s" id="biggestWorryNext">Finish</button>
+                <p id="biggestWorryError" role="alert" style="display:none; margin-top:1rem; color:#c0392b; font-size:0.95rem;"></p>
+            </div>
+        </main>
+
+        <!-- Analyzing (LLM wait) -->
+        <main class="page analyzing-page" id="pageAnalyzing">
+            <div class="analyzing-container">
+                <div class="analyzing-spinner" aria-hidden="true"></div>
+                <h2 class="analyzing-title">Analyzing your answers</h2>
+                <p class="analyzing-message" id="analyzingMessage">Reading your context...</p>
             </div>
         </main>
 
@@ -405,6 +421,29 @@
                         <div class="profile-item full-width mt-4">
                             <span class="profile-label">Products & Services</span>
                             <p class="profile-value text-body" id="sumProducts">--</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Diagnostic (LLM-authored, platform-agnostic) -->
+                <section class="summary-section fade-in" style="--delay: 0.5s" id="sectionDiagnostic">
+                    <h3 class="section-heading">Diagnosis</h3>
+                    <div class="summary-card">
+                        <div class="diagnostic-block">
+                            <h4 class="profile-label">Problem</h4>
+                            <p class="text-body" id="diagProblem">--</p>
+                        </div>
+                        <div class="diagnostic-block mt-4">
+                            <h4 class="profile-label">Root cause</h4>
+                            <p class="text-body" id="diagRootCause">--</p>
+                        </div>
+                        <div class="diagnostic-block mt-4">
+                            <h4 class="profile-label">Severity</h4>
+                            <p class="text-body" id="diagSeverity">--</p>
+                        </div>
+                        <div class="diagnostic-block mt-4">
+                            <h4 class="profile-label">Solution roadmap</h4>
+                            <ol class="roadmap-list" id="diagRoadmap"></ol>
                         </div>
                     </div>
                 </section>

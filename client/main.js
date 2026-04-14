@@ -57,14 +57,19 @@ function updateProgress(targetId) {
     var btnBack = document.getElementById('btnBack');
     var btnForward = document.getElementById('btnForward');
 
-    if (idx === 0 || targetId === 'pageSummary') {
+    if (idx === 0 || targetId === 'pageSummary' || targetId === 'pageAnalyzing') {
         progressContainer.style.display = 'none';
         wizardNav.style.display = 'none';
     } else {
-        progressContainer.style.display = 'block';
+        progressContainer.style.display = 'flex';
         wizardNav.style.display = 'flex';
-        var pct = (idx / (pages.length - 2)) * 100;
+        var totalQuestionPages = pages.length - 2; // exclude landing + summary
+        var pct = (idx / totalQuestionPages) * 100;
         progressBar.style.width = Math.min(pct, 100) + '%';
+        var label = document.getElementById('progressLabel');
+        var percentEl = document.getElementById('progressPercent');
+        if (label) label.textContent = 'Step ' + idx + ' of ' + totalQuestionPages;
+        if (percentEl) percentEl.textContent = Math.round(Math.min(pct, 100)) + '%';
     }
 
     btnBack.disabled = pageHistory.length === 0;
@@ -645,45 +650,72 @@ validateBw();
 bwInput.addEventListener('input', validateBw);
 
 bwBtn.addEventListener('click', function () {
-    if (!bwBtn.disabled) {
-        state.answers.biggestWorry = bwInput.value;
-        showLoadingState();
-        parseFreeTextSignals(state.answers.biggestWorry)
-            .then(function (aiSignals) {
-                if (aiSignals) state.answers.aiSignals = aiSignals;
-            })
-            .catch(function () { /* degrade silently per CLAUDE.md */ })
-            .then(function () { generateSummary(); });
-    }
+    if (bwBtn.disabled) return;
+    state.answers.biggestWorry = bwInput.value;
+    var errEl = document.getElementById('biggestWorryError');
+    errEl.style.display = 'none';
+    bwBtn.disabled = true;
+    bwBtn.textContent = 'Analyzing...';
+    showAnalyzingPage();
+    generateDiagnostic(state.answers)
+        .then(function (data) {
+            state.answers.aiSignals = data.parsedSignals;
+            state.answers.diagnostic = data.diagnostic;
+            stopAnalyzing();
+            generateSummary();
+        })
+        .catch(function (err) {
+            stopAnalyzing();
+            showPage('pageBiggestWorry');
+            errEl.textContent = 'We couldn\'t analyze your response: ' + (err && err.message || 'unknown error') + '. Please try again.';
+            errEl.style.display = 'block';
+            bwBtn.disabled = false;
+            bwBtn.textContent = 'Finish';
+        });
 });
 
-// ── AI free-text parsing (Qwen via Catalyst QuickML) ──
-// Returns tags on success, null on any failure — scoring works without it.
-function parseFreeTextSignals(text) {
-    if (!text || !text.trim()) return Promise.resolve(null);
+// ── AI diagnostic generation (Qwen via Catalyst QuickML) ──
+// LLM is required per CLAUDE.md. Accepts the full answers map, returns both
+// parsedSignals (feeds the rule-based ScoringEngine for Phase II bundles) and
+// diagnostic (Phase I platform-agnostic output). Rejects on failure; caller
+// must surface it rather than rendering a partial summary.
+function generateDiagnostic(answers) {
+    if (!answers || Object.keys(answers).length === 0) {
+        return Promise.reject(new Error('No answers provided to diagnostic'));
+    }
+    return attemptDiagnostic(answers, 1);
+}
 
+function attemptDiagnostic(answers, attemptsLeft) {
     var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 5000);
+    var timer = setTimeout(function () { controller.abort(); }, 30000);
 
     return fetch('/server/discowizard_function/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_input: text }),
+        body: JSON.stringify({ answers: answers }),
         signal: controller.signal
     })
         .then(function (resp) {
             clearTimeout(timer);
-            if (!resp.ok) return null;
-            return resp.json();
+            return resp.json().then(function (body) { return { ok: resp.ok, body: body }; });
         })
-        .then(function (body) {
-            if (!body || body.status !== 'success') return null;
-            return body.data || null;
+        .then(function (r) {
+            if (!r.ok || !r.body || r.body.status !== 'success' || !r.body.data) {
+                throw new Error((r.body && r.body.message) || 'Diagnostic returned no data');
+            }
+            if (!r.body.data.parsedSignals || !r.body.data.diagnostic) {
+                throw new Error('Diagnostic response missing parsedSignals or diagnostic');
+            }
+            return r.body.data;
         })
         .catch(function (err) {
             clearTimeout(timer);
-            console.warn('AI signal parse failed, continuing without it:', err && err.message);
-            return null;
+            if (attemptsLeft > 0) {
+                console.warn('Diagnostic failed, retrying:', err && err.message);
+                return attemptDiagnostic(answers, attemptsLeft - 1);
+            }
+            throw err;
         });
 }
 
@@ -799,6 +831,12 @@ function generateSummary() {
     }
 
     try {
+        // Phase I: render LLM-authored diagnostic above the bundles.
+        if (state.answers.diagnostic) {
+            renderDiagnostic(state.answers.diagnostic);
+        }
+
+        // Phase II: rule-based scoring (unchanged).
         // Build supplementary signals from new questions
         var supplementary = buildSupplementarySignals(state.answers);
 
@@ -818,6 +856,66 @@ function generateSummary() {
     } catch (e) {
         console.error('Scoring engine error:', e);
         generateSummaryFallback();
+    }
+}
+
+// ── Analyzing page: rotating progress messages while LLM works ──
+var ANALYZING_MESSAGES = [
+    'Reading your context...',
+    'Listening for what\'s really breaking...',
+    'Finding the root cause...',
+    'Assessing urgency and impact...',
+    'Building your roadmap...'
+];
+var analyzingInterval = null;
+
+function showAnalyzingPage() {
+    var msgEl = document.getElementById('analyzingMessage');
+    var i = 0;
+    if (msgEl) msgEl.textContent = ANALYZING_MESSAGES[0];
+    showPage('pageAnalyzing');
+
+    stopAnalyzing();
+    analyzingInterval = setInterval(function () {
+        if (!msgEl) return;
+        msgEl.classList.add('fading');
+        setTimeout(function () {
+            i = (i + 1) % ANALYZING_MESSAGES.length;
+            msgEl.textContent = ANALYZING_MESSAGES[i];
+            msgEl.classList.remove('fading');
+        }, 350);
+    }, 2500);
+}
+
+function stopAnalyzing() {
+    if (analyzingInterval) {
+        clearInterval(analyzingInterval);
+        analyzingInterval = null;
+    }
+}
+
+function renderDiagnostic(d) {
+    var set = function (id, text) { var el = document.getElementById(id); if (el) el.textContent = text || '--'; };
+    set('diagProblem', d.problemStatement);
+    set('diagRootCause', d.rootCause);
+    set('diagSeverity', d.severity);
+    var list = document.getElementById('diagRoadmap');
+    if (list) {
+        while (list.firstChild) list.removeChild(list.firstChild);
+        (d.solutionRoadmap || []).forEach(function (step) {
+            var li = document.createElement('li');
+            li.className = 'roadmap-item';
+            var p = document.createElement('p');
+            p.className = 'text-body';
+            p.textContent = step.process || '';
+            var cat = document.createElement('p');
+            cat.className = 'text-body text-muted';
+            cat.style.marginTop = '0.25rem';
+            cat.textContent = step.toolCategory || '';
+            li.appendChild(p);
+            li.appendChild(cat);
+            list.appendChild(li);
+        });
     }
 }
 

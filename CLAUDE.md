@@ -207,7 +207,7 @@ After Phase I diagnostic, the "Explore this solution in Zoho →" button transit
 - **Never put bundle logic in if/else chains.** All bundle changes go in data definitions.
 - **Never hardcode API keys.** Use Catalyst Environment Variables: `LLM_API_KEY`, `LLM_API_URL`.
 - **Always log sessions to Data Store.** Every recommendation must be logged — this data is used to tune weights over time.
-- **LLM is optional.** The scoring engine works without AI. Free-text fields degrade gracefully if the LLM call fails.
+- **LLM is required.** Free-text parsing (PP4) is load-bearing — the diagnosis depends on AI-extracted tags (`root_cause_type`, `problem_pattern`, `urgency_signal`) on top of structured answers. If the LLM call fails, harden the path (retry, fallback model, surface a clear error) rather than proceeding without tags. Do not let the wizard complete a diagnosis without successful free-text analysis.
 - **Use weighted scoring.** The weighted signal system is the long-term approach — not a placeholder.
 
 ---
