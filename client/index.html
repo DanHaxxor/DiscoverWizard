@@ -3,128 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiscoverWizard — Test Harness</title>
+    <title>DiscoverWizard — Debug Screen</title>
     <link rel="stylesheet" href="main.css">
     <style>
-        /* Harness-only layout. Reuses reasoning-card + base styles from main.css. */
-        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; margin: 0; padding: 1.5rem; background: var(--bg); color: var(--text); }
-        .harness-container { max-width: 1100px; margin: 0 auto; }
-        .harness-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
-        .harness-header h1 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; margin: 0; }
-        .harness-header .tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); padding: 0.2rem 0.6rem; border: 1px dashed var(--border); border-radius: 999px; }
-        .harness-section { background: var(--panel); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
-        .harness-section h2 { font-family: 'Outfit', sans-serif; font-size: 1rem; margin: 0 0 0.75rem 0; }
-        .preset-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
-        .preset-row select { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); min-width: 280px; }
-        .field-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        .field-grid label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8rem; color: var(--text-muted); }
-        .field-grid textarea { padding: 0.6rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.9rem; min-height: 70px; resize: vertical; }
-        .btn-run { padding: 0.7rem 1.25rem; background: var(--accent, #5b8def); color: white; border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; font-size: 0.95rem; }
-        .btn-run:disabled { opacity: 0.5; cursor: wait; }
-        .btn-secondary { padding: 0.5rem 0.9rem; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.85rem; cursor: pointer; }
-        .run-row { display: flex; gap: 0.5rem; align-items: center; margin-top: 1rem; }
-        .status-line { font-size: 0.85rem; color: var(--text-muted); flex: 1; }
-        .status-error { color: #c0392b; font-weight: 600; }
-        #jsonEditor { width: 100%; min-height: 240px; font-family: Menlo, Consolas, monospace; font-size: 0.8rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); box-sizing: border-box; }
-        .json-toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-        #jsonEditorWrap { display: none; margin-top: 0.5rem; }
-        #jsonEditorWrap.open { display: block; }
+        .signal-grade { display: inline-flex; gap: 4px; margin-left: auto; }
+        .grade-btn {
+            border: 1px solid var(--border, #ddd);
+            background: transparent;
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: inherit;
+            color: inherit;
+        }
+        .grade-btn:hover { background: rgba(0,0,0,0.04); }
+        .grade-btn--correct.is-active {
+            background: #e3f4e0; border-color: #5ba055; color: #1d5a1d;
+        }
+        .grade-btn--wrong.is-active {
+            background: #fbe3e3; border-color: #c14b4b; color: #7a1d1d;
+        }
     </style>
 </head>
-<body>
-    <div class="harness-container">
-
-        <div class="harness-header">
-            <h1>DiscoverWizard — Test Harness</h1>
-            <span class="tag">
-                Internal · not for production users
-                &nbsp;·&nbsp;
-                <a href="wizard.html" style="color: inherit; text-decoration: underline;">Open production wizard &rarr;</a>
-            </span>
+<body class="debug-body">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-overlay__backdrop"></div>
+        <div class="loading-overlay__border"></div>
+        <div class="loading-overlay__orb">
+            <div class="loading-overlay__ring"></div>
+            <span class="loading-overlay__label">Running diagnostic</span>
         </div>
-
-        <!-- Preset + free-text inputs -->
-        <div class="harness-section">
-            <h2>Scenario</h2>
-            <div class="preset-row">
-                <select id="presetSelect" aria-label="Preset scenario">
-                    <!-- Populated from PRESETS in JS -->
-                </select>
-                <button class="btn-secondary" id="loadPresetBtn" type="button">Load preset</button>
-                <button class="btn-secondary" id="toggleJsonBtn" type="button">Show JSON</button>
-            </div>
-
-            <div id="jsonEditorWrap">
-                <label for="jsonEditor" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.75rem;">Full <code>answers</code> object (editable) &mdash; this is what gets POSTed to the Catalyst function:</label>
-                <textarea id="jsonEditor" spellcheck="false"></textarea>
-            </div>
-
-            <h2 style="margin-top: 1.25rem;">Free-text inputs</h2>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 0.75rem 0;">These are the fields the LLM actually parses. Structured answers come from the preset.</p>
-            <div class="field-grid">
-                <label>
-                    <span>Biggest worry (PP4)</span>
-                    <textarea id="inputBiggestWorry" placeholder="e.g. we lose track of leads after the first call and nobody owns follow-up"></textarea>
-                </label>
-                <label>
-                    <span>Requirements</span>
-                    <textarea id="inputRequirements" placeholder="What the user said they need"></textarea>
-                </label>
-                <label>
-                    <span>Current software</span>
-                    <textarea id="inputCurrentSoftware" placeholder="What they use today"></textarea>
-                </label>
-                <label>
-                    <span>Products &amp; services</span>
-                    <textarea id="inputProducts" placeholder="What they sell"></textarea>
-                </label>
-            </div>
-
-            <div class="run-row">
-                <button class="btn-run" id="runBtn" type="button">Run diagnostic &rarr;</button>
-                <span class="status-line" id="statusLine">Pick a preset and click Run.</span>
-            </div>
-        </div>
-
-        <!-- Reasoning card output (reuses markup + CSS from production) -->
-        <div class="summary-container" style="margin-top: 1rem;">
-            <section class="summary-section" id="sectionReasoning">
-                <details class="reasoning-card" id="reasoningDetails" open>
-                    <summary class="reasoning-summary">
-                        <span class="reasoning-summary-title">Reasoning output</span>
-                        <span class="reasoning-summary-hint">always expanded in harness</span>
-                    </summary>
-                    <div class="reasoning-body">
-                        <div class="reasoning-section">
-                            <h4 class="profile-label">LLM's interpretation</h4>
-                            <blockquote class="reasoning-interpretation" id="reasoningInterpretation">&mdash;</blockquote>
-                        </div>
-                        <div class="reasoning-section">
-                            <h4 class="profile-label">What you told us</h4>
-                            <dl class="reasoning-inputs" id="reasoningInputs"></dl>
-                        </div>
-                        <div class="reasoning-section">
-                            <h4 class="profile-label">Your own words</h4>
-                            <div class="reasoning-quotes" id="reasoningQuotes"></div>
-                        </div>
-                        <div class="reasoning-section">
-                            <h4 class="profile-label">Signals the AI extracted</h4>
-                            <div class="reasoning-signals" id="reasoningSignals"></div>
-                        </div>
-                        <div class="reasoning-section">
-                            <h4 class="profile-label">Pattern matches (rule engine)</h4>
-                            <div class="reasoning-patterns" id="reasoningPatterns"></div>
-                        </div>
-                        <details class="reasoning-dev" open>
-                            <summary class="reasoning-dev-summary">Developer details</summary>
-                            <div class="reasoning-dev-body" id="reasoningDevDetails"></div>
-                        </details>
-                    </div>
-                </details>
-            </section>
-        </div>
-
     </div>
+
+    <header class="debug-header">
+        <h1>DiscoverWizard — Debug Screen</h1>
+        <div class="debug-header__actions">
+            <button class="btn-secondary" id="aboutAppBtn" type="button">Anatomy</button>
+            <button class="btn-secondary" id="viewDataFlowBtn" type="button">View Data Flow</button>
+            <span class="debug-tag">Internal · not for production users</span>
+        </div>
+    </header>
+
+    <dialog id="aboutAppDialog" class="data-flow-dialog" aria-labelledby="aboutAppTitle">
+        <div class="data-flow-dialog__bar">
+            <span id="aboutAppTitle" class="data-flow-dialog__title">Anatomy</span>
+            <div class="data-flow-dialog__controls">
+                <a class="btn-ghost" href="about.html" target="_blank" rel="noopener">Open in new tab ↗</a>
+                <button class="btn-ghost" id="aboutAppCloseBtn" type="button">Close ✕</button>
+            </div>
+        </div>
+        <iframe id="aboutAppFrame" class="data-flow-dialog__frame" title="Anatomy" src="about:blank"></iframe>
+    </dialog>
+
+    <dialog id="dataFlowDialog" class="data-flow-dialog" aria-labelledby="dataFlowTitle">
+        <div class="data-flow-dialog__bar">
+            <span id="dataFlowTitle" class="data-flow-dialog__title">Data Flow</span>
+            <div class="data-flow-dialog__controls">
+                <a class="btn-ghost" href="data-flow.html" target="_blank" rel="noopener">Open in new tab ↗</a>
+                <button class="btn-ghost" id="dataFlowCloseBtn" type="button">Close ✕</button>
+            </div>
+        </div>
+        <iframe id="dataFlowFrame" class="data-flow-dialog__frame" title="Data Flow" src="about:blank"></iframe>
+    </dialog>
+
+    <main class="debug-grid">
+
+        <!-- ── LEFT: Inputs ───────────────────────────── -->
+        <section class="debug-panel debug-inputs">
+            <div class="panel-block">
+                <h2 class="panel-title">Structured answers</h2>
+                <p class="hint-text" id="statusLine">Fill the fields, type a biggest worry, then run. Grade each signal after.</p>
+                <div class="field-grid">
+                    <label class="field">
+                        <span class="field-label">Industry</span>
+                        <select id="fldIndustry">
+                            <option value="Technology">Technology</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Professional Services">Professional Services</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Financial Services">Financial Services</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Sub-industry</span>
+                        <input type="text" id="fldSubIndustry" placeholder="e.g. SaaS, E-commerce, Consulting" list="subIndustryList" autocomplete="off">
+                        <datalist id="subIndustryList"></datalist>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Team size</span>
+                        <select id="fldUsers">
+                            <option value="just-me">Just me</option>
+                            <option value="2-10">2–10</option>
+                            <option value="11-50">11–50</option>
+                            <option value="51-200">51–200</option>
+                            <option value="201-500">201–500</option>
+                            <option value="500+">500+</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Role</span>
+                        <select id="fldRole">
+                            <option value="Owner / Founder">Owner / Founder</option>
+                            <option value="Executive or Director">Executive or Director</option>
+                            <option value="Manager or Team Lead">Manager or Team Lead</option>
+                            <option value="Individual Contributor">Individual Contributor</option>
+                            <option value="Evaluating on behalf of someone else">Evaluating on behalf of someone else</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Customer type</span>
+                        <select id="fldB2b">
+                            <option value="b2b">B2B</option>
+                            <option value="b2c">B2C</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Breakdown area (PP1)</span>
+                        <select id="fldBreakdownArea">
+                            <option value="sales">Sales process</option>
+                            <option value="service">Customer service</option>
+                            <option value="ops">Internal ops &amp; admin</option>
+                            <option value="marketing">Marketing &amp; lead generation</option>
+                        </select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Current approach (PP2)</span>
+                        <select id="fldCurrentApproach"></select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Root cause (PP3)</span>
+                        <select id="fldRootCause"></select>
+                    </label>
+                    <label class="field">
+                        <span class="field-label">Urgency (IU2)</span>
+                        <select id="fldUrgency">
+                            <option value="critical">Critical — affecting us right now</option>
+                            <option value="high">High — within weeks</option>
+                            <option value="medium">Medium — important not on fire</option>
+                            <option value="low">Low — planning ahead</option>
+                        </select>
+                    </label>
+                    <fieldset class="field field--full">
+                        <legend class="field-label">Impact (IU1 · multi)</legend>
+                        <div class="checkbox-row" id="fldImpact">
+                            <label><input type="checkbox" value="lost_revenue"> Lost revenue / missed deals</label>
+                            <label><input type="checkbox" value="wasted_time"> Wasted time / labor cost</label>
+                            <label><input type="checkbox" value="customer_churn"> Customer churn / complaints</label>
+                            <label><input type="checkbox" value="team_frustration"> Team frustration / turnover risk</label>
+                            <label><input type="checkbox" value="general_inefficiency"> General inefficiency</label>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="panel-block">
+                <h2 class="panel-title">Free-text (LLM inputs)</h2>
+                <p class="hint-text">These fields are parsed by the LLM into <code>root_cause_type</code>, <code>problem_pattern</code>, <code>urgency_signal</code>.</p>
+                <div class="field-grid">
+                    <label class="field field--full">
+                        <span class="field-label">Biggest worry (PP4)</span>
+                        <textarea id="inputBiggestWorry" placeholder="e.g. we lose track of leads after the first call and nobody owns follow-up"></textarea>
+                    </label>
+                    <label class="field field--full">
+                        <span class="field-label">Requirements</span>
+                        <textarea id="inputRequirements" placeholder="What the user said they need"></textarea>
+                    </label>
+                    <label class="field field--full">
+                        <span class="field-label">Current software</span>
+                        <textarea id="inputCurrentSoftware" placeholder="What they use today"></textarea>
+                    </label>
+                    <label class="field field--full">
+                        <span class="field-label">Products &amp; services</span>
+                        <textarea id="inputProducts" placeholder="What they sell"></textarea>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel-block panel-block--sticky">
+                <button class="btn-run" id="runBtn" type="button">Run diagnostic →</button>
+            </div>
+        </section>
+
+        <!-- ── RIGHT: Output ──────────────────────────── -->
+        <section class="debug-panel debug-output">
+
+            <!-- 0. GRADED ACCURACY TRACKER -->
+            <div class="output-block output-block--tracker">
+                <div class="output-block__head">
+                    <h2 class="output-block__title">Graded accuracy</h2>
+                    <div class="tracker-controls">
+                        <span class="output-block__meta" id="trackerSummary">no runs yet</span>
+                        <button class="btn-ghost" id="trackerResetBtn" type="button">Reset</button>
+                    </div>
+                </div>
+                <div class="tracker-bars" id="trackerBars"></div>
+                <div class="tracker-recent-wrap">
+                    <span class="sub-label">Recent runs</span>
+                    <ol class="tracker-recent" id="trackerRecent"></ol>
+                </div>
+            </div>
+
+            <!-- 1. LLM OUTPUT — elevated -->
+            <div class="output-block output-block--primary">
+                <div class="output-block__head">
+                    <h2 class="output-block__title">LLM output</h2>
+                    <span class="output-block__meta" id="outRunMeta">—</span>
+                </div>
+
+                <div class="output-sub">
+                    <span class="sub-label">Interpretation</span>
+                    <blockquote id="outInterpretation" class="interpretation">—</blockquote>
+                </div>
+
+                <div class="output-sub">
+                    <span class="sub-label">Parsed signals</span>
+                    <div id="outSignals" class="signal-stack"></div>
+                </div>
+
+                <div class="output-sub">
+                    <span class="sub-label">Raw response (LLM text)</span>
+                    <pre id="outRaw" class="raw-pre">—</pre>
+                </div>
+
+                <div class="output-sub">
+                    <span class="sub-label">
+                        Returned JSON (server body)
+                        <span class="sub-label-hint" id="outResponseStatus"></span>
+                    </span>
+                    <pre id="outResponse" class="raw-pre">—</pre>
+                </div>
+            </div>
+
+            <!-- 2. Rule-engine trace -->
+            <div class="output-block">
+                <h2 class="output-block__title">Rule-engine pattern matches</h2>
+                <div id="outPatterns" class="pattern-stack"></div>
+            </div>
+
+            <!-- 3. What the user said -->
+            <div class="output-block">
+                <h2 class="output-block__title">User's own words</h2>
+                <div id="outQuotes" class="quote-stack"></div>
+            </div>
+
+            <!-- 4. Structured recap -->
+            <div class="output-block">
+                <h2 class="output-block__title">Structured inputs echoed</h2>
+                <dl id="outInputs" class="recap-list"></dl>
+            </div>
+
+            <!-- 5. Request details -->
+            <div class="output-block">
+                <h2 class="output-block__title">Request details</h2>
+                <dl id="outMeta" class="meta-list"></dl>
+                <details class="collapsible">
+                    <summary>Prompt</summary>
+                    <pre id="outPrompt" class="raw-pre raw-pre--soft">—</pre>
+                </details>
+            </div>
+
+        </section>
+
+    </main>
 
     <script src="scoring-engine.js"></script>
     <script src="reasoning-card.js"></script>
@@ -132,144 +276,106 @@
     (function () {
         'use strict';
 
-        // ── Preset scenarios ────────────────────────────
-        // TODO(user): these are stubs. Tailor the structured-answer values
-        // (industry, size, urgency, etc.) and biggestWorry text to real
-        // iteration cases you care about. See client/knowledge-model.json for
-        // valid industry/signal values and CLAUDE.md for the answer-key vocabulary.
-        //
-        // `expected` = the tags YOU think the LLM should produce for this input.
-        // This is the calibration point for debugging. Valid values (per the
-        // LLM prompt schema in functions/discowizard_function/index.js):
-        //   root_cause_type: process | people | technology | data
-        //   problem_pattern: firefighting | leakage | bottleneck | visibility
-        //                    | adoption_failure | missing_ownership
-        //                    | communication_breakdown
-        //   urgency_signal:  low | medium | high
-        //
-        // Leave fields off `expected` to skip comparison for that tag.
-        var PRESETS = {
-            'sales-firefighting': {
-                label: 'Sales — firefighting / no follow-up ownership',
-                answers: {
-                    journeyStage: 'prospect',
-                    industry: 'Technology',
-                    subIndustry: 'SaaS',
-                    users: '11-50',
-                    role: 'Manager or Team Lead',
-                    b2b: 'b2b',
-                    breakdownArea: 'sales',
-                    currentApproach: 'A CRM we\u2019re not really using well',
-                    rootCause: 'Leads go cold because follow-up is inconsistent',
-                    impact: ['lost_revenue'],
-                    urgency: 'high',
-                    biggestWorry: 'We lose track of leads after the first call and nobody owns follow-up. Losing two deals a month to this.',
-                    requirements: 'Something the team will actually use — current CRM has low adoption.',
-                    currentSoftware: 'HubSpot free tier, Google Sheets for pipeline.',
-                    products: 'B2B analytics SaaS; mid-market customers.'
-                },
-                expected: {
-                    root_cause_type: 'people',
-                    problem_pattern: 'missing_ownership',
-                    urgency_signal: 'high'
-                }
-            },
-            'service-breakdown': {
-                label: 'Customer service — no single pane of glass',
-                answers: {
-                    journeyStage: 'prospect',
-                    industry: 'Retail',
-                    subIndustry: 'E-commerce',
-                    users: '11-50',
-                    role: 'Owner / Founder',
-                    b2b: 'b2c',
-                    breakdownArea: 'service',
-                    currentApproach: 'Shared email inbox',
-                    rootCause: 'No single place to see all customer issues',
-                    impact: ['customer_churn'],
-                    urgency: 'high',
-                    biggestWorry: 'Customers have to repeat themselves every time they contact us. We\u2019ve lost three big accounts this quarter.',
-                    requirements: 'A way to track every customer conversation in one place.',
-                    currentSoftware: 'Gmail, Intercom trial that we never configured.',
-                    products: 'Home goods direct-to-consumer.'
-                },
-                expected: {
-                    root_cause_type: 'technology',
-                    problem_pattern: 'visibility',
-                    urgency_signal: 'high'
-                }
-            },
-            'ops-bottleneck': {
-                label: 'Internal ops — approvals stuck, no ownership',
-                answers: {
-                    journeyStage: 'evaluating',
-                    industry: 'Professional Services',
-                    subIndustry: 'Consulting',
-                    users: '51-200',
-                    role: 'Executive or Director',
-                    b2b: 'b2b',
-                    breakdownArea: 'ops',
-                    currentApproach: 'Spreadsheets multiple people try to maintain',
-                    rootCause: 'Lack of ownership \u2014 nobody\u2019s accountable',
-                    impact: ['wasted_time', 'team_frustration'],
-                    urgency: 'medium',
-                    biggestWorry: 'Approvals get stuck and nobody knows where things stand. Clients are starting to notice the slowness.',
-                    requirements: 'Clear approval chain with audit trail.',
-                    currentSoftware: 'Excel, email, Monday.com.',
-                    products: 'Management consulting for mid-market.'
-                },
-                expected: {
-                    root_cause_type: 'process',
-                    problem_pattern: 'bottleneck',
-                    urgency_signal: 'medium'
-                }
-            },
-            'marketing-adoption-failure': {
-                label: 'Marketing — ran ads, can\u2019t measure impact',
-                answers: {
-                    journeyStage: 'prospect',
-                    industry: 'Technology',
-                    subIndustry: 'Software',
-                    users: '2-10',
-                    role: 'Owner / Founder',
-                    b2b: 'b2b',
-                    breakdownArea: 'marketing',
-                    currentApproach: 'Running campaigns but can\u2019t tell what\u2019s actually working',
-                    rootCause: 'No way to track what\u2019s generating leads vs. wasting budget',
-                    impact: ['wasted_time', 'general_inefficiency'],
-                    urgency: 'medium',
-                    biggestWorry: 'We spend money on ads but have no idea which ones actually turn into customers. Burning ~$4k/mo and can\u2019t justify it.',
-                    requirements: 'Attribution from ad click to closed deal.',
-                    currentSoftware: 'Google Ads, Mailchimp, HubSpot free.',
-                    products: 'Dev tools SaaS.'
-                },
-                expected: {
-                    root_cause_type: 'data',
-                    problem_pattern: 'visibility',
-                    urgency_signal: 'medium'
-                }
-            }
+        // ── Sub-industry suggestions (industry-aware datalist) ──
+        var SUBINDUSTRY_BY_INDUSTRY = {
+            'Technology':            ['SaaS', 'DevTools', 'AI / ML', 'Cybersecurity', 'Data Infrastructure', 'Mobile Apps', 'Consumer Tech', 'Hardware'],
+            'Retail':                ['E-commerce', 'Brick & Mortar', 'Direct-to-Consumer', 'Apparel', 'Grocery', 'Home Goods', 'Beauty', 'Pet Supplies'],
+            'Professional Services': ['Consulting', 'Legal', 'Accounting', 'Marketing Agency', 'Architecture', 'Engineering', 'Design Studio', 'Recruitment'],
+            'Manufacturing':         ['Industrial', 'Consumer Goods', 'Food & Beverage', 'Automotive', 'Electronics', 'Textiles', 'Chemicals', 'Medical Devices'],
+            'Healthcare':            ['Clinic / Practice', 'Hospital', 'Telehealth', 'Dental', 'Mental Health', 'Pharma', 'Medical Devices', 'Wellness'],
+            'Financial Services':    ['Banking', 'Insurance', 'Wealth Management', 'Fintech', 'Lending', 'Real Estate', 'Accounting', 'Investment'],
+            'Other':                 []
         };
+        function populateSubIndustryList() {
+            var industry = document.getElementById('fldIndustry').value;
+            var list = document.getElementById('subIndustryList');
+            list.innerHTML = '';
+            (SUBINDUSTRY_BY_INDUSTRY[industry] || []).forEach(function (txt) {
+                var opt = document.createElement('option');
+                opt.value = txt;
+                list.appendChild(opt);
+            });
+        }
+
+        // ── Branched options (PP2 / PP3 per spec) ────────
+        var APPROACH_BY_AREA = {
+            sales: [
+                'Spreadsheets and email — that\u2019s basically it',
+                'A CRM we\u2019re not really using well',
+                'Mostly in people\u2019s heads',
+                'Multiple tools that don\u2019t connect to each other'
+            ],
+            service: [
+                'Shared email inbox',
+                'A helpdesk tool we\u2019ve outgrown',
+                'Phone calls and manual notes',
+                'No real system — it\u2019s reactive'
+            ],
+            ops: [
+                'Mostly email and chat messages',
+                'Spreadsheets multiple people try to maintain',
+                'Meetings that could have been a process',
+                'Everyone has their own system'
+            ],
+            marketing: [
+                'Scattered across social, email, and ads with no unified view',
+                'Running campaigns but can\u2019t tell what\u2019s actually working',
+                'We know we need to do more but don\u2019t know where to start',
+                'A marketing tool we\u2019ve outgrown or barely use'
+            ]
+        };
+        var ROOTCAUSE_BY_AREA = {
+            sales: [
+                'No visibility into where things stand',
+                'Leads go cold because follow-up is inconsistent',
+                'Proposals take too long or get lost',
+                'We don\u2019t know what\u2019s working and what isn\u2019t'
+            ],
+            service: [
+                'No single place to see all customer issues',
+                'Too much depends on individual people',
+                'No process for escalation or follow-through',
+                'We can\u2019t tell what\u2019s resolved and what isn\u2019t'
+            ],
+            ops: [
+                'Lack of ownership — nobody\u2019s accountable',
+                'Too many tools that don\u2019t connect',
+                'Processes exist but aren\u2019t enforced',
+                'The way we work hasn\u2019t changed even though the team has'
+            ],
+            marketing: [
+                'No way to track what\u2019s generating leads vs. wasting budget',
+                'Campaigns go out but there\u2019s no follow-through to sales',
+                'Content and messaging are inconsistent across channels',
+                'We\u2019re guessing instead of using data'
+            ]
+        };
+
+        // Signal generation now lives entirely in scoring-engine.js, driven
+        // by knowledge-model.json's structured_to_signals map. No client-side
+        // duplication — the engine is the single source of truth.
 
         // ── State ───────────────────────────────────────
         var knowledgeModel = null;
+        // Holds the id of the latest graded run so clicks in the signal row
+        // mutate the right tracker entry.
+        var currentRunId = null;
 
-        // ── Load knowledge model for pattern trace ──────
         fetch('knowledge-model.json')
             .then(function (r) { return r.json(); })
             .then(function (km) { knowledgeModel = km; setStatus('Knowledge model loaded. Ready.'); })
             .catch(function (e) {
-                setStatus('Knowledge model failed to load: ' + (e && e.message) + ' (pattern trace will be empty)', true);
+                setStatus('Knowledge model failed to load: ' + (e && e.message), true);
             });
 
-        // ── Populate preset dropdown ────────────────────
-        var presetSelect = document.getElementById('presetSelect');
-        Object.keys(PRESETS).forEach(function (key) {
-            var opt = document.createElement('option');
-            opt.value = key;
-            opt.textContent = PRESETS[key].label;
-            presetSelect.appendChild(opt);
-        });
+        // Warmup tap: wake the Qwen endpoint on page load so the user's first
+        // real diagnostic doesn't eat the cold-start penalty. Fire-and-forget —
+        // errors are silent; the regular request path has its own retry logic.
+        fetch('/server/discowizard_function/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ warmup: true })
+        }).catch(function () { /* ignored */ });
 
         function setStatus(text, isError) {
             var el = document.getElementById('statusLine');
@@ -277,46 +383,70 @@
             el.classList.toggle('status-error', !!isError);
         }
 
-        function loadPreset() {
-            var key = presetSelect.value;
-            var preset = PRESETS[key];
-            if (!preset) return;
-            var a = preset.answers;
-            document.getElementById('inputBiggestWorry').value = a.biggestWorry || '';
-            document.getElementById('inputRequirements').value = a.requirements || '';
-            document.getElementById('inputCurrentSoftware').value = a.currentSoftware || '';
-            document.getElementById('inputProducts').value = a.products || '';
-            document.getElementById('jsonEditor').value = JSON.stringify(a, null, 2);
-            setStatus('Preset loaded: ' + preset.label);
+        function populateBranchedDropdowns() {
+            var area = document.getElementById('fldBreakdownArea').value;
+            populate('fldCurrentApproach', APPROACH_BY_AREA[area] || []);
+            populate('fldRootCause',       ROOTCAUSE_BY_AREA[area] || []);
+        }
+        function populate(id, options) {
+            var sel = document.getElementById(id);
+            var prev = sel.value;
+            sel.innerHTML = '';
+            options.forEach(function (txt) {
+                var opt = document.createElement('option');
+                opt.value = txt;
+                opt.textContent = txt;
+                sel.appendChild(opt);
+            });
+            if (options.indexOf(prev) !== -1) sel.value = prev;
         }
 
-        function currentAnswers() {
-            // If the JSON editor is non-empty, it wins (allows arbitrary edits).
-            var jsonText = document.getElementById('jsonEditor').value.trim();
-            var base = {};
-            if (jsonText) {
-                try { base = JSON.parse(jsonText); }
-                catch (e) {
-                    throw new Error('JSON editor contains invalid JSON: ' + e.message);
-                }
-            } else {
-                // Fall back to preset structured values
-                var preset = PRESETS[presetSelect.value];
-                base = preset ? Object.assign({}, preset.answers) : {};
+        function readAnswers() {
+            var impact = [];
+            document.querySelectorAll('#fldImpact input[type="checkbox"]:checked').forEach(function (b) {
+                impact.push(b.value);
+            });
+            return {
+                industry:         document.getElementById('fldIndustry').value,
+                subIndustry:      document.getElementById('fldSubIndustry').value,
+                users:            document.getElementById('fldUsers').value,
+                role:             document.getElementById('fldRole').value,
+                b2b:              document.getElementById('fldB2b').value,
+                breakdownArea:    document.getElementById('fldBreakdownArea').value,
+                currentApproach:  document.getElementById('fldCurrentApproach').value,
+                rootCause:        document.getElementById('fldRootCause').value,
+                urgency:          document.getElementById('fldUrgency').value,
+                impact:           impact,
+                biggestWorry:     document.getElementById('inputBiggestWorry').value,
+                requirements:     document.getElementById('inputRequirements').value,
+                currentSoftware:  document.getElementById('inputCurrentSoftware').value,
+                products:         document.getElementById('inputProducts').value
+            };
+        }
+
+        function renderReturnedJson(status, body) {
+            var pre = document.getElementById('outResponse');
+            var hint = document.getElementById('outResponseStatus');
+            if (!pre) return;
+            try { pre.textContent = JSON.stringify(body, null, 2); }
+            catch (_) { pre.textContent = String(body); }
+            if (hint) {
+                var ok = status >= 200 && status < 300;
+                hint.textContent = 'HTTP ' + status;
+                hint.className = 'sub-label-hint ' + (ok ? 'is-ok' : 'is-err');
             }
-            // Free-text overrides always apply
-            base.biggestWorry = document.getElementById('inputBiggestWorry').value || base.biggestWorry || '';
-            base.requirements = document.getElementById('inputRequirements').value || base.requirements || '';
-            base.currentSoftware = document.getElementById('inputCurrentSoftware').value || base.currentSoftware || '';
-            base.products = document.getElementById('inputProducts').value || base.products || '';
-            return base;
+        }
+
+        function setLoading(on) {
+            document.body.classList.toggle('is-loading', !!on);
+            var btn = document.getElementById('runBtn');
+            btn.classList.toggle('is-loading', !!on);
+            btn.textContent = on ? 'Running diagnostic…' : 'Run diagnostic →';
         }
 
         function run() {
             var btn = document.getElementById('runBtn');
-            var answers;
-            try { answers = currentAnswers(); }
-            catch (e) { setStatus(e.message, true); return; }
+            var answers = readAnswers();
 
             if (!answers.biggestWorry) {
                 setStatus('Biggest worry is required (the LLM needs text to parse).', true);
@@ -324,76 +454,283 @@
             }
 
             btn.disabled = true;
-            setStatus('Running diagnostic\u2026');
+            setLoading(true);
             var t0 = Date.now();
 
-            fetch('/server/discowizard_function/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ answers: answers, attempt: 1 })
-            })
-                .then(function (resp) { return resp.json().then(function (body) { return { ok: resp.ok, body: body }; }); })
+            // The LLM call is load-bearing per CLAUDE.md — a failed call should not
+            // produce a diagnosis. Each attempt is firmly bounded by the server's
+            // 22s LLM timeout, so 3 attempts max is safe (~66s worst case visible
+            // to the user, with status updates so they know it's still trying).
+            // Only 5xx and network errors are retried; 4xx is our fault and a retry
+            // won't help.
+            var MAX_ATTEMPTS = 3;
+
+            function callOnce(attempt) {
+                setStatus(attempt === 1 ? 'Running diagnostic… (posting to server)' : 'Retrying (attempt ' + attempt + ')…');
+                // 60-second ceiling per attempt. The two parallel LLM calls
+                // should each resolve in ~3-15s; anything past a minute is a
+                // hang, not a slow call. Abort so the spinner doesn't stick.
+                var ctrl = new AbortController();
+                var timeoutId = setTimeout(function () { ctrl.abort(); }, 60000);
+
+                // Count up every 2 seconds so the user knows the request is
+                // still live rather than the page being frozen.
+                var tickStart = Date.now();
+                var tickId = setInterval(function () {
+                    var elapsed = Math.round((Date.now() - tickStart) / 1000);
+                    setStatus('Running diagnostic… waiting on server (' + elapsed + 's)');
+                }, 2000);
+                function stopTicker() { clearInterval(tickId); }
+
+                return fetch('/server/discowizard_function/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers: answers, attempt: attempt }),
+                    signal: ctrl.signal
+                }).then(function (resp) {
+                    clearTimeout(timeoutId);
+                    stopTicker();
+                    setStatus('Server responded (' + resp.status + '), parsing…');
+                    return resp.json()
+                        .then(function (body) { return { ok: resp.ok, status: resp.status, body: body, attempt: attempt }; })
+                        .catch(function () { return { ok: resp.ok, status: resp.status, body: { status: 'error', message: 'Response was not valid JSON.' }, attempt: attempt }; });
+                }).catch(function (netErr) {
+                    clearTimeout(timeoutId);
+                    stopTicker();
+                    var msg = netErr && netErr.name === 'AbortError'
+                        ? 'Request timed out after 60s (Qwen call hung)'
+                        : 'Network error: ' + (netErr && netErr.message);
+                    return { ok: false, status: 0, body: { status: 'error', message: msg }, attempt: attempt };
+                });
+            }
+
+            function shouldRetry(r) {
+                // Retry on network errors (status 0) or 5xx. Do not retry 4xx —
+                // those are our fault (bad input shape) and a retry won't help.
+                return r.status === 0 || (r.status >= 500 && r.status <= 599);
+            }
+
+            function attemptChain(attempt) {
+                return callOnce(attempt).then(function (r) {
+                    if (!r.ok && shouldRetry(r) && attempt < MAX_ATTEMPTS) {
+                        return attemptChain(attempt + 1);
+                    }
+                    return r;
+                });
+            }
+
+            attemptChain(1)
                 .then(function (r) {
                     var wall = Date.now() - t0;
+                    renderReturnedJson(r.status, r.body);
                     if (!r.ok || !r.body || r.body.status !== 'success' || !r.body.data) {
                         throw new Error((r.body && r.body.message) || 'Diagnostic returned no data');
                     }
                     var data = r.body.data;
                     var debug = r.body._debug || null;
 
-                    // Merge LLM output back into answers so ReasoningCard.render can display it.
                     var merged = Object.assign({}, answers, {
                         aiSignals: data.parsedSignals,
                         interpretation: data.interpretation,
-                        signalEvidence: data.signalEvidence,
-                        diagnostic: data.diagnostic
+                        signalEvidence: data.signalEvidence
                     });
 
-                    // Run the scoring engine so pattern trace renders (same path as main.js).
                     var scoring = null;
                     if (knowledgeModel && window.ScoringEngine) {
                         try {
-                            scoring = window.ScoringEngine.score(merged, knowledgeModel, null);
+                            // Engine now pulls supplementary signals from the knowledge
+                            // model itself, and reads LLM tags from merged.aiSignals.
+                            scoring = window.ScoringEngine.score(merged, knowledgeModel);
                         } catch (scErr) {
                             console.warn('Scoring engine error:', scErr && scErr.message);
                         }
                     }
 
-                    var preset = PRESETS[presetSelect.value];
-                    var expected = preset ? preset.expected : null;
+                    // Seed a new tracker entry for this run. Grade buttons in
+                    // the signals rendering mutate this entry via handleGrade.
+                    currentRunId = startRun(answers.biggestWorry, data.parsedSignals);
 
-                    window.ReasoningCard.render(merged, scoring, debug, knowledgeModel, expected);
+                    window.ReasoningCard.render(merged, scoring, debug, knowledgeModel, handleGrade);
 
-                    var matchSummary = '';
-                    if (expected) {
-                        var cmp = window.ReasoningCard.compareToExpected(data.parsedSignals, expected);
-                        if (cmp && cmp.total > 0) {
-                            var suffix = cmp.matches === cmp.total ? ' \u2713 all aligned' : ' \u2014 review highlighted signals';
-                            matchSummary = ' \u00b7 ' + cmp.matches + '/' + cmp.total + ' signals match expected' + suffix;
-                        }
-                    }
-                    setStatus('Done in ' + wall + 'ms (server ' + (debug ? debug.latencyMs + 'ms' : '\u2014') + ')' + matchSummary);
+                    var retryNote = r.attempt > 1 ? ' (succeeded on attempt ' + r.attempt + ')' : '';
+                    setStatus('Done in ' + wall + 'ms (server ' + (debug ? debug.latencyMs + 'ms' : '—') + ')' + retryNote + ' · grade each signal');
                 })
                 .catch(function (err) {
                     setStatus('Error: ' + (err && err.message), true);
                     console.error(err);
                 })
-                .finally(function () {
-                    btn.disabled = false;
+                .finally(function () { btn.disabled = false; setLoading(false); });
+        }
+
+        // ── Graded accuracy tracker ─────────────────────
+        // Each run is seeded with the three tags the LLM picked, each with grade=null.
+        // The user clicks ✓ / ✗ under each tag card; those clicks mutate the latest
+        // run by id. Rollups only count graded results.
+        var TRACKER_KEY = 'discoverwizard_debug_grades_v1';
+        var TRACKER_MAX = 200;
+        var TRACKER_TAGS = ['root_cause_type', 'problem_pattern', 'urgency_signal'];
+
+        function loadRuns() {
+            try { return JSON.parse(localStorage.getItem(TRACKER_KEY)) || []; }
+            catch (_) { return []; }
+        }
+        function saveRuns(runs) {
+            try { localStorage.setItem(TRACKER_KEY, JSON.stringify(runs.slice(-TRACKER_MAX))); }
+            catch (_) { /* quota / disabled — silent */ }
+        }
+        function startRun(biggestWorry, parsedSignals) {
+            var runs = loadRuns();
+            var id = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+            var sig = parsedSignals || {};
+            runs.push({
+                id: id,
+                t: Date.now(),
+                worry: (biggestWorry || '').slice(0, 80),
+                results: TRACKER_TAGS.map(function (tag) {
+                    return { tag: tag, actual: sig[tag] || null, grade: null };
+                })
+            });
+            saveRuns(runs);
+            renderTracker();
+            return id;
+        }
+        function handleGrade(tag, grade) {
+            if (!currentRunId) return;
+            var runs = loadRuns();
+            var run = null;
+            for (var i = 0; i < runs.length; i++) {
+                if (runs[i].id === currentRunId) { run = runs[i]; break; }
+            }
+            if (!run) return;
+            for (var j = 0; j < run.results.length; j++) {
+                if (run.results[j].tag === tag) { run.results[j].grade = grade; break; }
+            }
+            saveRuns(runs);
+            renderTracker();
+        }
+        function resetRuns() {
+            try { localStorage.removeItem(TRACKER_KEY); } catch (_) {}
+            currentRunId = null;
+            renderTracker();
+        }
+
+        function fmtPct(n, d) { return d ? Math.round((n / d) * 100) + '%' : '—'; }
+        function fmtAgo(ms) {
+            var s = Math.round((Date.now() - ms) / 1000);
+            if (s < 60)    return s + 's ago';
+            if (s < 3600)  return Math.round(s / 60) + 'm ago';
+            if (s < 86400) return Math.round(s / 3600) + 'h ago';
+            return Math.round(s / 86400) + 'd ago';
+        }
+
+        function renderTracker() {
+            var runs = loadRuns();
+            var summaryEl = document.getElementById('trackerSummary');
+            var barsEl    = document.getElementById('trackerBars');
+            var recentEl  = document.getElementById('trackerRecent');
+
+            barsEl.innerHTML = '';
+            recentEl.innerHTML = '';
+
+            if (!runs.length) {
+                summaryEl.textContent = 'no runs yet';
+                var hint = document.createElement('li');
+                hint.className = 'tracker-empty';
+                hint.textContent = 'Run a diagnostic and grade each signal to start tracking.';
+                recentEl.appendChild(hint);
+                return;
+            }
+
+            // Per-tag rollup (graded only).
+            var perTag = {};
+            TRACKER_TAGS.forEach(function (t) { perTag[t] = { correct: 0, graded: 0 }; });
+            var overallCorrect = 0, overallGraded = 0;
+
+            runs.forEach(function (r) {
+                r.results.forEach(function (res) {
+                    if (!perTag[res.tag]) perTag[res.tag] = { correct: 0, graded: 0 };
+                    if (res.grade === 'correct' || res.grade === 'wrong') {
+                        perTag[res.tag].graded++;
+                        overallGraded++;
+                        if (res.grade === 'correct') {
+                            perTag[res.tag].correct++;
+                            overallCorrect++;
+                        }
+                    }
                 });
+            });
+
+            summaryEl.textContent = runs.length + ' run' + (runs.length === 1 ? '' : 's') +
+                ' · ' + overallCorrect + '/' + overallGraded + ' graded correct (' + fmtPct(overallCorrect, overallGraded) + ')';
+
+            TRACKER_TAGS.forEach(function (tag) {
+                var stat = perTag[tag];
+                var pctVal = stat.graded ? (stat.correct / stat.graded) * 100 : 0;
+                var bar = document.createElement('div');
+                bar.className = 'tracker-bar';
+                bar.innerHTML =
+                    '<div class="tracker-bar__head">' +
+                        '<code class="signal-tag">' + tag + '</code>' +
+                        '<span class="tracker-bar__count">' + stat.correct + '/' + stat.graded + '</span>' +
+                        '<span class="tracker-bar__pct">' + fmtPct(stat.correct, stat.graded) + '</span>' +
+                    '</div>' +
+                    '<div class="tracker-bar__track"><div class="tracker-bar__fill" style="width:' + pctVal.toFixed(0) + '%"></div></div>';
+                barsEl.appendChild(bar);
+            });
+
+            // Recent runs (last 6, newest first).
+            runs.slice(-6).reverse().forEach(function (r) {
+                var li = document.createElement('li');
+                li.className = 'tracker-recent-item';
+                var graded = r.results.filter(function (x) { return x.grade === 'correct' || x.grade === 'wrong'; }).length;
+                var correct = r.results.filter(function (x) { return x.grade === 'correct'; }).length;
+                var label = r.worry || '(no biggest-worry)';
+                var scoreClass = graded === 0 ? '' : (correct === graded ? 'is-perfect' : (correct === 0 ? 'is-miss' : ''));
+                var scoreText = graded === 0 ? 'ungraded' : (correct + '/' + graded);
+                li.innerHTML =
+                    '<span class="tracker-recent__label">' + label + '</span>' +
+                    '<span class="tracker-recent__score ' + scoreClass + '">' + scoreText + '</span>' +
+                    '<span class="tracker-recent__time">' + fmtAgo(r.t) + '</span>';
+                recentEl.appendChild(li);
+            });
         }
 
-        document.getElementById('loadPresetBtn').addEventListener('click', loadPreset);
+        // ── Generic dialog wiring ───────────────────────
+        function wireDialog(dlgId, frameId, srcUrl) {
+            var dlg = document.getElementById(dlgId);
+            var frame = document.getElementById(frameId);
+            function open() {
+                if (frame.getAttribute('src') === 'about:blank') frame.setAttribute('src', srcUrl);
+                if (typeof dlg.showModal === 'function') dlg.showModal();
+                else dlg.setAttribute('open', '');
+            }
+            function close() {
+                if (typeof dlg.close === 'function') dlg.close();
+                else dlg.removeAttribute('open');
+            }
+            dlg.addEventListener('click', function (e) {
+                if (e.target === dlg) close();
+            });
+            return { open: open, close: close };
+        }
+        var dataFlowDlg = wireDialog('dataFlowDialog', 'dataFlowFrame', 'data-flow.html');
+        var aboutAppDlg = wireDialog('aboutAppDialog', 'aboutAppFrame', 'about.html');
+
         document.getElementById('runBtn').addEventListener('click', run);
-        document.getElementById('toggleJsonBtn').addEventListener('click', function () {
-            document.getElementById('jsonEditorWrap').classList.toggle('open');
+        document.getElementById('fldBreakdownArea').addEventListener('change', populateBranchedDropdowns);
+        document.getElementById('fldIndustry').addEventListener('change', populateSubIndustryList);
+        document.getElementById('trackerResetBtn').addEventListener('click', function () {
+            if (confirm('Clear all tracked accuracy runs?')) resetRuns();
         });
+        document.getElementById('viewDataFlowBtn').addEventListener('click', dataFlowDlg.open);
+        document.getElementById('dataFlowCloseBtn').addEventListener('click', dataFlowDlg.close);
+        document.getElementById('aboutAppBtn').addEventListener('click', aboutAppDlg.open);
+        document.getElementById('aboutAppCloseBtn').addEventListener('click', aboutAppDlg.close);
 
-        // Auto-load first preset so there's something to run immediately
-        if (presetSelect.options.length) {
-            presetSelect.selectedIndex = 0;
-            loadPreset();
-        }
+        // Initial state
+        populateBranchedDropdowns();
+        populateSubIndustryList();
+        renderTracker();
     })();
     </script>
 </body>

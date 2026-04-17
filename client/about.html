@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiscoverWizard Anatomy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --ink-soft: #3a3a3a;
+            --ink-muted: #6b6b6b;
+            --paper: #fbfaf7;
+            --rule: #e8e4dd;
+            --accent: #3f3c91;
+            --tint: #f3f1ec;
+            --mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+        }
+        * { box-sizing: border-box; }
+        html { font-size: 17px; }
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page { padding: 4rem 1.5rem 6rem; }
+        .prose { max-width: 38rem; margin: 0 auto; }
+
+        /* Header */
+        .eyebrow {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin: 0 0 0.8rem;
+        }
+        h1 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 600;
+            font-size: 2.4rem;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            margin: 0 0 1.25rem;
+            color: var(--ink);
+        }
+        .standfirst {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            margin: 0 0 3rem;
+        }
+
+        /* Body */
+        p {
+            margin: 0 0 1.2rem;
+            color: var(--ink-soft);
+        }
+        p:first-of-type::first-letter {
+            /* subtle drop-cap, only on opening paragraph after the standfirst */
+        }
+        .prose > section { margin-bottom: 3rem; }
+        .prose > section:last-child { margin-bottom: 0; }
+
+        h2 {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin: 0 0 0.4rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid var(--rule);
+        }
+        h2 + p { margin-top: 0.85rem; }
+
+        h3 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            line-height: 1.35;
+            margin: 1.5rem 0 0.4rem;
+            color: var(--ink);
+            letter-spacing: -0.005em;
+        }
+
+        strong { color: var(--ink); font-weight: 600; }
+        em { font-style: italic; }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(63, 60, 145, 0.25);
+        }
+        a:hover { border-bottom-color: var(--accent); }
+
+        code {
+            font-family: var(--mono);
+            font-size: 0.85em;
+            color: var(--ink);
+            background: transparent;
+            padding: 0;
+            /* restrained: no badge / pill treatment */
+        }
+
+        /* Pull quote — used sparingly, once */
+        .pullquote {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-style: italic;
+            font-size: 1.35rem;
+            line-height: 1.5;
+            color: var(--ink);
+            padding: 1.5rem 0 1.5rem 1.25rem;
+            margin: 2rem 0;
+            border-left: 2px solid var(--accent);
+        }
+        .pullquote__attr {
+            display: block;
+            margin-top: 0.65rem;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-style: normal;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--ink-muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* Question list — a simple definition list with subtle id column */
+        .qlist {
+            margin: 1rem 0 1.25rem;
+            padding: 0;
+            list-style: none;
+        }
+        .qlist li {
+            display: grid;
+            grid-template-columns: 3.5rem 1fr;
+            gap: 1rem;
+            padding: 0.55rem 0;
+            border-bottom: 1px solid var(--rule);
+            font-size: 0.95rem;
+        }
+        .qlist li:last-child { border-bottom: none; }
+        .qlist .qid {
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            color: var(--ink-muted);
+            padding-top: 0.2rem;
+        }
+        .qlist .qbody { color: var(--ink-soft); }
+
+        /* Four layers — stepped text, no cards */
+        .steps {
+            counter-reset: step;
+            margin: 1rem 0 0.5rem;
+            padding: 0;
+            list-style: none;
+        }
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            padding: 0.3rem 0 1.1rem 2.75rem;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0.15rem;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--paper);
+        }
+        .steps li:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 0.8rem;
+            top: 1.8rem;
+            bottom: -0.3rem;
+            width: 1px;
+            background: var(--rule);
+        }
+        .steps h3 {
+            margin: 0 0 0.2rem;
+            font-size: 1rem;
+        }
+        .steps p { margin: 0; font-size: 0.95rem; }
+
+        /* Solutions — quiet list, no card stacking */
+        .solutions {
+            margin: 1rem 0;
+            padding: 0;
+            list-style: none;
+        }
+        .solutions li {
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--rule);
+        }
+        .solutions li:first-child { border-top: 1px solid var(--rule); }
+        .solutions__area {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .solutions__name {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.08rem;
+            color: var(--ink);
+            display: block;
+            margin-bottom: 0.1rem;
+        }
+        .solutions__apps {
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: var(--ink-muted);
+        }
+
+        /* Two-up (for "does / doesn't do") — minimal, typographic */
+        .twoup {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 1.25rem 0;
+        }
+        .twoup h3 {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin: 0 0 0.65rem;
+        }
+        .twoup ul {
+            margin: 0;
+            padding-left: 1.1rem;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+        }
+        .twoup li { margin-bottom: 0.45rem; }
+
+        /* Footer */
+        .colophon {
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--rule);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.78rem;
+            color: var(--ink-muted);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            html { font-size: 16px; }
+            .page { padding: 2.5rem 1.25rem 4rem; }
+            h1 { font-size: 1.9rem; }
+            .standfirst { font-size: 1.05rem; }
+            .twoup { grid-template-columns: 1fr; gap: 1.25rem; }
+            .pullquote { font-size: 1.15rem; padding-left: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+<article class="prose">
+
+    <h1>DiscoverWizard Anatomy</h1>
+    <p class="standfirst">How the wizard turns a user's description of their business into a ranked recommendation — the nine questions, the role of the language model, the four-layer pipeline, and where the guardrails are.</p>
+
+    <section>
+        <p>The problem it's trying to fix is an old one for Zoho: customers buy the platform, open a catalog of forty-five apps, try to stand up eight of them at once, and churn before a single core workflow is running. The usual answer is a shallow "pick one app" quiz. DiscoverWizard is an attempt at something else — a wizard that asks about the business first and the software last.</p>
+    </section>
+
+    <section>
+        <h2>The nine questions</h2>
+        <p>Phase I collects nine answers across three mini-phases and produces a <em>platform-agnostic</em> diagnosis. Zoho is never named in Phase I — by design. The user should see their problem clearly before any brand enters the conversation.</p>
+
+        <h3>Demographics</h3>
+        <ul class="qlist">
+            <li><span class="qid">D1, D2</span><span class="qbody">Industry and sub-industry.</span></li>
+            <li><span class="qid">D3</span><span class="qbody">How many people work at the company.</span></li>
+            <li><span class="qid">D4</span><span class="qbody">What best describes the user's role. This one is load-bearing: role decides whether the final report is written to <em>act on</em> (decision-makers) or to <em>bring to leadership</em> (everyone else).</span></li>
+        </ul>
+
+        <h3>Pain points</h3>
+        <ul class="qlist">
+            <li><span class="qid">PP1</span><span class="qbody">Where the operation is breaking down most — sales, service, ops, or marketing. This branch selector rewrites PP2 and PP3 to use the right language for that area.</span></li>
+            <li><span class="qid">PP2</span><span class="qbody">How the user is handling this today.</span></li>
+            <li><span class="qid">PP3</span><span class="qbody">What they think is really driving it.</span></li>
+            <li><span class="qid">PP4</span><span class="qbody">How they'd describe the challenge in their own words. Free text. This is the field that does the heavy lifting, and it's the only field the language model ever reads.</span></li>
+        </ul>
+
+        <h3>Impact and urgency</h3>
+        <ul class="qlist">
+            <li><span class="qid">IU1</span><span class="qbody">How the problem is showing up in the business — lost revenue, wasted time, churn, frustration, general drag. Multi-select.</span></li>
+            <li><span class="qid">IU2</span><span class="qbody">How pressured they feel to solve it, on a four-step scale from <em>planning ahead</em> to <em>on fire right now</em>.</span></li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Why PP4 matters</h2>
+        <p>Dropdowns capture facts. PP4 captures <em>how the user frames their own problem</em> — the verbs they use, what they blame, how urgent it sounds in their own voice. That's where nuance lives, and it's where the language model earns its keep.</p>
+
+        <p>The model reads PP4 and returns three tags, each drawn from a fixed vocabulary. <code>root_cause_type</code> lands on one of <em>process</em>, <em>people</em>, <em>technology</em>, or <em>data</em>. <code>problem_pattern</code> picks from seven shapes of dysfunction — <em>firefighting</em>, <em>leakage</em>, <em>bottleneck</em>, <em>visibility</em>, <em>adoption_failure</em>, <em>missing_ownership</em>, <em>communication_breakdown</em>. <code>urgency_signal</code> is a simple <em>low</em> / <em>medium</em> / <em>high</em>.</p>
+
+        <p>Alongside the tags, the model returns a one- or two-sentence interpretation in plain English, and the specific quotes from the user's text that justify each tag. The controlled vocabulary is the point: the model isn't inventing labels, it's picking from a menu. That's what makes its output stable enough to feed into a rule engine downstream.</p>
+    </section>
+
+    <section>
+        <h2>Where the AI stops</h2>
+        <p>The single most important architectural decision in this app: the language model <em>parses</em>, it does not <em>recommend</em>. Every recommendation a user sees comes from code, not from the model.</p>
+
+        <div class="pullquote">
+            The LLM labels the problem. The rule engine picks the answer.
+        </div>
+
+        <div class="twoup">
+            <div>
+                <h3>What the LLM does</h3>
+                <ul>
+                    <li>Reads PP4 and its context.</li>
+                    <li>Chooses one value per tag from the fixed vocabulary.</li>
+                    <li>Writes a short interpretation in plain English.</li>
+                    <li>Surfaces the quote that justifies each tag.</li>
+                    <li>Writes the diagnostic narrative — without brand names.</li>
+                </ul>
+            </div>
+            <div>
+                <h3>What it never does</h3>
+                <ul>
+                    <li>Pick which Zoho products to recommend.</li>
+                    <li>Decide rollout order.</li>
+                    <li>Score or rank solution patterns.</li>
+                    <li>Name a brand in Phase I output.</li>
+                    <li>Proceed if the output doesn't match the schema.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>How a recommendation is actually made</h2>
+        <p>Once the model has labeled the problem, a deterministic pipeline turns those labels — plus the structured answers — into a ranked recommendation. Four layers, each one auditable:</p>
+
+        <ol class="steps">
+            <li>
+                <h3>Input</h3>
+                <p>The nine structured answers plus the free-text PP4.</p>
+            </li>
+            <li>
+                <h3>Signals</h3>
+                <p>Structured answers convert to internal signals — things like <code>crm_needed</code> at weight 1.0 or <code>workflow_automation</code> at 0.8. Role, team size, and customer type act as modifiers that boost or dampen specific signals.</p>
+            </li>
+            <li>
+                <h3>Patterns</h3>
+                <p>Four solution patterns compete. Each defines required signals (a gate), anti-signals (a veto), and supporting signals (a confidence boost). The winner is whichever pattern clears the gate with the highest combined score.</p>
+            </li>
+            <li>
+                <h3>Bundles</h3>
+                <p>The winning pattern maps to a concrete set of Zoho apps, ordered by rollout priority, with an integration-aware "why this product" sentence attached to each.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section>
+        <h2>The four solutions in this build</h2>
+        <p>The scoring engine currently knows about four solutions, one per breakdown area. That's down from fifteen in an earlier iteration — deliberately, because a smaller set makes the logic fast to tune and easy to audit while we stabilize the core diagnostic.</p>
+
+        <ul class="solutions">
+            <li>
+                <span class="solutions__area">Sales</span>
+                <span class="solutions__name">Pipeline and follow-up automation</span>
+                <span class="solutions__apps">Zoho CRM · SalesIQ · Campaigns</span>
+            </li>
+            <li>
+                <span class="solutions__area">Customer service</span>
+                <span class="solutions__name">Unified inbox</span>
+                <span class="solutions__apps">Zoho Desk · SalesIQ · CRM</span>
+            </li>
+            <li>
+                <span class="solutions__area">Internal ops</span>
+                <span class="solutions__name">Workflow automation</span>
+                <span class="solutions__apps">Zoho Creator · Cliq · Projects</span>
+            </li>
+            <li>
+                <span class="solutions__area">Marketing</span>
+                <span class="solutions__name">Lead attribution</span>
+                <span class="solutions__apps">Zoho Marketing Automation · Campaigns · Social</span>
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Calibration built in</h2>
+        <p>Every preset on the debug screen ships with an <em>expected</em> set of tags — what we believe the model should produce for that input. After each run, the accuracy tracker records which tags matched and which didn't, and keeps a rolling history in local storage.</p>
+
+        <p>The tracker turns the debug screen into a lightweight evaluation harness. If <code>problem_pattern</code> is landing at 60 percent while <code>urgency_signal</code> is at 95, that's a specific signal about which part of the prompt needs tuning. Bad tags cascade — the rule engine will happily pick the wrong pattern based on the wrong label — so tracking accuracy per tag matters more than tracking accuracy as a single number.</p>
+    </section>
+
+    <section>
+        <h2>What this build isn't doing yet</h2>
+        <p>Phase II — the richer Zoho-specific conversation with case studies, playbooks, and multi-app orchestration — isn't wired. The LLM call has no retry and no fallback model; a failed call surfaces the error to the UI. The accuracy tracker shows drift but doesn't feed bad runs back into prompt tuning automatically. And the consumer-facing wizard itself has been stripped: this build is the debug harness only, while the core diagnostic stabilizes.</p>
+    </section>
+
+    <footer class="colophon">
+        DiscoverWizard — Phase I debug build.
+    </footer>
+
+</article>
+</main>
+</body>
+</html>

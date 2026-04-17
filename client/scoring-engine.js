@@ -1,384 +1,268 @@
 // ── DiscoverWizard – Scoring Engine ──────────────────
 // Pure functions only. No DOM access. No side effects.
-// Loads knowledge-model.json data passed in as argument.
-// Exports: score(answers, knowledgeModel)
+// Single source of truth for: signal generation, modifier application,
+// pattern scoring, bundle construction.
+//
+// Public API: score(answers, knowledgeModel)
+//
+// `answers` is the flat object readAnswers() produces in index.html, and may
+// carry LLM-parsed tags under `aiSignals`:
+//   aiSignals: { root_cause_type, problem_pattern, urgency_signal }
+// These are used as multipliers on pattern confidence — the LLM never picks
+// a pattern, it nudges between close calls.
 
-// ── 1. Signal Generator ─────────────────────────────
+// ── 1. Signal generation ────────────────────────────
+// All signals come from the knowledge model's `structured_to_signals` map.
+// No more dead pain_point_mappings, no more client-side supplementary builder.
+function generateSignals(answers, km) {
+  var sigs = {};
+  var map = km.structured_to_signals || {};
 
-function generateSignals(answers, knowledgeModel) {
-  const signals = {};
-  const painPoints = answers.painPoints || [];
-  const mappings = knowledgeModel.pain_point_mappings;
+  // breakdownArea → seed signals for that area
+  var areaMap = (map.breakdownArea || {})[answers.breakdownArea];
+  if (areaMap) {
+    for (var sig in areaMap) {
+      sigs[sig] = Math.max(sigs[sig] || 0, areaMap[sig]);
+    }
+  }
 
-  painPoints.forEach(function (pp) {
-    const mapped = mappings[pp];
-    if (!mapped) return;
-    mapped.forEach(function (entry) {
-      // Take the max weight if the same signal is triggered by multiple pain points
-      if (!signals[entry.signal] || entry.weight > signals[entry.signal]) {
-        signals[entry.signal] = entry.weight;
-      }
-    });
+  // impact (multi-select) → light boosts per selected value
+  var impactMap = map.impact || {};
+  (answers.impact || []).forEach(function (impactValue) {
+    var boosts = impactMap[impactValue];
+    if (!boosts) return;
+    for (var sig in boosts) {
+      sigs[sig] = Math.max(sigs[sig] || 0, boosts[sig]);
+    }
   });
 
-  return signals;
+  return sigs;
 }
 
-// ── 2. Modifier Applier ─────────────────────────────
-
-function applyModifiers(signals, answers, knowledgeModel) {
+// ── 2. Modifier application ─────────────────────────
+function applyModifiers(signals, answers, km) {
   var modified = {};
   var flag = null;
 
-  // Copy signals
-  for (var key in signals) {
-    modified[key] = signals[key];
-  }
+  for (var k in signals) modified[k] = signals[k];
 
-  // Role modifier
-  var roleMod = knowledgeModel.role_modifiers[answers.role];
-  if (roleMod) {
-    // Apply global multiplier
-    if (roleMod.multiplier !== 1.0) {
-      for (var key in modified) {
-        modified[key] = modified[key] * roleMod.multiplier;
-      }
+  function applyMod(mod) {
+    if (!mod) return;
+    if (mod.multiplier && mod.multiplier !== 1.0) {
+      for (var k in modified) modified[k] = modified[k] * mod.multiplier;
     }
-    // Apply boosted signals
-    for (var sig in roleMod.boosted_signals) {
+    var boosts = mod.boosted_signals || {};
+    for (var sig in boosts) {
       if (modified[sig] !== undefined) {
-        modified[sig] = modified[sig] * roleMod.boosted_signals[sig];
+        modified[sig] = modified[sig] * boosts[sig];
       } else {
-        // Boost creates a baseline signal if none exists
-        modified[sig] = 0.3 * roleMod.boosted_signals[sig];
+        modified[sig] = 0.3 * boosts[sig];
       }
     }
-    if (roleMod.flag) {
-      flag = roleMod.flag;
-    }
+    if (mod.flag && !flag) flag = mod.flag;
   }
 
-  // Size modifier
-  var sizeMod = knowledgeModel.size_modifiers[answers.users];
-  if (sizeMod) {
-    for (var sig in sizeMod.boosted_signals) {
-      if (modified[sig] !== undefined) {
-        modified[sig] = modified[sig] * sizeMod.boosted_signals[sig];
-      } else {
-        modified[sig] = 0.3 * sizeMod.boosted_signals[sig];
-      }
-    }
-    if (sizeMod.flag && !flag) {
-      flag = sizeMod.flag;
-    }
-    // sales_handoff takes priority over bring_to_leadership
-    if (sizeMod.flag === "sales_handoff") {
-      flag = "sales_handoff";
-    }
-  }
+  applyMod(km.role_modifiers && km.role_modifiers[answers.role]);
 
-  // B2B modifier
-  var b2bMod = knowledgeModel.b2b_modifiers[answers.b2b];
-  if (b2bMod) {
-    for (var sig in b2bMod.boosted_signals) {
-      if (modified[sig] !== undefined) {
-        modified[sig] = modified[sig] * b2bMod.boosted_signals[sig];
-      } else {
-        modified[sig] = 0.3 * b2bMod.boosted_signals[sig];
-      }
-    }
-  }
+  var sizeMod = km.size_modifiers && km.size_modifiers[answers.users];
+  applyMod(sizeMod);
+  // size-handoff wins over bring-to-leadership
+  if (sizeMod && sizeMod.flag === 'sales_handoff') flag = 'sales_handoff';
 
-  // Clamp all signals to [0, 2.0] to prevent runaway values
-  for (var key in modified) {
-    if (modified[key] > 2.0) modified[key] = 2.0;
-    if (modified[key] < 0) modified[key] = 0;
+  applyMod(km.b2b_modifiers && km.b2b_modifiers[answers.b2b]);
+
+  // Clamp to [0, 2.0]
+  for (var k2 in modified) {
+    if (modified[k2] > 2.0) modified[k2] = 2.0;
+    if (modified[k2] < 0) modified[k2] = 0;
   }
 
   return { signals: modified, flag: flag };
 }
 
-// ── 3. Pattern Scorer ───────────────────────────────
-
-function scorePatterns(signals, answers, knowledgeModel) {
-  var exclusions = [];
-  var sizeMod = knowledgeModel.size_modifiers[answers.users];
-  if (sizeMod && sizeMod.exclusions) {
-    exclusions = sizeMod.exclusions;
-  }
-
+// ── 3. Pattern scoring ──────────────────────────────
+// Confidence is built up from: required + supporting signals (normalized),
+// ideal-profile bonus, cohesion bonus, and LLM-tag boosts. Gated by
+// required_signals (must clear 0.5) and vetoed by anti_signals (>= 0.7).
+function scorePatterns(signals, answers, km, llmTags) {
   var scored = [];
+  var tagBoosts = km.llm_tag_boosts || {};
 
-  knowledgeModel.solution_patterns.forEach(function (pattern) {
-    // 5a. Check required_signals — all must be >= 0.5
+  km.solution_patterns.forEach(function (pattern) {
+    // 3a. required_signals gate
     var eligible = true;
-    pattern.required_signals.forEach(function (reqSig) {
-      if (!signals[reqSig] || signals[reqSig] < 0.5) {
-        eligible = false;
-      }
+    pattern.required_signals.forEach(function (req) {
+      if (!signals[req] || signals[req] < 0.5) eligible = false;
     });
     if (!eligible) return;
 
-    // 5b. Check anti_signals — if any >= 0.7, exclude
+    // 3b. anti_signals veto
     var excluded = false;
-    pattern.anti_signals.forEach(function (antiSig) {
-      if (signals[antiSig] && signals[antiSig] >= 0.7) {
-        excluded = true;
-      }
+    (pattern.anti_signals || []).forEach(function (anti) {
+      if (signals[anti] && signals[anti] >= 0.7) excluded = true;
     });
     if (excluded) return;
 
-    // 5c. Sum supporting_signal scores for confidence
+    // 3c. Base confidence from required + supporting signals (normalized)
     var confidence = 0;
-    pattern.supporting_signals.forEach(function (supSig) {
-      confidence += (signals[supSig] || 0);
-    });
+    pattern.required_signals.forEach(function (s) { confidence += (signals[s] || 0); });
+    pattern.supporting_signals.forEach(function (s) { confidence += (signals[s] || 0); });
+    var total = pattern.required_signals.length + pattern.supporting_signals.length;
+    if (total > 0) confidence = confidence / total;
 
-    // Add required signal scores to base confidence
-    pattern.required_signals.forEach(function (reqSig) {
-      confidence += (signals[reqSig] || 0);
-    });
-
-    // Normalize confidence to roughly 0-1 range
-    var totalSignals = pattern.required_signals.length + pattern.supporting_signals.length;
-    if (totalSignals > 0) {
-      confidence = confidence / totalSignals;
-    }
-
-    // 5d. Apply ideal_profile bonus (+0.15) if user matches
-    var profileBonus = 0;
+    // 3d. Ideal profile bonus (up to +0.15)
     var profile = pattern.ideal_profile;
-    if (profile.size.indexOf(answers.users) !== -1) profileBonus += 0.05;
-    if (profile.role.indexOf(answers.role) !== -1) profileBonus += 0.05;
-    if (profile.b2b.indexOf(answers.b2b) !== -1) profileBonus += 0.05;
-    confidence += profileBonus;
+    if (profile.size.indexOf(answers.users) !== -1) confidence += 0.05;
+    if (profile.role.indexOf(answers.role) !== -1) confidence += 0.05;
+    if (profile.b2b.indexOf(answers.b2b) !== -1) confidence += 0.05;
 
-    // 5e. Apply cohesion bonus — count integrates_with matches in primary_bundle
-    var products = knowledgeModel.products;
-    var bundleProducts = pattern.primary_bundle;
-    var cohesionBonus = 0;
-
-    bundleProducts.forEach(function (prodId) {
-      var product = null;
-      for (var i = 0; i < products.length; i++) {
-        if (products[i].id === prodId) {
-          product = products[i];
-          break;
-        }
-      }
-      if (!product) return;
-
-      bundleProducts.forEach(function (otherProdId) {
-        if (otherProdId === prodId) return;
-        if (product.integrates_with.indexOf(otherProdId) !== -1) {
-          cohesionBonus += 0.05;
-        }
+    // 3e. Cohesion bonus — pairs in primary_bundle that integrate with each other
+    var cohesion = 0;
+    pattern.primary_bundle.forEach(function (id) {
+      var prod = lookupProduct(id, km);
+      if (!prod) return;
+      pattern.primary_bundle.forEach(function (otherId) {
+        if (otherId === id) return;
+        if (prod.integrates_with.indexOf(otherId) !== -1) cohesion += 0.05;
       });
     });
-    // Avoid double-counting: each pair counted once from each side
-    cohesionBonus = cohesionBonus / 2;
-    confidence += cohesionBonus;
+    confidence += cohesion / 2;
 
-    // Clamp to 0-1
-    if (confidence > 1.0) confidence = 1.0;
+    // 3f. LLM tag boosts — the AI doesn't pick a pattern, but it nudges ranking
+    var tagBoostExplain = [];
+    if (llmTags) {
+      ['problem_pattern', 'root_cause_type', 'urgency_signal'].forEach(function (tag) {
+        var value = llmTags[tag];
+        if (!value) return;
+        var boostsForTag = tagBoosts[tag] && tagBoosts[tag][value];
+        if (!boostsForTag) return;
+        var boost = 0;
+        if (boostsForTag._all !== undefined) boost = boostsForTag._all;
+        else if (boostsForTag[pattern.id] !== undefined) boost = boostsForTag[pattern.id];
+        if (boost) {
+          confidence += boost;
+          tagBoostExplain.push(tag + '=' + value + ' (' + (boost >= 0 ? '+' : '') + boost.toFixed(2) + ')');
+        }
+      });
+    }
+
+    // Clamp to [0, 1.2]. Ceiling is above 1.0 so the debug view can
+    // distinguish crushed-it matches (score ~1.15) from barely-cleared
+    // matches (score ~0.55). Display layer is responsible for formatting.
+    if (confidence > 1.2) confidence = 1.2;
     if (confidence < 0) confidence = 0;
 
     scored.push({
       pattern: pattern,
       confidence: Math.round(confidence * 1000) / 1000,
-      exclusions: exclusions
+      tagBoostExplain: tagBoostExplain
     });
   });
 
-  // 6. Sort by confidence descending
   scored.sort(function (a, b) { return b.confidence - a.confidence; });
-
   return scored;
 }
 
-// ── 4. Bundle Builder ───────────────────────────────
-
-function buildBundle(pattern, signals, exclusions, answers, knowledgeModel) {
-  var products = knowledgeModel.products;
-
-  function lookupProduct(prodId) {
-    for (var i = 0; i < products.length; i++) {
-      if (products[i].id === prodId) return products[i];
-    }
-    return null;
+// ── 4. Bundle construction ──────────────────────────
+function lookupProduct(id, km) {
+  for (var i = 0; i < km.products.length; i++) {
+    if (km.products[i].id === id) return km.products[i];
   }
+  return null;
+}
 
-  function buildProductEntry(prodId) {
-    // Skip excluded products (from size modifier)
+function lookupSignalExplanation(signalId, km) {
+  for (var i = 0; i < km.signals.length; i++) {
+    if (km.signals[i].id === signalId) return km.signals[i].explanation;
+  }
+  return null;
+}
+
+function buildBundle(pattern, signals, exclusions, answers, km, tagBoostExplain) {
+  function buildEntry(prodId) {
     if (exclusions.indexOf(prodId) !== -1) return null;
-
-    var product = lookupProduct(prodId);
+    var product = lookupProduct(prodId, km);
     if (!product) return null;
-
-    // Generate a "why" sentence connecting product to signals
-    var why = generateWhy(product, signals);
-
     return {
       product_id: product.id,
       product_name: product.name,
       one_line: product.one_line,
       rollout_priority: product.rollout_priority,
-      why: why
+      why: generateWhy(product, signals, km)
     };
   }
 
-  function generateWhy(product, signals) {
-    // Find the strongest matching signal for this product
+  function generateWhy(product, signals, km) {
     var bestSignal = null;
     var bestWeight = 0;
-
-    product.signals_required.concat(product.signals_boosted).forEach(function (sig) {
+    var candidates = (product.signals_required || []).concat(product.signals_boosted || []);
+    candidates.forEach(function (sig) {
       if (signals[sig] && signals[sig] > bestWeight) {
         bestWeight = signals[sig];
         bestSignal = sig;
       }
     });
-
-    // Map signal names to readable explanations
-    var signalExplanations = {
-      crm_needed: "centralizes your customer relationships and pipeline",
-      workflow_automation: "automates your repetitive workflows",
-      data_entry_automation: "eliminates manual data entry",
-      reporting_needed: "gives you visibility into key metrics",
-      dashboard_needed: "provides real-time operational dashboards",
-      helpdesk_needed: "organizes customer support into a trackable system",
-      customer_engagement_needed: "engages customers proactively",
-      project_management_needed: "structures your project delivery",
-      collaboration_needed: "keeps your team communicating in one place",
-      document_management_needed: "centralizes your documents with version control",
-      integration_needed: "connects your disparate tools into one flow",
-      api_orchestration_needed: "orchestrates data across your tech stack",
-      unified_platform_needed: "replaces your fragmented tool stack",
-      spreadsheet_replacement: "replaces error-prone spreadsheets with structured data",
-      database_needed: "gives you a proper database instead of spreadsheets",
-      billing_needed: "automates your invoicing and payment collection",
-      accounting_needed: "handles your accounting and financial reporting",
-      expense_management_needed: "streamlines expense tracking and approvals",
-      inventory_needed: "tracks your inventory across locations",
-      hr_needed: "manages your employee records and HR processes",
-      payroll_needed: "processes payroll and tax compliance",
-      recruiting_needed: "streamlines your hiring pipeline",
-      marketing_automation_needed: "automates your lead nurture campaigns",
-      email_campaigns_needed: "powers your email marketing",
-      social_media_needed: "manages your social media presence",
-      ecommerce_needed: "runs your online storefront",
-      esignature_needed: "handles digital document signing",
-      contract_management_needed: "manages your contract lifecycle",
-      security_needed: "secures your accounts and credentials",
-      it_management_needed: "centralizes identity and access management",
-      analytics_needed: "blends your data into cross-functional analytics",
-      learning_management_needed: "delivers training and onboarding content",
-      video_conferencing_needed: "hosts your team meetings and webinars",
-      survey_needed: "collects customer and employee feedback",
-      custom_apps_needed: "lets you build custom apps without heavy coding",
-      solo_productivity: "gives you lightweight tools for personal productivity",
-      process_definition_needed: "enforces standard operating procedures",
-      approval_flows_needed: "structures your approval chains",
-      field_service_needed: "manages field jobs and technician dispatch",
-      employee_engagement_needed: "motivates your team with gamification",
-      event_management_needed: "manages events and attendees",
-      website_needed: "builds your web presence",
-      remote_support_needed: "provides remote support to customers or staff",
-      appointment_scheduling_needed: "lets customers book time with you online"
-    };
-
-    if (bestSignal && signalExplanations[bestSignal]) {
-      return product.name + " " + signalExplanations[bestSignal] + ".";
-    }
-
-    return product.name + " supports this solution pattern.";
+    var explanation = bestSignal ? lookupSignalExplanation(bestSignal, km) : null;
+    if (explanation) return product.name + ' ' + explanation + '.';
+    return product.name + ' supports this solution pattern.';
   }
 
-  // Build primary bundle
-  var primaryBundle = [];
-  pattern.primary_bundle.forEach(function (prodId) {
-    var entry = buildProductEntry(prodId);
-    if (entry) primaryBundle.push(entry);
-  });
+  var primary = pattern.primary_bundle.map(buildEntry).filter(Boolean);
+  primary.sort(function (a, b) { return a.rollout_priority - b.rollout_priority; });
 
-  // Sort primary bundle by rollout_priority
-  primaryBundle.sort(function (a, b) { return a.rollout_priority - b.rollout_priority; });
+  var supporting = pattern.supporting_bundle.map(buildEntry).filter(Boolean);
+  supporting.sort(function (a, b) { return a.rollout_priority - b.rollout_priority; });
 
-  // Build supporting bundle
-  var supportingBundle = [];
-  pattern.supporting_bundle.forEach(function (prodId) {
-    var entry = buildProductEntry(prodId);
-    if (entry) supportingBundle.push(entry);
-  });
-
-  supportingBundle.sort(function (a, b) { return a.rollout_priority - b.rollout_priority; });
-
-  // Fill explanation template
+  // Role-aware template substitution. Keys match the spec's role strings
+  // exactly (previously mismatched against old slugs like "owner-operator").
   var roleLabels = {
-    "owner-operator": "business owner",
-    "team-manager": "team manager",
-    "system-admin": "system administrator",
-    "user": "team member"
+    'Owner / Founder': 'founder',
+    'Executive or Director': 'executive',
+    'Manager or Team Lead': 'team manager',
+    'Individual Contributor': 'team member',
+    'Evaluating on behalf of someone else': 'evaluator'
   };
   var explanation = pattern.explanation_template
-    .replace(/\{role\}/g, roleLabels[answers.role] || answers.role)
-    .replace(/\{industry\}/g, answers.industry || "your industry")
-    .replace(/\{size\}/g, answers.users || "your");
+    .replace(/\{role\}/g, roleLabels[answers.role] || answers.role || 'team')
+    .replace(/\{industry\}/g, answers.industry || 'your industry')
+    .replace(/\{size\}/g, answers.users || 'your team');
 
   return {
     pattern_id: pattern.id,
     pattern_name: pattern.name,
     confidence: 0, // filled by caller
     explanation: explanation,
-    primary_bundle: primaryBundle,
-    supporting_bundle: supportingBundle,
-    business_outcome: pattern.business_outcome
+    primary_bundle: primary,
+    supporting_bundle: supporting,
+    business_outcome: pattern.business_outcome,
+    tag_boost_explain: tagBoostExplain || []
   };
 }
 
 // ── 5. Public API ───────────────────────────────────
+function score(answers, km) {
+  var baseSignals = generateSignals(answers, km);
+  var modified = applyModifiers(baseSignals, answers, km);
+  var signals = modified.signals;
+  var flag = modified.flag;
 
-function score(answers, knowledgeModel, supplementarySignals) {
-  // 1. Generate base signals from pain points
-  var baseSignals = generateSignals(answers, knowledgeModel);
+  var llmTags = answers.aiSignals || null;
+  var scored = scorePatterns(signals, answers, km, llmTags);
 
-  // 1b. Merge supplementary signals (from breakdown/approach/rootCause/impact questions)
-  if (supplementarySignals) {
-    for (var sig in supplementarySignals) {
-      if (!baseSignals[sig] || supplementarySignals[sig] > baseSignals[sig]) {
-        baseSignals[sig] = supplementarySignals[sig];
-      }
-    }
-  }
-
-  // 2-4. Apply role, size, b2b modifiers
-  var result = applyModifiers(baseSignals, answers, knowledgeModel);
-  var signals = result.signals;
-  var flag = result.flag;
-
-  // 5. Score and filter patterns
-  var scored = scorePatterns(signals, answers, knowledgeModel);
-
-  // Get size exclusions
   var exclusions = [];
-  var sizeMod = knowledgeModel.size_modifiers[answers.users];
-  if (sizeMod && sizeMod.exclusions) {
-    exclusions = sizeMod.exclusions;
-  }
+  var sizeMod = km.size_modifiers && km.size_modifiers[answers.users];
+  if (sizeMod && sizeMod.exclusions) exclusions = sizeMod.exclusions;
 
-  // 7. Take top 3 and build full bundle detail
   var topPatterns = [];
   var count = Math.min(scored.length, 3);
   for (var i = 0; i < count; i++) {
     var entry = scored[i];
-    var built = buildBundle(entry.pattern, signals, exclusions, answers, knowledgeModel);
+    var built = buildBundle(entry.pattern, signals, exclusions, answers, km, entry.tagBoostExplain);
     built.confidence = entry.confidence;
     topPatterns.push(built);
   }
 
-  // If no patterns matched, return a minimal result
   if (topPatterns.length === 0) {
-    // REVIEW: fallback when no patterns match — should we always match at least one?
     return {
       session_id: answers.session_id || null,
       top_patterns: [],
@@ -388,21 +272,17 @@ function score(answers, knowledgeModel, supplementarySignals) {
     };
   }
 
-  // Check if 3+ primary bundle products across top pattern
   var primaryCount = topPatterns[0].primary_bundle.length;
-  var zohoOneRecommended = primaryCount >= 3;
-
   return {
     session_id: answers.session_id || null,
     top_patterns: topPatterns,
     signals_generated: signals,
     flag: flag,
-    zoho_one_recommended: zohoOneRecommended
+    zoho_one_recommended: primaryCount >= 3
   };
 }
 
-// Export for use in main.js (loaded via <script> tag, not ES modules)
-// score() is the only public function
-if (typeof window !== "undefined") {
+// Exposed on window for use from index.html (loaded as <script>, not ES module).
+if (typeof window !== 'undefined') {
   window.ScoringEngine = { score: score };
 }

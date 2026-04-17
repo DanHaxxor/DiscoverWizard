@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiscoverWizard — Data Flow</title>
+    <style>
+        :root {
+            --bg: #f4f6fa;
+            --panel: #ffffff;
+            --panel-alt: #fafbfd;
+            --text: #0f172a;
+            --text-soft: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --border-soft: #eef1f5;
+            --accent: #4f46e5;
+            --accent-tint: rgba(79, 70, 229, 0.08);
+            --code-bg: #0f172a;
+            --code-fg: #e2e8f0;
+            --code-blue: #93c5fd;
+            --code-green: #86efac;
+            --code-orange: #fdba74;
+            --mono: 'Menlo', 'Consolas', 'Roboto Mono', monospace;
+            --radius: 10px;
+            --radius-lg: 16px;
+        }
+        * { box-sizing: border-box; }
+        html { font-size: 15px; overflow-x: hidden; }
+        body {
+            margin: 0;
+            padding: 2.5rem 2rem 4rem;
+            font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .doc {
+            max-width: 960px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2.75rem;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 30px rgba(15, 23, 42, 0.05);
+        }
+        .doc-header {
+            border-bottom: 1px solid var(--border-soft);
+            padding-bottom: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin: 0 0 0.35rem;
+        }
+        .doc-sub {
+            font-size: 0.95rem;
+            color: var(--text-soft);
+            margin: 0;
+        }
+        h2 {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 2.25rem 0 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--accent-tint);
+            letter-spacing: -0.01em;
+        }
+        h2:first-of-type { margin-top: 0; }
+        h3 {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        p { margin: 0 0 1rem; color: var(--text-soft); }
+        ul { margin: 0 0 1rem; padding-left: 1.35rem; color: var(--text-soft); }
+        ul li { margin-bottom: 0.4rem; }
+        code {
+            font-family: var(--mono);
+            font-size: 0.82em;
+            background: var(--accent-tint);
+            color: var(--accent);
+            padding: 0.1rem 0.35rem;
+            border-radius: 4px;
+        }
+        a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+        a:hover { border-bottom-style: solid; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.25rem;
+            font-size: 0.88rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid var(--border-soft);
+            vertical-align: top;
+        }
+        th {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--panel-alt);
+            border-bottom: 2px solid var(--border);
+        }
+        td { color: var(--text-soft); }
+        td:first-child { color: var(--text); font-weight: 600; }
+
+        pre.ascii {
+            background: var(--panel-alt);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            line-height: 1.55;
+            color: var(--text);
+            margin: 0 0 1.25rem;
+        }
+        pre.json {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            line-height: 1.55;
+            margin: 0 0 1.25rem;
+        }
+        pre.json .k { color: var(--code-blue); }
+        pre.json .s { color: var(--code-green); }
+        pre.json .c { color: var(--code-orange); font-style: italic; }
+        pre.json .p { color: #94a3b8; }
+
+        .contract {
+            margin-bottom: 1.5rem;
+        }
+        .note {
+            border-left: 3px solid var(--accent);
+            background: var(--accent-tint);
+            padding: 0.75rem 1rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            font-size: 0.88rem;
+            color: var(--text);
+            margin-bottom: 1.25rem;
+        }
+        .note strong { color: var(--accent); }
+        .table-wrap { margin-bottom: 1.25rem; }
+
+        @media (max-width: 720px) {
+            body { padding: 1rem 0.5rem 2.5rem; }
+            .doc { padding: 1.25rem 1rem; }
+            h1 { font-size: 1.35rem; }
+            h2 { font-size: 1.1rem; }
+            .doc-sub { font-size: 0.85rem; }
+
+            /* Tables: horizontal scroll wrapper */
+            .table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0 -1rem 1.25rem;
+                padding: 0 1rem;
+            }
+            .table-wrap table { margin-bottom: 0; min-width: 520px; }
+            table { font-size: 0.78rem; }
+            th, td { padding: 0.45rem 0.5rem; }
+
+            /* Pre blocks: tighter, scrollable */
+            pre.ascii, pre.json {
+                font-size: 0.65rem;
+                padding: 0.75rem 0.85rem;
+                margin-left: -1rem;
+                margin-right: -1rem;
+                border-radius: 0;
+            }
+
+            /* Notes */
+            .note { font-size: 0.82rem; padding: 0.6rem 0.75rem; }
+
+            /* Code inline */
+            code { font-size: 0.75em; word-break: break-all; }
+        }
+    </style>
+</head>
+<body>
+<article class="doc">
+
+    <header class="doc-header">
+        <h1>DiscoverWizard — Data Flow</h1>
+        <p class="doc-sub">End-to-end trace of what happens when a user clicks <strong>Run diagnostic</strong> on the debug screen. Phase I only (platform-agnostic diagnosis wired through a 4-pattern rule engine).</p>
+    </header>
+
+    <h2>1. Actors</h2>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Layer</th><th>File</th><th>Role</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Client UI</td>            <td><code>client/index.html</code></td>          <td>Debug screen — structured dropdowns, free text, output panels, session accuracy tracker.</td></tr>
+            <tr><td>Client — scoring</td>     <td><code>client/scoring-engine.js</code></td>    <td>Pure function: <code>score(answers, knowledgeModel, supplementarySignals)</code> → ranked patterns + bundles.</td></tr>
+            <tr><td>Client — rendering</td>   <td><code>client/reasoning-card.js</code></td>    <td>Pure DOM: <code>render(answers, scoring, debug, knowledgeModel, expected)</code> populates output IDs.</td></tr>
+            <tr><td>Client — knowledge</td>   <td><code>client/knowledge-model.json</code></td> <td>4 solution patterns, 18 signals, 10 products, modifiers.</td></tr>
+            <tr><td>Server</td>               <td><code>functions/discowizard_function/index.js</code></td> <td>Catalyst serverless function: auth → LLM call → parse → log → return.</td></tr>
+            <tr><td>LLM</td>                  <td>External Zoho QuickML endpoint</td>           <td>Free text → structured tags + diagnostic narrative.</td></tr>
+            <tr><td>Persistence (server)</td> <td>Catalyst Data Store <code>WizardSessions</code></td> <td>Fire-and-forget row per run.</td></tr>
+            <tr><td>Persistence (client)</td> <td><code>localStorage.discoverwizard_debug_accuracy_v1</code></td> <td>Session accuracy tracker, ≤200 runs rolling.</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <h2>2. End-to-end lifecycle</h2>
+<pre class="ascii">┌────────────────────────────────────────────────────────────────────────────┐
+│ 1. Page load                                                               │
+│    index.html ← main.css, scoring-engine.js, reasoning-card.js             │
+│    fetch('knowledge-model.json')  →  cached in window scope                │
+│    renderTracker()                →  reads localStorage                    │
+└────────────────────────────────────────────────────────────────────────────┘
+                                    │
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 2. User input                                                              │
+│    Structured dropdowns → industry, subIndustry, users, role, b2b,         │
+│                           breakdownArea, currentApproach, rootCause,       │
+│                           impact[], urgency                                │
+│    Free text textareas → biggestWorry, requirements, currentSoftware,      │
+│                          products                                          │
+│    (Optional) Load Preset → writes all fields from PRESETS[key].answers    │
+└────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                           click "Run diagnostic"
+                                    │
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 3. Client → Server                                                         │
+│    readAnswers() → flat object of all 14 fields                            │
+│    POST /server/discowizard_function/                                      │
+│      body: { answers, attempt: 1 }                                         │
+└────────────────────────────────────────────────────────────────────────────┘
+                                    │
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 4. Catalyst function                                                       │
+│    a. Validate env vars (LLM_API_URL, ZOHO_ORG_ID, OAuth creds)            │
+│    b. getAccessToken() — mints Zoho OAuth bearer (cached in-memory)        │
+│    c. Build prompt:                                                        │
+│         - Role-based framingRule (Owner → "write to act on",               │
+│                                   IC → "write to bring to leadership")     │
+│         - JSON schema literal with 3 parsed tags + diagnostic block        │
+│         - answers as JSON.stringify                                        │
+│    d. POST to LLM_API_URL                                                  │
+│         model: LLM_MODEL (default crm-di-qwen_text_14b-fp8-it)             │
+│         temperature: 0.3, top_p: 0.9, max_tokens: 1200                     │
+│    e. Strip ```json fences (Qwen quirk), JSON.parse                        │
+│    f. Validate shape: parsedSignals &amp; diagnostic &amp; interpretation           │
+│                       &amp; signalEvidence all present                         │
+│    g. logSession() — fire-and-forget insert into WizardSessions table      │
+│    h. Respond 200:                                                         │
+│         { status: 'success',                                               │
+│           data: {parsedSignals, interpretation, signalEvidence,            │
+│                  diagnostic},                                              │
+│           _debug: {prompt, rawResponse, model, latencyMs, attempts} }      │
+└────────────────────────────────────────────────────────────────────────────┘
+                                    │
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 5. Client post-processing                                                  │
+│    a. merged = { ...answers,                                               │
+│                  aiSignals: data.parsedSignals,                            │
+│                  interpretation: data.interpretation,                      │
+│                  signalEvidence: data.signalEvidence }                     │
+│    b. supplementary = buildSupplementarySignals(answers)                   │
+│         breakdownArea → seed signal weights for that area's pattern        │
+│         impact[] → light boosts (reporting_needed, analytics_needed)       │
+│    c. scoring = ScoringEngine.score(merged, knowledgeModel, supplementary) │
+│         1. generateSignals    — from answers.painPoints (unused now)       │
+│         2. merge supplementary (max weight wins)                           │
+│         3. applyModifiers     — role × size × b2b boosts + flag            │
+│         4. scorePatterns      — required_signals gate, anti_signals veto,  │
+│                                 supporting_signals + profile bonus +       │
+│                                 cohesion bonus, clamp to [0,1]             │
+│         5. buildBundle × top 3 — primary/supporting products with "why"    │
+│    d. ReasoningCard.render(merged, scoring, debug, km, expected)           │
+│         Populates #outInterpretation, #outSignals, #outRaw, #outPatterns,  │
+│         #outQuotes, #outInputs, #outMeta, #outPrompt                       │
+│    e. If preset loaded:                                                    │
+│         compareToExpected(data.parsedSignals, preset.expected)             │
+│         recordRun() → localStorage → renderTracker() refresh               │
+└────────────────────────────────────────────────────────────────────────────┘</pre>
+
+    <h2>3. Key data contracts</h2>
+
+    <div class="contract">
+        <h3>3.1 <code>answers</code> (client → server)</h3>
+<pre class="json"><span class="p">{</span>
+  <span class="k">"industry"</span>:        <span class="s">"Technology"</span>,
+  <span class="k">"subIndustry"</span>:     <span class="s">"SaaS"</span>,
+  <span class="k">"users"</span>:           <span class="s">"11-50"</span>,                            <span class="c">// D3 bucket</span>
+  <span class="k">"role"</span>:            <span class="s">"Manager or Team Lead"</span>,             <span class="c">// D4</span>
+  <span class="k">"b2b"</span>:             <span class="s">"b2b"</span>,                              <span class="c">// b2b | b2c | both</span>
+  <span class="k">"breakdownArea"</span>:   <span class="s">"sales"</span>,                            <span class="c">// PP1: sales | service | ops | marketing</span>
+  <span class="k">"currentApproach"</span>: <span class="s">"A CRM we're not using well"</span>,        <span class="c">// PP2 (branched by PP1)</span>
+  <span class="k">"rootCause"</span>:       <span class="s">"Leads go cold, follow-up inconsistent"</span>, <span class="c">// PP3 (branched)</span>
+  <span class="k">"urgency"</span>:         <span class="s">"high"</span>,                             <span class="c">// IU2: critical | high | medium | low</span>
+  <span class="k">"impact"</span>:          [<span class="s">"lost_revenue"</span>],                   <span class="c">// IU1 multi</span>
+  <span class="k">"biggestWorry"</span>:    <span class="s">"…free text…"</span>,                     <span class="c">// PP4 (LLM-parsed)</span>
+  <span class="k">"requirements"</span>:    <span class="s">"…"</span>,
+  <span class="k">"currentSoftware"</span>: <span class="s">"…"</span>,
+  <span class="k">"products"</span>:        <span class="s">"…"</span>
+<span class="p">}</span></pre>
+    </div>
+
+    <div class="contract">
+        <h3>3.2 LLM response (<code>data</code> in server response)</h3>
+<pre class="json"><span class="p">{</span>
+  <span class="k">"parsedSignals"</span>: <span class="p">{</span>
+    <span class="k">"root_cause_type"</span>: <span class="s">"process | people | technology | data"</span>,
+    <span class="k">"problem_pattern"</span>: <span class="s">"firefighting | leakage | bottleneck | visibility |</span>
+<span class="s">                        adoption_failure | missing_ownership |</span>
+<span class="s">                        communication_breakdown"</span>,
+    <span class="k">"urgency_signal"</span>:  <span class="s">"low | medium | high"</span>
+  <span class="p">}</span>,
+  <span class="k">"interpretation"</span>: <span class="s">"1–2 sentences, human-readable, no brand names"</span>,
+  <span class="k">"signalEvidence"</span>: <span class="p">{</span>
+    <span class="k">"root_cause_type"</span>: <span class="s">"quote or paraphrase"</span>,
+    <span class="k">"problem_pattern"</span>: <span class="s">"quote or paraphrase"</span>,
+    <span class="k">"urgency_signal"</span>:  <span class="s">"quote or paraphrase"</span>
+  <span class="p">}</span>,
+  <span class="k">"diagnostic"</span>: <span class="p">{</span>
+    <span class="k">"problemStatement"</span>: <span class="s">"…"</span>,
+    <span class="k">"rootCause"</span>:        <span class="s">"…"</span>,
+    <span class="k">"severity"</span>:         <span class="s">"2 sentences: urgency + consequence of inaction"</span>,
+    <span class="k">"solutionRoadmap"</span>:  [<span class="p">{</span> <span class="k">"process"</span>: <span class="s">"…"</span>, <span class="k">"toolCategory"</span>: <span class="s">"…"</span> <span class="p">}</span>]
+  <span class="p">}</span>
+<span class="p">}</span></pre>
+    </div>
+
+    <div class="contract">
+        <h3>3.3 <code>_debug</code> (server → client, for the debug screen)</h3>
+<pre class="json"><span class="p">{</span>
+  <span class="k">"prompt"</span>:      <span class="s">"…full prompt sent to LLM…"</span>,
+  <span class="k">"rawResponse"</span>: <span class="s">"…unparsed LLM text…"</span>,
+  <span class="k">"model"</span>:       <span class="s">"crm-di-qwen_text_14b-fp8-it"</span>,
+  <span class="k">"latencyMs"</span>:   2340,
+  <span class="k">"attempts"</span>:    1
+<span class="p">}</span></pre>
+    </div>
+
+    <div class="contract">
+        <h3>3.4 <code>scoring</code> (ScoringEngine output)</h3>
+<pre class="json"><span class="p">{</span>
+  <span class="k">"session_id"</span>: null,
+  <span class="k">"top_patterns"</span>: [
+    <span class="p">{</span>
+      <span class="k">"pattern_id"</span>:   <span class="s">"sales_pipeline_automation"</span>,
+      <span class="k">"pattern_name"</span>: <span class="s">"Sales Pipeline + Follow-up Automation"</span>,
+      <span class="k">"confidence"</span>:   0.84,
+      <span class="k">"explanation"</span>:  <span class="s">"…"</span>,
+      <span class="k">"primary_bundle"</span>:    [<span class="p">{</span> <span class="k">"product_id"</span>: <span class="s">"zoho_crm"</span>, <span class="k">"why"</span>: <span class="s">"…"</span>, <span class="k">"rollout_priority"</span>: 1 <span class="p">}</span>],
+      <span class="k">"supporting_bundle"</span>: [ … ],
+      <span class="k">"business_outcome"</span>:  <span class="s">"…"</span>
+    <span class="p">}</span>
+  ],
+  <span class="k">"signals_generated"</span>: <span class="p">{</span> <span class="k">"crm_needed"</span>: 1.0, <span class="k">"followup_automation_needed"</span>: 1.0 <span class="p">}</span>,
+  <span class="k">"flag"</span>: <span class="s">"bring_to_leadership | sales_handoff | null"</span>,
+  <span class="k">"zoho_one_recommended"</span>: false
+<span class="p">}</span></pre>
+    </div>
+
+    <div class="contract">
+        <h3>3.5 Accuracy tracker row (localStorage)</h3>
+<pre class="json"><span class="p">{</span>
+  <span class="k">"t"</span>: 1712949123456,
+  <span class="k">"preset"</span>: <span class="s">"sales-firefighting"</span>,
+  <span class="k">"label"</span>:  <span class="s">"Sales — leads fall through cracks"</span>,
+  <span class="k">"results"</span>: [
+    <span class="p">{</span> <span class="k">"tag"</span>: <span class="s">"root_cause_type"</span>, <span class="k">"match"</span>: true,  <span class="k">"actual"</span>: <span class="s">"people"</span>,       <span class="k">"expected"</span>: <span class="s">"people"</span> <span class="p">}</span>,
+    <span class="p">{</span> <span class="k">"tag"</span>: <span class="s">"problem_pattern"</span>, <span class="k">"match"</span>: false, <span class="k">"actual"</span>: <span class="s">"firefighting"</span>, <span class="k">"expected"</span>: <span class="s">"missing_ownership"</span> <span class="p">}</span>,
+    <span class="p">{</span> <span class="k">"tag"</span>: <span class="s">"urgency_signal"</span>,  <span class="k">"match"</span>: true,  <span class="k">"actual"</span>: <span class="s">"high"</span>,         <span class="k">"expected"</span>: <span class="s">"high"</span> <span class="p">}</span>
+  ]
+<span class="p">}</span></pre>
+    </div>
+
+    <h2>4. Signal flow (the four-layer model)</h2>
+<pre class="ascii">  ┌───────────────────┐
+  │ 1. User input     │  structured dropdowns + free text
+  └─────────┬─────────┘
+            ▼
+  ┌───────────────────┐
+  │ 2. Signals        │  ← buildSupplementarySignals(answers) — structured → weighted tags
+  │                   │  ← LLM parsedSignals — free text → 3 high-level tags
+  │                   │  ← modifiers — role × size × b2b multipliers
+  └─────────┬─────────┘
+            ▼
+  ┌───────────────────┐
+  │ 3. Patterns       │  4 patterns compete: required_signals gate, anti_signals veto,
+  │                   │  supporting_signals + profile + cohesion = confidence
+  └─────────┬─────────┘
+            ▼
+  ┌───────────────────┐
+  │ 4. Bundles        │  primary/supporting Zoho products with integration-aware "why"
+  └───────────────────┘</pre>
+
+    <div class="note">
+        <strong>AI boundary:</strong> the LLM is a <em>parsing</em> layer only. It does not pick patterns or products. All ranking logic lives in <code>scoring-engine.js</code> and is fully auditable.
+    </div>
+
+    <h2>5. What's not in this diagram (future work)</h2>
+    <ul>
+        <li><strong>Phase II:</strong> mapping the Phase I diagnostic to the 4 patterns currently happens via <code>breakdownArea</code> alone. A richer LLM-tags → pattern-selection layer is open.</li>
+        <li><strong>Feedback loop:</strong> the accuracy tracker is client-only. A round-trip that feeds bad runs back into prompt tuning (few-shot examples, tag definitions) is not wired.</li>
+        <li><strong>Session durability:</strong> only LLM runs are logged server-side (<code>WizardSessions</code>). Scoring output, user corrections, and tracker state are not persisted centrally.</li>
+        <li><strong>Retry / fallback:</strong> the spec calls for hardening the LLM path (retry, fallback model). Currently a single attempt, errors surfaced to the UI.</li>
+    </ul>
+
+</article>
+</body>
+</html>

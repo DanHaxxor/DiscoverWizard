@@ -4,7 +4,6 @@ require('dotenv').config();
 const catalyst = require('zcatalyst-sdk-node');
 
 module.exports = async (req, res) => {
-  // Parse input
   let body = '';
   if (req.method === 'POST') {
     await new Promise((resolve) => {
@@ -14,6 +13,15 @@ module.exports = async (req, res) => {
   }
   let parsedBody = {};
   try { parsedBody = body ? JSON.parse(body) : {}; } catch (_e) { /* ignore */ }
+
+  // Client fires this on page load to wake the model before the user submits.
+  // We respond 200 fast; the LLM call runs detached.
+  if (parsedBody.warmup === true) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'warming' }));
+    warmupLLM().catch(function (e) { console.warn('Warmup failed:', e && e.message); });
+    return;
+  }
 
   const answers = parsedBody.answers || {};
   const attempt = parsedBody.attempt || 1;
@@ -26,49 +34,69 @@ module.exports = async (req, res) => {
   const role = (answers.role || '').toLowerCase();
   let framingRule;
   if (role.includes('owner') || role.includes('founder')) {
-    framingRule = 'The reader is the owner/founder. Use a confident, directive voice. Speak to outcomes and ownership. "You own this — here\'s what to do."';
+    framingRule = 'Reader is owner/founder. Directive voice: "you own this".';
   } else if (role.includes('executive') || role.includes('director')) {
-    framingRule = 'The reader is an executive or director. Use a strategic voice. Emphasize business impact, ROI, and risk. Keep it tight and outcome-focused.';
+    framingRule = 'Reader is executive/director. Strategic voice, ROI-focused.';
   } else if (role.includes('manager') || role.includes('lead')) {
-    framingRule = 'The reader is a manager or team lead. Use an operational voice. Focus on what the team will do differently and how to sequence the work.';
+    framingRule = 'Reader is manager/team-lead. Operational voice: what the team does.';
   } else {
-    framingRule = 'The reader is evaluating on behalf of leadership. Use third person ("the team should...", "leadership can..."). Produce something they can bring to a decision-maker.';
+    framingRule = 'Reader will bring this to leadership. Third person: "the team should".';
   }
 
-  const prompt = `You are a business operations diagnostician. Analyze the provided business context and produce a platform-agnostic diagnosis. Never mention specific product or brand names (e.g., Zoho, HubSpot, Salesforce). Tool categories only (e.g., "a CRM platform", "a helpdesk system", "a shared inbox tool").
+  // Split the LLM-facing payload so evidence quotes can only be drawn from
+  // actual free-text. `currentApproach` (PP2) and `userGuessDriver` (PP3) are
+  // dropdown *selections* that happen to read as sentences — without this
+  // split the model quotes them as if the user wrote them.
+  const context = {};
+  ['industry','subIndustry','users','role','b2b','breakdownArea','currentApproach','urgency','impact','currentSoftware','products'].forEach(function (k) {
+    const v = answers[k];
+    if (v === undefined || v === null || v === '' || (Array.isArray(v) && !v.length)) return;
+    context[k] = v;
+  });
+  if (answers.rootCause) context.userGuessDriver = answers.rootCause;
 
-Return ONLY valid JSON matching this exact schema. No markdown, no code fences, no prose outside the JSON:
-{
-  "parsedSignals": {
-    "root_cause_type": "process | people | technology | data",
-    "problem_pattern": "firefighting | leakage | bottleneck | visibility | adoption_failure | missing_ownership | communication_breakdown",
-    "urgency_signal": "low | medium | high"
-  },
-  "interpretation": "1-2 sentences in plain English explaining how you read the situation. Written for a human reviewer to sanity-check. Reference the user's own words where useful. No brand names.",
-  "signalEvidence": {
-    "root_cause_type": "Direct quote or close paraphrase from the user's free-text that justifies this tag.",
-    "problem_pattern": "Direct quote or close paraphrase from the user's free-text that justifies this tag.",
-    "urgency_signal": "Direct quote or close paraphrase from the user's input that justifies this tag. May pull from structured urgency answer if free-text doesn't cover it."
-  },
-  "diagnostic": {
-    "problemStatement": "1-2 sentences naming what's broken in plain language.",
-    "rootCause": "1-2 sentences explaining why it is happening.",
-    "severity": "Exactly 2 sentences: (1) urgency of acting now; (2) consequence of inaction.",
-    "solutionRoadmap": [
-      { "process": "One-sentence process step.", "toolCategory": "One sentence naming the tool category that would support it. No brand names." }
-    ]
-  }
-}
+  const userOwnWords = {};
+  if (answers.biggestWorry) userOwnWords.biggestWorry = answers.biggestWorry;
+  if (answers.requirements) userOwnWords.requirements = answers.requirements;
 
-Framing rule for this reader: ${framingRule}
-Use the industry and sub-industry to tailor language and examples. solutionRoadmap must have 3 or 4 entries, ordered first-to-last by what to tackle first.
+  const TAG_SYSTEM = `Business ops tag extractor. Output ONLY JSON matching the schema — no prose, markdown, fences.
 
-Business context:
-${JSON.stringify(answers, null, 2)}`;
+TAGS (pick one per list, never cross lists):
+root_cause_type: process (broken steps) | people (ownership/adoption gap) | technology (tools can't do job / don't connect) | data (info missing/scattered).
+problem_pattern: leakage (drops silently) | missing_ownership (nobody owns X) | bottleneck (queues at one step) | visibility (no single view) | adoption_failure (tool unused) | communication_breakdown (silos) | firefighting (last resort).
+urgency_signal: high (active $ loss / critical) | medium (ongoing) | low (planning).
+
+RULES:
+- userOwnWords is the only source the user actually wrote. context fields are dropdown selections and background — never quote from context.
+- biggestWorry in userOwnWords outweighs every structured field. Most-specific pattern wins.
+- All quotes in interpretation and signalEvidence must be verbatim substrings of userOwnWords (full clauses — a complete thought, not single words). If userOwnWords doesn't cover a tag, quote the closest supporting clause rather than inventing or pulling from context.
+- Return the empty string "" for a signalEvidence field only if userOwnWords is entirely empty.`;
+
+  const TAG_PROMPT = `Output ONLY this JSON:
+{"parsedSignals":{"root_cause_type":"process|people|technology|data","problem_pattern":"firefighting|leakage|bottleneck|visibility|adoption_failure|missing_ownership|communication_breakdown","urgency_signal":"low|medium|high"},"interpretation":"2-3 sentences explaining what userOwnWords reveals about the situation, quoting the user directly","signalEvidence":{"root_cause_type":"full verbatim clause from userOwnWords supporting this tag","problem_pattern":"full verbatim clause from userOwnWords supporting this tag","urgency_signal":"full verbatim clause from userOwnWords supporting this tag"}}
+
+context (structured answers — do NOT quote from these):
+${JSON.stringify(context)}
+
+userOwnWords (the only source for quotes):
+${JSON.stringify(userOwnWords)}`;
+
+  const DIAG_SYSTEM = `Business ops diagnostician. Output ONLY valid JSON — no prose, markdown, fences. Never use brand names — tool categories only ("a CRM", "a helpdesk", "a shared inbox tool"). solutionRoadmap: 3-4 entries ordered first-to-last by what to tackle first.`;
+
+  const DIAG_PROMPT = `Output ONLY this JSON:
+{"diagnostic":{"problemStatement":"1-2 sentences naming what's broken","rootCause":"1-2 sentences explaining why it's happening","severity":"exactly 2 sentences: urgency now + consequence of inaction","solutionRoadmap":[{"process":"one sentence process step","toolCategory":"one sentence tool category, no brand names"}]}}
+
+Reader framing: ${framingRule}
+
+context:
+${JSON.stringify(context)}
+
+userOwnWords:
+${JSON.stringify(userOwnWords)}`;
 
   const llmUrl = process.env.LLM_API_URL;
   const orgId = process.env.ZOHO_ORG_ID;
-  const model = process.env.LLM_MODEL || 'crm-di-qwen_text_14b-fp8-it';
+  const model = process.env.LLM_MODEL || 'crm-di-qwen_text_moe_30b';
 
   const missing = [];
   if (!llmUrl) missing.push('LLM_API_URL');
@@ -94,99 +122,148 @@ ${JSON.stringify(answers, null, 2)}`;
   }
 
   const app = catalyst.initialize(req);
+  const t0 = Date.now();
+  const requestId = Math.random().toString(36).slice(2, 10);
+  const llm = { bearer, llmUrl, orgId, model, requestId };
 
-  const data = {
-    prompt,
+  // QuickML's max_tokens is total context (input + output), not output-only.
+  // 1024 covers both prompts with headroom; model stops naturally when JSON completes.
+  const [tagResult, diagResult] = await Promise.all([
+    callLLM('tag', TAG_PROMPT, TAG_SYSTEM, 1024, llm),
+    callLLM('diag', DIAG_PROMPT, DIAG_SYSTEM, 1024, llm)
+  ]);
+
+  const latencyMs = Date.now() - t0;
+  const debugBlock = {
+    requestId,
+    tag:  { prompt: TAG_PROMPT,  raw: tagResult.rawText,  latencyMs: tagResult.latency,  status: tagResult.status, usage: tagResult.usage },
+    diag: { prompt: DIAG_PROMPT, raw: diagResult.rawText, latencyMs: diagResult.latency, status: diagResult.status, usage: diagResult.usage },
     model,
-    system_prompt: 'You are a business operations diagnostician. Return only valid JSON matching the schema in the prompt. No prose outside the JSON, no markdown, no code fences.',
-    top_p: 0.9,
-    top_k: 50,
-    best_of: 1,
-    temperature: 0.3,
-    max_tokens: 1200
+    latencyMs,
+    attempts: attempt
   };
 
+  if (!tagResult.ok) {
+    const code = tagResult.err === 'timeout' ? 504 : 502;
+    res.writeHead(code, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'error', message: 'Tag call failed: ' + tagResult.err, _debug: debugBlock }));
+    return;
+  }
+  if (!diagResult.ok) {
+    const code = diagResult.err === 'timeout' ? 504 : 502;
+    res.writeHead(code, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'error', message: 'Diag call failed: ' + diagResult.err, _debug: debugBlock }));
+    return;
+  }
+
+  if (!tagResult.parsed.parsedSignals || !tagResult.parsed.interpretation || !tagResult.parsed.signalEvidence) {
+    res.writeHead(502, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'error', message: 'Tag response missing required fields', _debug: debugBlock }));
+    return;
+  }
+  if (!diagResult.parsed.diagnostic) {
+    res.writeHead(502, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'error', message: 'Diag response missing diagnostic', _debug: debugBlock }));
+    return;
+  }
+
+  // A tag value outside its list silently corrupts downstream scoring — hard fail.
+  const ALLOWED = {
+    root_cause_type: ['process', 'people', 'technology', 'data'],
+    problem_pattern: ['firefighting', 'leakage', 'bottleneck', 'visibility', 'adoption_failure', 'missing_ownership', 'communication_breakdown'],
+    urgency_signal:  ['low', 'medium', 'high']
+  };
+  const vocabErrors = [];
+  for (const tag in ALLOWED) {
+    const value = tagResult.parsed.parsedSignals[tag];
+    if (!value) { vocabErrors.push(tag + ' missing'); continue; }
+    if (ALLOWED[tag].indexOf(value) === -1) {
+      vocabErrors.push(tag + '="' + value + '" not in [' + ALLOWED[tag].join(',') + ']');
+    }
+  }
+  if (vocabErrors.length) {
+    res.writeHead(502, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'error', message: 'Tag vocabulary violation: ' + vocabErrors.join('; '), _debug: debugBlock }));
+    return;
+  }
+
+  // Fire-and-forget — log failures must not block the user's response.
+  logSession(app, {
+    user_input:      JSON.stringify(answers),
+    ai_signals:      JSON.stringify(tagResult.parsed),
+    prompt:          TAG_PROMPT + '\n---\n' + DIAG_PROMPT,
+    raw_response:    tagResult.rawText + '\n---\n' + diagResult.rawText,
+    latency_ms:      latencyMs,
+    interpretation:  tagResult.parsed.interpretation,
+    signal_evidence: JSON.stringify(tagResult.parsed.signalEvidence)
+  });
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({
+    status: 'success',
+    data: {
+      parsedSignals:  tagResult.parsed.parsedSignals,
+      interpretation: tagResult.parsed.interpretation,
+      signalEvidence: tagResult.parsed.signalEvidence,
+      diagnostic:     diagResult.parsed.diagnostic
+    },
+    _debug: debugBlock
+  }));
+};
+
+async function callLLM(label, prompt, systemPrompt, maxTokens, llm) {
+  const tag = `[${label} req:${llm.requestId}]`;
   const t0 = Date.now();
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(function () { ctrl.abort(); }, 27000);
+  let rawText = '';
+  let status = 0;
   try {
-    const response = await fetch(llmUrl, {
+    const resp = await fetch(llm.llmUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${bearer}`,
-        'CATALYST-ORG': orgId
+        'Authorization': `Bearer ${llm.bearer}`,
+        'CATALYST-ORG': llm.orgId
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({
+        prompt,
+        model: llm.model,
+        system_prompt: systemPrompt,
+        top_p: 0.9,
+        top_k: 50,
+        best_of: 1,
+        temperature: 0.3,
+        max_tokens: maxTokens
+      }),
+      signal: ctrl.signal
     });
-
-    const latencyMs = Date.now() - t0;
-    console.log('QuickML status:', response.status, 'latency:', latencyMs + 'ms');
-    const rawText = await response.text();
-    console.log('QuickML response:', rawText);
-
-    if (!response.ok) {
-      res.writeHead(response.status, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'error', message: `QuickML returned ${response.status}`, debug: rawText }));
-      return;
-    }
-
-    const raw = JSON.parse(rawText);
-    const modelOutput = raw.output || raw.response || raw.choices?.[0]?.text || raw.result;
-
-    if (!modelOutput) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'error', message: 'No output field found', raw }));
-      return;
-    }
-
-    // Qwen occasionally wraps output in ```json fences despite instructions.
-    const cleaned = modelOutput.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    status = resp.status;
+    rawText = await resp.text();
+    const latency = Date.now() - t0;
+    console.log(tag, 'status:', status, 'latency:', latency + 'ms');
+    if (!resp.ok) return { ok: false, status, rawText, latency, err: 'QuickML ' + status };
+    const upstream = JSON.parse(rawText);
+    const usage = upstream.usage || null;
+    if (usage) console.log(tag, 'tokens:', usage.prompt_tokens, '+', usage.completion_tokens, '=', usage.total_tokens);
+    const output = upstream.output || upstream.response || (upstream.choices && upstream.choices[0] && upstream.choices[0].text) || upstream.result;
+    if (!output) return { ok: false, status, rawText, latency, usage, err: 'no output field' };
+    const cleaned = output.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
     const parsed = JSON.parse(cleaned);
-
-    if (!parsed.parsedSignals || !parsed.diagnostic || !parsed.interpretation || !parsed.signalEvidence) {
-      res.writeHead(502, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'error', message: 'LLM output missing parsedSignals, diagnostic, interpretation, or signalEvidence.', raw: cleaned }));
-      return;
-    }
-
-    // Fire-and-forget: log to Data Store. Errors swallowed so response still returns.
-    // NOTE: `prompt`, `raw_response`, `latency_ms`, `interpretation`, `signal_evidence`
-    // columns must exist on the WizardSessions table in the Catalyst console before
-    // this deploy, or insertRow will reject the extra fields.
-    logSession(app, {
-      user_input: JSON.stringify(answers),
-      ai_signals: JSON.stringify(parsed),
-      prompt: prompt,
-      raw_response: rawText,
-      latency_ms: latencyMs,
-      interpretation: parsed.interpretation,
-      signal_evidence: JSON.stringify(parsed.signalEvidence)
-    });
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      status: 'success',
-      data: parsed,
-      _debug: {
-        prompt: prompt,
-        rawResponse: rawText,
-        model: model,
-        latencyMs: latencyMs,
-        attempts: attempt
-      }
-    }));
-
+    return { ok: true, status, rawText, latency, usage, parsed };
   } catch (err) {
-    console.error('Error:', err.message);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'error', message: err.message }));
+    const latency = Date.now() - t0;
+    const isAbort = err && err.name === 'AbortError';
+    console.error(tag, 'error:', isAbort ? 'timeout' : err.message, 'latency:', latency + 'ms');
+    return { ok: false, status, rawText, latency, err: isAbort ? 'timeout' : (err && err.message) };
+  } finally {
+    clearTimeout(timeoutId);
   }
-};
+}
 
-// Module-scope cache — warm invocations reuse this. Cold starts re-mint.
+// Module-scope cache survives warm invocations; cold starts re-mint.
 let cachedToken = { value: null, expiresAt: 0 };
 
-// Mints a fresh Zoho OAuth access token from the refresh token, or returns cached.
-// TODO: implement caching strategy below.
 async function getAccessToken() {
   const now = Date.now();
   if (cachedToken.value && now < cachedToken.expiresAt) {
@@ -216,8 +293,46 @@ async function getAccessToken() {
   return cachedToken.value;
 }
 
-// Minimal Data Store logger. Table "WizardSessions" must exist with columns:
-//   user_input (Text), ai_signals (Text). CREATEDTIME is built-in.
+// Trivial call on page-load to wake the model before the user's real request.
+// Not critical path — errors are swallowed.
+async function warmupLLM() {
+  const llmUrl = process.env.LLM_API_URL;
+  const orgId = process.env.ZOHO_ORG_ID;
+  const model = process.env.LLM_MODEL || 'crm-di-qwen_text_moe_30b';
+  if (!llmUrl || !orgId || !process.env.CLIENT_ID || !process.env.CLIENT_SECRET || !process.env.REFRESH_TOKEN) return;
+
+  const bearer = await getAccessToken();
+  const ctrl = new AbortController();
+  const timeoutId = setTimeout(function () { ctrl.abort(); }, 8000);
+  try {
+    const resp = await fetch(llmUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${bearer}`,
+        'CATALYST-ORG': orgId
+      },
+      body: JSON.stringify({
+        prompt: 'Reply with ok.',
+        model,
+        system_prompt: 'Respond with a single word.',
+        top_p: 0.9,
+        top_k: 50,
+        best_of: 1,
+        temperature: 0.1,
+        max_tokens: 50
+      }),
+      signal: ctrl.signal
+    });
+    const body = await resp.text();
+    console.log('[warmup] status:', resp.status, 'body:', body.slice(0, 200));
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+// Writes to Data Store table "WizardSessions" (must exist with matching columns).
+// Errors swallowed to keep the user's response unblocked.
 function logSession(app, payload) {
   try {
     const table = app.datastore().table('WizardSessions');

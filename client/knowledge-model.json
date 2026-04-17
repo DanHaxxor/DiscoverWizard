@@ -1,1005 +1,175 @@
 {
-  "version": "1.0.0",
-  "phase": "v1-static-poc",
-
-  "signals": {
-    "data_entry_automation": {
-      "description": "Need to automate repetitive data entry tasks",
-      "default_weight": 0.0
-    },
-    "workflow_automation": {
-      "description": "Need to automate multi-step business workflows",
-      "default_weight": 0.0
-    },
-    "spreadsheet_replacement": {
-      "description": "Need to move off spreadsheets into structured systems",
-      "default_weight": 0.0
-    },
-    "reporting_needed": {
-      "description": "Need visibility into business metrics and KPIs",
-      "default_weight": 0.0
-    },
-    "dashboard_needed": {
-      "description": "Need real-time dashboards for operational oversight",
-      "default_weight": 0.0
-    },
-    "crm_needed": {
-      "description": "Need a centralized system to manage customer relationships",
-      "default_weight": 0.0
-    },
-    "project_management_needed": {
-      "description": "Need structured project tracking and task management",
-      "default_weight": 0.0
-    },
-    "process_definition_needed": {
-      "description": "Need to define and enforce standard operating procedures",
-      "default_weight": 0.0
-    },
-    "approval_flows_needed": {
-      "description": "Need structured approval chains for decisions and requests",
-      "default_weight": 0.0
-    },
-    "database_needed": {
-      "description": "Need structured data storage beyond spreadsheets",
-      "default_weight": 0.0
-    },
-    "integration_needed": {
-      "description": "Need to connect disparate tools and data sources",
-      "default_weight": 0.0
-    },
-    "api_orchestration_needed": {
-      "description": "Need programmatic integration and API management",
-      "default_weight": 0.0
-    },
-    "unified_platform_needed": {
-      "description": "Need a single platform to replace fragmented tool stack",
-      "default_weight": 0.0
-    },
-    "helpdesk_needed": {
-      "description": "Need a ticketing system for customer support",
-      "default_weight": 0.0
-    },
-    "ecommerce_needed": {
-      "description": "Need online storefront and order management",
-      "default_weight": 0.0
-    },
-    "marketing_automation_needed": {
-      "description": "Need automated marketing campaigns and lead nurturing",
-      "default_weight": 0.0
-    },
-    "hr_needed": {
-      "description": "Need employee lifecycle and HR process management",
-      "default_weight": 0.0
-    },
-    "payroll_needed": {
-      "description": "Need payroll processing and compliance management",
-      "default_weight": 0.0
-    },
-    "recruiting_needed": {
-      "description": "Need applicant tracking and hiring workflow",
-      "default_weight": 0.0
-    },
-    "collaboration_needed": {
-      "description": "Need team communication and file sharing tools",
-      "default_weight": 0.0
-    },
-    "document_management_needed": {
-      "description": "Need centralized document storage and version control",
-      "default_weight": 0.0
-    },
-    "esignature_needed": {
-      "description": "Need digital document signing workflows",
-      "default_weight": 0.0
-    },
-    "field_service_needed": {
-      "description": "Need on-site job scheduling and technician dispatch",
-      "default_weight": 0.0
-    },
-    "video_conferencing_needed": {
-      "description": "Need online meetings and webinar capability",
-      "default_weight": 0.0
-    },
-    "survey_needed": {
-      "description": "Need customer or employee feedback collection",
-      "default_weight": 0.0
-    },
-    "social_media_needed": {
-      "description": "Need social media management and scheduling",
-      "default_weight": 0.0
-    },
-    "inventory_needed": {
-      "description": "Need inventory tracking and warehouse management",
-      "default_weight": 0.0
-    },
-    "billing_needed": {
-      "description": "Need invoicing, payments, and billing automation",
-      "default_weight": 0.0
-    },
-    "expense_management_needed": {
-      "description": "Need expense tracking and reimbursement workflows",
-      "default_weight": 0.0
-    },
-    "accounting_needed": {
-      "description": "Need double-entry accounting and financial reporting",
-      "default_weight": 0.0
-    },
-    "solo_productivity": {
-      "description": "Solo operator needing lightweight personal productivity tools",
-      "default_weight": 0.0
-    },
-    "it_management_needed": {
-      "description": "Need IT asset management and identity governance",
-      "default_weight": 0.0
-    },
-    "security_needed": {
-      "description": "Need password management and security controls",
-      "default_weight": 0.0
-    },
-    "learning_management_needed": {
-      "description": "Need employee training and course delivery platform",
-      "default_weight": 0.0
-    },
-    "employee_engagement_needed": {
-      "description": "Need gamification and motivation tools for teams",
-      "default_weight": 0.0
-    },
-    "event_management_needed": {
-      "description": "Need event planning and attendee management",
-      "default_weight": 0.0
-    },
-    "website_needed": {
-      "description": "Need website or landing page builder",
-      "default_weight": 0.0
-    },
-    "customer_engagement_needed": {
-      "description": "Need live chat and visitor tracking for customer engagement",
-      "default_weight": 0.0
-    },
-    "analytics_needed": {
-      "description": "Need advanced cross-functional analytics and BI",
-      "default_weight": 0.0
-    },
-    "contract_management_needed": {
-      "description": "Need contract lifecycle management",
-      "default_weight": 0.0
-    },
-    "remote_support_needed": {
-      "description": "Need remote desktop access and support tools",
-      "default_weight": 0.0
-    },
-    "custom_apps_needed": {
-      "description": "Need low-code custom application development",
-      "default_weight": 0.0
-    },
-    "email_campaigns_needed": {
-      "description": "Need email marketing and newsletter management",
-      "default_weight": 0.0
-    },
-    "appointment_scheduling_needed": {
-      "description": "Need online booking and appointment scheduling",
-      "default_weight": 0.0
-    }
-  },
-
-  "pain_point_mappings": {
-    "manual-data-entry": [
-      { "signal": "data_entry_automation", "weight": 0.9 },
-      { "signal": "workflow_automation", "weight": 0.7 },
-      { "signal": "spreadsheet_replacement", "weight": 0.6 }
-    ],
-    "lack-visibility": [
-      { "signal": "reporting_needed", "weight": 0.9 },
-      { "signal": "dashboard_needed", "weight": 0.8 },
-      { "signal": "crm_needed", "weight": 0.5 }
-    ],
-    "lack-structure": [
-      { "signal": "crm_needed", "weight": 0.7 },
-      { "signal": "project_management_needed", "weight": 0.6 },
-      { "signal": "process_definition_needed", "weight": 0.8 }
-    ],
-    "lack-process": [
-      { "signal": "workflow_automation", "weight": 0.8 },
-      { "signal": "process_definition_needed", "weight": 0.9 },
-      { "signal": "approval_flows_needed", "weight": 0.7 }
-    ],
-    "too-many-spreadsheets": [
-      { "signal": "spreadsheet_replacement", "weight": 0.95 },
-      { "signal": "database_needed", "weight": 0.8 },
-      { "signal": "data_entry_automation", "weight": 0.7 }
-    ],
-    "integration-issues": [
-      { "signal": "integration_needed", "weight": 0.95 },
-      { "signal": "api_orchestration_needed", "weight": 0.8 },
-      { "signal": "unified_platform_needed", "weight": 0.7 }
-    ],
-    "no-automation": [
-      { "signal": "workflow_automation", "weight": 0.95 },
-      { "signal": "data_entry_automation", "weight": 0.8 },
-      { "signal": "approval_flows_needed", "weight": 0.6 }
-    ]
-  },
-
-  "role_modifiers": {
-    "owner-operator": { "multiplier": 1.0, "boosted_signals": {} },
-    "team-manager": {
-      "multiplier": 1.0,
-      "boosted_signals": { "reporting_needed": 1.2, "dashboard_needed": 1.2 }
-    },
-    "system-admin": {
-      "multiplier": 1.0,
-      "boosted_signals": { "integration_needed": 1.3, "api_orchestration_needed": 1.3 }
-    },
-    "user": { "multiplier": 0.8, "boosted_signals": {}, "flag": "bring_to_leadership" }
-  },
-
-  "size_modifiers": {
-    "just-me": {
-      "exclusions": ["zoho_people", "zoho_payroll", "zoho_recruit", "zoho_connect", "zoho_learn", "zoho_motivator", "zoho_sprints", "zoho_directory"],
-      "boosted_signals": { "solo_productivity": 1.3 }
-    },
-    "2-5": {
-      "exclusions": [],
-      "boosted_signals": {}
-    },
-    "6-15": {
-      "exclusions": [],
-      "boosted_signals": { "collaboration_needed": 1.1, "reporting_needed": 1.1, "dashboard_needed": 1.1 }
-    },
-    "16-50": {
-      "exclusions": [],
-      "boosted_signals": { "hr_needed": 1.2, "approval_flows_needed": 1.2, "reporting_needed": 1.2 }
-    },
-    "51-200": {
-      "exclusions": [],
-      "boosted_signals": { "hr_needed": 1.3, "it_management_needed": 1.2, "security_needed": 1.2, "analytics_needed": 1.2 },
-      "flag": "sales_handoff"
-    },
-    "200+": {
-      "exclusions": [],
-      "boosted_signals": { "hr_needed": 1.4, "it_management_needed": 1.3, "security_needed": 1.3, "analytics_needed": 1.3, "learning_management_needed": 1.2 },
-      "flag": "sales_handoff"
-    }
-  },
-
-  "b2b_modifiers": {
-    "b2b": { "boosted_signals": { "crm_needed": 1.2, "helpdesk_needed": 0.9 } },
-    "b2c": { "boosted_signals": { "ecommerce_needed": 1.2, "marketing_automation_needed": 1.1 } },
-    "both": { "boosted_signals": { "crm_needed": 0.9, "ecommerce_needed": 0.9 } }
-  },
-
-  "products": [
-    {
-      "id": "zoho_crm",
-      "name": "Zoho CRM",
-      "category": "CRM",
-      "one_line": "Manage your sales pipeline, track leads, and close deals from one place.",
-      "signals_required": ["crm_needed"],
-      "signals_boosted": ["reporting_needed", "workflow_automation", "customer_engagement_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_campaigns", "zoho_desk", "zoho_analytics", "zoho_salesiq", "zoho_books", "zoho_invoice", "zoho_sign", "zoho_survey", "zoho_projects", "zoho_marketing_automation", "zoho_social", "zoho_flow", "zoho_meeting", "zoho_cliq", "zoho_inventory"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_bigin",
-      "name": "Zoho Bigin",
-      "category": "CRM",
-      "one_line": "A simple pipeline-centric CRM built for small businesses.",
-      "signals_required": ["crm_needed", "solo_productivity"],
-      "signals_boosted": [],
-      "anti_signals": ["analytics_needed", "api_orchestration_needed"],
-      "integrates_with": ["zoho_desk", "zoho_campaigns", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_salesiq",
-      "name": "Zoho SalesIQ",
-      "category": "CRM",
-      "one_line": "Engage website visitors with live chat, visitor tracking, and chatbots.",
-      "signals_required": ["customer_engagement_needed"],
-      "signals_boosted": ["crm_needed", "marketing_automation_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_desk", "zoho_campaigns", "zoho_analytics"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_bookings",
-      "name": "Zoho Bookings",
-      "category": "CRM",
-      "one_line": "Let customers book appointments online and sync with your calendar.",
-      "signals_required": ["appointment_scheduling_needed"],
-      "signals_boosted": ["customer_engagement_needed", "solo_productivity"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_meeting", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_forms",
-      "name": "Zoho Forms",
-      "category": "CRM",
-      "one_line": "Build online forms to collect data and automate follow-up workflows.",
-      "signals_required": ["data_entry_automation"],
-      "signals_boosted": ["crm_needed", "workflow_automation", "survey_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_campaigns", "zoho_creator", "zoho_flow", "zoho_analytics"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_books",
-      "name": "Zoho Books",
-      "category": "Finance",
-      "one_line": "End-to-end accounting with automated bank feeds, reconciliation, and tax compliance.",
-      "signals_required": ["accounting_needed"],
-      "signals_boosted": ["billing_needed", "expense_management_needed", "reporting_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_inventory", "zoho_expense", "zoho_invoice", "zoho_checkout", "zoho_analytics", "zoho_payroll", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_invoice",
-      "name": "Zoho Invoice",
-      "category": "Finance",
-      "one_line": "Create professional invoices and collect payments online.",
-      "signals_required": ["billing_needed"],
-      "signals_boosted": ["accounting_needed", "data_entry_automation"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_books", "zoho_expense", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_expense",
-      "name": "Zoho Expense",
-      "category": "Finance",
-      "one_line": "Automate expense reporting with receipt scanning and approval workflows.",
-      "signals_required": ["expense_management_needed"],
-      "signals_boosted": ["approval_flows_needed", "accounting_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_books", "zoho_people", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_inventory",
-      "name": "Zoho Inventory",
-      "category": "Finance",
-      "one_line": "Track stock levels, manage warehouses, and fulfill orders across channels.",
-      "signals_required": ["inventory_needed"],
-      "signals_boosted": ["ecommerce_needed", "billing_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_books", "zoho_commerce", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_checkout",
-      "name": "Zoho Checkout",
-      "category": "Finance",
-      "one_line": "Create payment pages and collect one-time or recurring payments online.",
-      "signals_required": ["billing_needed"],
-      "signals_boosted": ["ecommerce_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_books", "zoho_invoice", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_payroll",
-      "name": "Zoho Payroll",
-      "category": "Finance",
-      "one_line": "Process payroll, manage tax filings, and handle direct deposits.",
-      "signals_required": ["payroll_needed"],
-      "signals_boosted": ["hr_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_people", "zoho_books", "zoho_expense", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_billing",
-      "name": "Zoho Billing",
-      "category": "Finance",
-      "one_line": "Manage subscriptions, recurring billing, and revenue recognition.",
-      "signals_required": ["billing_needed"],
-      "signals_boosted": ["accounting_needed", "ecommerce_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_books", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_campaigns",
-      "name": "Zoho Campaigns",
-      "category": "Marketing",
-      "one_line": "Design and send email campaigns with segmentation and A/B testing.",
-      "signals_required": ["email_campaigns_needed"],
-      "signals_boosted": ["marketing_automation_needed", "crm_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_analytics", "zoho_salesiq", "zoho_survey", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_marketing_automation",
-      "name": "Zoho Marketing Automation",
-      "category": "Marketing",
-      "one_line": "Nurture leads with multi-channel journeys, scoring, and behavioral triggers.",
-      "signals_required": ["marketing_automation_needed"],
-      "signals_boosted": ["crm_needed", "email_campaigns_needed", "customer_engagement_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_salesiq", "zoho_analytics", "zoho_campaigns", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_social",
-      "name": "Zoho Social",
-      "category": "Marketing",
-      "one_line": "Schedule posts, monitor mentions, and measure social media ROI.",
-      "signals_required": ["social_media_needed"],
-      "signals_boosted": ["marketing_automation_needed", "customer_engagement_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_desk", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_survey",
-      "name": "Zoho Survey",
-      "category": "Marketing",
-      "one_line": "Create surveys to gather customer feedback and measure satisfaction.",
-      "signals_required": ["survey_needed"],
-      "signals_boosted": ["customer_engagement_needed", "reporting_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_campaigns", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_backstage",
-      "name": "Zoho Backstage",
-      "category": "Marketing",
-      "one_line": "Plan and manage events end-to-end with registration, agendas, and sponsor portals.",
-      "signals_required": ["event_management_needed"],
-      "signals_boosted": ["marketing_automation_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_campaigns", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_pagesense",
-      "name": "Zoho PageSense",
-      "category": "Marketing",
-      "one_line": "Optimize website conversions with heatmaps, A/B tests, and funnel analysis.",
-      "signals_required": ["website_needed"],
-      "signals_boosted": ["marketing_automation_needed", "analytics_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_desk",
-      "name": "Zoho Desk",
-      "category": "Operations",
-      "one_line": "Manage customer support tickets across email, chat, phone, and social in one place.",
-      "signals_required": ["helpdesk_needed"],
-      "signals_boosted": ["crm_needed", "customer_engagement_needed", "process_definition_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_salesiq", "zoho_analytics", "zoho_projects", "zoho_cliq", "zoho_flow", "zoho_assist", "zoho_survey"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_assist",
-      "name": "Zoho Assist",
-      "category": "Operations",
-      "one_line": "Provide remote support and unattended access to customer or employee devices.",
-      "signals_required": ["remote_support_needed"],
-      "signals_boosted": ["helpdesk_needed", "it_management_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_desk", "zoho_salesiq", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_lens",
-      "name": "Zoho Lens",
-      "category": "Operations",
-      "one_line": "Provide remote visual assistance using augmented reality on mobile cameras.",
-      "signals_required": ["field_service_needed", "remote_support_needed"],
-      "signals_boosted": ["helpdesk_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_desk", "zoho_assist"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_projects",
-      "name": "Zoho Projects",
-      "category": "Operations",
-      "one_line": "Plan projects with Gantt charts, task dependencies, time tracking, and team collaboration.",
-      "signals_required": ["project_management_needed"],
-      "signals_boosted": ["collaboration_needed", "reporting_needed", "process_definition_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_desk", "zoho_cliq", "zoho_analytics", "zoho_sprints", "zoho_flow", "zoho_workdrive", "zoho_meeting"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_sprints",
-      "name": "Zoho Sprints",
-      "category": "Operations",
-      "one_line": "Run agile sprints with scrum boards, backlog management, and velocity tracking.",
-      "signals_required": ["project_management_needed"],
-      "signals_boosted": ["collaboration_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_projects", "zoho_cliq", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_people",
-      "name": "Zoho People",
-      "category": "HR",
-      "one_line": "Manage employee records, attendance, leave, and performance reviews.",
-      "signals_required": ["hr_needed"],
-      "signals_boosted": ["approval_flows_needed", "process_definition_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_payroll", "zoho_recruit", "zoho_expense", "zoho_cliq", "zoho_analytics", "zoho_flow", "zoho_learn", "zoho_connect"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_recruit",
-      "name": "Zoho Recruit",
-      "category": "HR",
-      "one_line": "Track applicants, post to job boards, and streamline your hiring pipeline.",
-      "signals_required": ["recruiting_needed"],
-      "signals_boosted": ["hr_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_people", "zoho_crm", "zoho_analytics", "zoho_sign", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_connect",
-      "name": "Zoho Connect",
-      "category": "HR",
-      "one_line": "Internal social network for company announcements, groups, and knowledge sharing.",
-      "signals_required": ["collaboration_needed"],
-      "signals_boosted": ["employee_engagement_needed", "document_management_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_people", "zoho_cliq", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_learn",
-      "name": "Zoho Learn",
-      "category": "HR",
-      "one_line": "Build training courses and knowledge bases for employee onboarding and development.",
-      "signals_required": ["learning_management_needed"],
-      "signals_boosted": ["hr_needed", "collaboration_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_people", "zoho_connect", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_motivator",
-      "name": "Zoho Motivator",
-      "category": "HR",
-      "one_line": "Gamify sales and team performance with leaderboards, targets, and competitions.",
-      "signals_required": ["employee_engagement_needed"],
-      "signals_boosted": ["crm_needed", "reporting_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_crm", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_cliq",
-      "name": "Zoho Cliq",
-      "category": "Collaboration",
-      "one_line": "Team messaging with channels, audio/video calls, and integrated bots.",
-      "signals_required": ["collaboration_needed"],
-      "signals_boosted": ["project_management_needed", "unified_platform_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_projects", "zoho_desk", "zoho_crm", "zoho_people", "zoho_connect", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_workdrive",
-      "name": "Zoho WorkDrive",
-      "category": "Collaboration",
-      "one_line": "Secure cloud storage for teams with real-time collaboration and access controls.",
-      "signals_required": ["document_management_needed"],
-      "signals_boosted": ["collaboration_needed", "security_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_projects", "zoho_cliq", "zoho_crm", "zoho_sign", "zoho_flow", "zoho_writer", "zoho_sheet", "zoho_show"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_meeting",
-      "name": "Zoho Meeting",
-      "category": "Collaboration",
-      "one_line": "Host video meetings and webinars with screen sharing and recording.",
-      "signals_required": ["video_conferencing_needed"],
-      "signals_boosted": ["collaboration_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_projects", "zoho_cliq", "zoho_bookings", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_writer",
-      "name": "Zoho Writer",
-      "category": "Collaboration",
-      "one_line": "Collaborative word processor with templates, merge, and approval workflows.",
-      "signals_required": ["document_management_needed"],
-      "signals_boosted": ["collaboration_needed", "process_definition_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_workdrive", "zoho_crm", "zoho_sign", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_sheet",
-      "name": "Zoho Sheet",
-      "category": "Collaboration",
-      "one_line": "Online spreadsheet with pivot tables, macros, and real-time collaboration.",
-      "signals_required": ["spreadsheet_replacement"],
-      "signals_boosted": ["data_entry_automation", "reporting_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_workdrive", "zoho_analytics", "zoho_crm", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_show",
-      "name": "Zoho Show",
-      "category": "Collaboration",
-      "one_line": "Create and deliver presentations with real-time co-editing.",
-      "signals_required": ["collaboration_needed"],
-      "signals_boosted": ["document_management_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_workdrive", "zoho_meeting", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_notebook",
-      "name": "Zoho Notebook",
-      "category": "Collaboration",
-      "one_line": "Capture notes, checklists, and ideas across all your devices.",
-      "signals_required": ["solo_productivity"],
-      "signals_boosted": ["collaboration_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_mail",
-      "name": "Zoho Mail",
-      "category": "Collaboration",
-      "one_line": "Secure business email with calendar, contacts, and task management.",
-      "signals_required": ["collaboration_needed"],
-      "signals_boosted": ["unified_platform_needed", "security_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_cliq", "zoho_workdrive", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_analytics",
-      "name": "Zoho Analytics",
-      "category": "Analytics",
-      "one_line": "Build interactive dashboards and reports by blending data from any source.",
-      "signals_required": ["analytics_needed"],
-      "signals_boosted": ["reporting_needed", "dashboard_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_desk", "zoho_books", "zoho_people", "zoho_projects", "zoho_campaigns", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_dataprep",
-      "name": "Zoho DataPrep",
-      "category": "Analytics",
-      "one_line": "Clean, transform, and enrich data for analysis with AI-assisted preparation.",
-      "signals_required": ["analytics_needed", "data_entry_automation"],
-      "signals_boosted": ["reporting_needed", "database_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_analytics", "zoho_crm", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_creator",
-      "name": "Zoho Creator",
-      "category": "Developer",
-      "one_line": "Build custom business apps with drag-and-drop forms, workflows, and dashboards.",
-      "signals_required": ["custom_apps_needed"],
-      "signals_boosted": ["spreadsheet_replacement", "database_needed", "workflow_automation", "process_definition_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_books", "zoho_analytics", "zoho_flow", "zoho_sign"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_flow",
-      "name": "Zoho Flow",
-      "category": "Developer",
-      "one_line": "Connect apps and automate workflows across Zoho and 500+ third-party services.",
-      "signals_required": ["integration_needed"],
-      "signals_boosted": ["workflow_automation", "api_orchestration_needed", "unified_platform_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_desk", "zoho_books", "zoho_people", "zoho_projects", "zoho_campaigns", "zoho_creator"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_catalyst",
-      "name": "Zoho Catalyst",
-      "category": "Developer",
-      "one_line": "Full-stack serverless platform for building and deploying custom applications.",
-      "signals_required": ["api_orchestration_needed", "custom_apps_needed"],
-      "signals_boosted": ["integration_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_creator", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_directory",
-      "name": "Zoho Directory",
-      "category": "IT",
-      "one_line": "Centralized identity and access management with SSO for all your apps.",
-      "signals_required": ["it_management_needed"],
-      "signals_boosted": ["security_needed", "unified_platform_needed"],
-      "anti_signals": ["solo_productivity"],
-      "integrates_with": ["zoho_vault", "zoho_oneauth", "zoho_people", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_vault",
-      "name": "Zoho Vault",
-      "category": "IT",
-      "one_line": "Securely store and share passwords across your team with role-based access.",
-      "signals_required": ["security_needed"],
-      "signals_boosted": ["it_management_needed", "collaboration_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_directory", "zoho_oneauth", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_oneauth",
-      "name": "Zoho OneAuth",
-      "category": "IT",
-      "one_line": "Multi-factor authentication app for securing all your Zoho and third-party accounts.",
-      "signals_required": ["security_needed"],
-      "signals_boosted": ["it_management_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_directory", "zoho_vault"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_sign",
-      "name": "Zoho Sign",
-      "category": "Operations",
-      "one_line": "Send documents for legally binding electronic signatures.",
-      "signals_required": ["esignature_needed"],
-      "signals_boosted": ["document_management_needed", "contract_management_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_people", "zoho_writer", "zoho_workdrive", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_contracts",
-      "name": "Zoho Contracts",
-      "category": "Operations",
-      "one_line": "Manage the entire contract lifecycle from drafting to renewal.",
-      "signals_required": ["contract_management_needed"],
-      "signals_boosted": ["esignature_needed", "approval_flows_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_sign", "zoho_books", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_commerce",
-      "name": "Zoho Commerce",
-      "category": "Operations",
-      "one_line": "Build an online store with product management, payments, and shipping.",
-      "signals_required": ["ecommerce_needed"],
-      "signals_boosted": ["inventory_needed", "billing_needed", "marketing_automation_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_inventory", "zoho_books", "zoho_crm", "zoho_campaigns", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 1
-    },
-    {
-      "id": "zoho_thrive",
-      "name": "Zoho Thrive",
-      "category": "Marketing",
-      "one_line": "Run affiliate and influencer marketing programs to drive partner-led growth.",
-      "signals_required": ["marketing_automation_needed"],
-      "signals_boosted": ["ecommerce_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_campaigns", "zoho_flow"],
-      "rollout_priority": 3
-    },
-    {
-      "id": "zoho_sites",
-      "name": "Zoho Sites",
-      "category": "Marketing",
-      "one_line": "Build responsive websites with drag-and-drop, no coding required.",
-      "signals_required": ["website_needed"],
-      "signals_boosted": ["marketing_automation_needed", "ecommerce_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_salesiq", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 2
-    },
-    {
-      "id": "zoho_landingpage",
-      "name": "Zoho LandingPage",
-      "category": "Marketing",
-      "one_line": "Create and A/B test landing pages for campaigns without developers.",
-      "signals_required": ["marketing_automation_needed"],
-      "signals_boosted": ["email_campaigns_needed", "website_needed"],
-      "anti_signals": [],
-      "integrates_with": ["zoho_crm", "zoho_campaigns", "zoho_analytics", "zoho_flow"],
-      "rollout_priority": 3
-    }
+  "version": "debug-v2",
+  "phase": "I",
+  "signals": [
+    { "id": "crm_needed",                   "description": "Needs a CRM to manage leads/deals",               "explanation": "centralizes your customer relationships and pipeline" },
+    { "id": "followup_automation_needed",   "description": "Needs automated follow-up sequences",             "explanation": "automates follow-ups so no lead goes cold" },
+    { "id": "lead_management_needed",       "description": "Needs structured lead capture and routing",       "explanation": "captures and routes leads into a single pipeline" },
+    { "id": "reporting_needed",             "description": "Needs sales/pipeline reporting",                  "explanation": "gives you visibility into pipeline health and rep activity" },
+    { "id": "email_campaigns_needed",       "description": "Needs email outreach",                            "explanation": "runs segmented email outreach tied to your CRM" },
+    { "id": "helpdesk_needed",              "description": "Needs a ticketing / helpdesk system",             "explanation": "organizes customer support into a trackable ticket system" },
+    { "id": "unified_customer_view_needed", "description": "Needs a single view of customer interactions",    "explanation": "gives every agent the full history of the customer in one view" },
+    { "id": "escalation_process_needed",    "description": "Needs escalation/routing for support",            "explanation": "routes tickets by priority and owner instead of by whoever notices" },
+    { "id": "customer_engagement_needed",   "description": "Needs proactive customer engagement",             "explanation": "engages customers on your site in real time" },
+    { "id": "workflow_automation",          "description": "Needs multi-step workflow automation",            "explanation": "makes multi-step workflows explicit and automatic" },
+    { "id": "approval_flows_needed",        "description": "Needs formal approval chains",                    "explanation": "enforces who approves what, with an audit trail" },
+    { "id": "process_definition_needed",    "description": "Needs documented processes",                      "explanation": "turns tribal knowledge into a repeatable process" },
+    { "id": "spreadsheet_replacement",      "description": "Replace shared spreadsheets with structured apps", "explanation": "replaces shared spreadsheets with a structured app" },
+    { "id": "collaboration_needed",         "description": "Needs team collaboration tooling",                "explanation": "keeps team conversation tied to the work, not scattered across email" },
+    { "id": "marketing_automation_needed",  "description": "Needs lead nurture / drip automation",            "explanation": "nurtures leads through multi-channel drip campaigns" },
+    { "id": "attribution_needed",           "description": "Needs campaign-to-revenue attribution",           "explanation": "traces every closed deal back to the campaign that sourced it" },
+    { "id": "social_media_needed",          "description": "Needs social media management",                   "explanation": "schedules and measures social posts from one place" },
+    { "id": "analytics_needed",             "description": "Needs cross-functional analytics",                "explanation": "blends data across sales, service, and marketing into one dashboard" }
   ],
-
+  "structured_to_signals": {
+    "breakdownArea": {
+      "sales": {
+        "crm_needed": 1.0,
+        "followup_automation_needed": 1.0,
+        "lead_management_needed": 0.8,
+        "reporting_needed": 0.5
+      },
+      "service": {
+        "helpdesk_needed": 1.0,
+        "unified_customer_view_needed": 1.0,
+        "escalation_process_needed": 0.7
+      },
+      "ops": {
+        "workflow_automation": 1.0,
+        "approval_flows_needed": 1.0,
+        "process_definition_needed": 0.7,
+        "spreadsheet_replacement": 0.5,
+        "collaboration_needed": 0.5
+      },
+      "marketing": {
+        "marketing_automation_needed": 1.0,
+        "attribution_needed": 1.0,
+        "email_campaigns_needed": 0.7,
+        "analytics_needed": 0.6,
+        "social_media_needed": 0.4
+      }
+    },
+    "impact": {
+      "lost_revenue":         { "reporting_needed": 0.6 },
+      "general_inefficiency": { "analytics_needed": 0.5 }
+    }
+  },
+  "llm_tag_boosts": {
+    "problem_pattern": {
+      "leakage":              { "sales_pipeline_automation": 0.15 },
+      "missing_ownership":    { "ops_workflow_automation": 0.15 },
+      "bottleneck":           { "ops_workflow_automation": 0.10, "service_unified_inbox": 0.05 },
+      "visibility":           { "marketing_lead_attribution": 0.10, "sales_pipeline_automation": 0.05, "service_unified_inbox": 0.05 },
+      "adoption_failure":     { "ops_workflow_automation": 0.05 }
+    },
+    "root_cause_type": {
+      "people":     { "ops_workflow_automation": 0.05, "sales_pipeline_automation": 0.05 },
+      "process":    { "ops_workflow_automation": 0.10 },
+      "technology": { "service_unified_inbox": 0.05, "sales_pipeline_automation": 0.05 },
+      "data":       { "marketing_lead_attribution": 0.10 }
+    },
+    "urgency_signal": {
+      "high":   { "_all": 0.05 },
+      "medium": { "_all": 0.0 },
+      "low":    { "_all": -0.03 }
+    }
+  },
+  "role_modifiers": {
+    "Owner / Founder":                       { "multiplier": 1.0, "boosted_signals": {}, "flag": null },
+    "Executive or Director":                 { "multiplier": 1.0, "boosted_signals": {}, "flag": null },
+    "Manager or Team Lead":                  { "multiplier": 1.0, "boosted_signals": {}, "flag": null },
+    "Individual Contributor":                { "multiplier": 1.0, "boosted_signals": {}, "flag": "bring_to_leadership" },
+    "Evaluating on behalf of someone else":  { "multiplier": 1.0, "boosted_signals": {}, "flag": "bring_to_leadership" }
+  },
+  "size_modifiers": {
+    "just-me":  { "boosted_signals": {}, "exclusions": [] },
+    "2-10":     { "boosted_signals": {}, "exclusions": [] },
+    "11-50":    { "boosted_signals": {}, "exclusions": [] },
+    "51-200":   { "boosted_signals": {}, "exclusions": [] },
+    "201-500":  { "boosted_signals": {}, "exclusions": [], "flag": "sales_handoff" },
+    "500+":     { "boosted_signals": {}, "exclusions": [], "flag": "sales_handoff" }
+  },
+  "b2b_modifiers": {
+    "b2b":  { "boosted_signals": {} },
+    "b2c":  { "boosted_signals": {} },
+    "both": { "boosted_signals": {} }
+  },
+  "products": [
+    { "id": "zoho_crm",                  "name": "Zoho CRM",                  "one_line": "Centralize leads, deals, and customer history in one place.",  "rollout_priority": 1, "signals_required": ["crm_needed"],                 "signals_boosted": ["lead_management_needed", "followup_automation_needed", "reporting_needed"],     "integrates_with": ["zoho_salesiq", "zoho_campaigns", "zoho_desk", "zoho_analytics"] },
+    { "id": "zoho_salesiq",              "name": "Zoho SalesIQ",              "one_line": "Live-chat and visitor tracking for your site.",                "rollout_priority": 3, "signals_required": [],                             "signals_boosted": ["lead_management_needed", "customer_engagement_needed"],                         "integrates_with": ["zoho_crm", "zoho_desk"] },
+    { "id": "zoho_campaigns",            "name": "Zoho Campaigns",            "one_line": "Segmented email outreach and drip campaigns.",                 "rollout_priority": 2, "signals_required": ["email_campaigns_needed"],     "signals_boosted": ["followup_automation_needed", "marketing_automation_needed"],                    "integrates_with": ["zoho_crm", "zoho_marketing_automation"] },
+    { "id": "zoho_desk",                 "name": "Zoho Desk",                 "one_line": "Ticketing and helpdesk with full customer context.",           "rollout_priority": 1, "signals_required": ["helpdesk_needed"],            "signals_boosted": ["unified_customer_view_needed", "escalation_process_needed"],                    "integrates_with": ["zoho_crm", "zoho_salesiq", "zoho_analytics"] },
+    { "id": "zoho_creator",              "name": "Zoho Creator",              "one_line": "Build custom workflow apps without heavy coding.",             "rollout_priority": 1, "signals_required": ["workflow_automation"],        "signals_boosted": ["approval_flows_needed", "spreadsheet_replacement", "process_definition_needed"], "integrates_with": ["zoho_cliq", "zoho_projects", "zoho_analytics"] },
+    { "id": "zoho_cliq",                 "name": "Zoho Cliq",                 "one_line": "Team chat with channels and bot-driven approvals.",            "rollout_priority": 3, "signals_required": [],                             "signals_boosted": ["collaboration_needed", "approval_flows_needed"],                                "integrates_with": ["zoho_creator", "zoho_projects"] },
+    { "id": "zoho_projects",             "name": "Zoho Projects",             "one_line": "Project and task tracking across teams.",                      "rollout_priority": 2, "signals_required": [],                             "signals_boosted": ["collaboration_needed", "process_definition_needed"],                            "integrates_with": ["zoho_cliq", "zoho_creator"] },
+    { "id": "zoho_marketing_automation", "name": "Zoho Marketing Automation", "one_line": "Multi-channel nurture with behavior-based triggers.",          "rollout_priority": 1, "signals_required": ["marketing_automation_needed"], "signals_boosted": ["email_campaigns_needed", "attribution_needed"],                                "integrates_with": ["zoho_crm", "zoho_campaigns", "zoho_social", "zoho_analytics"] },
+    { "id": "zoho_social",               "name": "Zoho Social",               "one_line": "Schedule and measure social channels in one place.",           "rollout_priority": 3, "signals_required": [],                             "signals_boosted": ["social_media_needed"],                                                          "integrates_with": ["zoho_crm", "zoho_marketing_automation"] },
+    { "id": "zoho_analytics",            "name": "Zoho Analytics",            "one_line": "Blended dashboards across sales, service, and marketing.",     "rollout_priority": 2, "signals_required": ["analytics_needed"],           "signals_boosted": ["reporting_needed", "attribution_needed"],                                       "integrates_with": ["zoho_crm", "zoho_desk", "zoho_marketing_automation"] }
+  ],
   "solution_patterns": [
     {
       "id": "sales_pipeline_automation",
       "name": "Sales Pipeline + Follow-up Automation",
-      "required_signals": ["crm_needed", "workflow_automation"],
-      "supporting_signals": ["data_entry_automation", "reporting_needed", "customer_engagement_needed", "email_campaigns_needed"],
-      "anti_signals": ["ecommerce_needed"],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50"], "role": ["owner-operator", "team-manager"], "b2b": ["b2b", "both"] },
-      "primary_bundle": ["zoho_crm", "zoho_salesiq", "zoho_analytics"],
-      "supporting_bundle": ["zoho_campaigns", "zoho_sign", "zoho_meeting", "zoho_motivator"],
+      "required_signals": ["crm_needed", "followup_automation_needed"],
+      "supporting_signals": ["lead_management_needed", "reporting_needed", "email_campaigns_needed"],
+      "anti_signals": [],
+      "ideal_profile": {
+        "size": ["2-10", "11-50", "51-200"],
+        "role": ["Owner / Founder", "Manager or Team Lead", "Executive or Director"],
+        "b2b":  ["b2b", "both"]
+      },
+      "primary_bundle":    ["zoho_crm", "zoho_salesiq", "zoho_campaigns"],
+      "supporting_bundle": ["zoho_analytics"],
       "business_outcome": "Convert more leads into deals by ensuring every prospect gets timely, consistent follow-up.",
-      "explanation_template": "As a {role} in {industry} with a {size}-person team, your biggest growth lever is a structured sales pipeline. Right now leads are falling through the cracks because there's no system enforcing follow-up. This pattern gives you full pipeline visibility plus automated next-step reminders."
+      "explanation_template": "Leads are falling through the cracks because no system enforces follow-up. This pattern gives you pipeline visibility and automated next-step reminders."
     },
     {
-      "id": "helpdesk_customer_context",
-      "name": "Helpdesk + Customer Context",
-      "required_signals": ["helpdesk_needed", "crm_needed"],
-      "supporting_signals": ["customer_engagement_needed", "process_definition_needed", "reporting_needed"],
+      "id": "service_unified_inbox",
+      "name": "Customer Service + Unified Inbox",
+      "required_signals": ["helpdesk_needed", "unified_customer_view_needed"],
+      "supporting_signals": ["escalation_process_needed", "customer_engagement_needed"],
       "anti_signals": [],
-      "ideal_profile": { "size": ["6-15", "16-50", "51-200"], "role": ["team-manager", "owner-operator"], "b2b": ["b2b", "both"] },
-      "primary_bundle": ["zoho_desk", "zoho_crm", "zoho_salesiq"],
-      "supporting_bundle": ["zoho_analytics", "zoho_survey", "zoho_assist"],
-      "business_outcome": "Resolve customer issues faster by giving agents full context on every interaction.",
-      "explanation_template": "As a {role} in {industry}, your support team is flying blind without customer history. With a {size}-person operation, every repeat-yourself moment costs you trust and time. This pattern connects your helpdesk to your CRM so agents see the full picture before they reply."
+      "ideal_profile": {
+        "size": ["2-10", "11-50", "51-200"],
+        "role": ["Owner / Founder", "Manager or Team Lead", "Executive or Director"],
+        "b2b":  ["b2b", "b2c", "both"]
+      },
+      "primary_bundle":    ["zoho_desk", "zoho_salesiq", "zoho_crm"],
+      "supporting_bundle": ["zoho_analytics"],
+      "business_outcome": "Every customer interaction is tracked, visible, and resolvable in one place.",
+      "explanation_template": "Customers repeat themselves because support history is scattered across inboxes. This pattern consolidates every touchpoint into one ticket view."
     },
     {
-      "id": "finance_billing_operations",
-      "name": "Finance + Billing Operations",
-      "required_signals": ["billing_needed", "accounting_needed"],
-      "supporting_signals": ["expense_management_needed", "reporting_needed", "approval_flows_needed", "inventory_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50"], "role": ["owner-operator", "team-manager"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_books", "zoho_invoice", "zoho_expense"],
-      "supporting_bundle": ["zoho_checkout", "zoho_payroll", "zoho_analytics", "zoho_inventory"],
-      "business_outcome": "Eliminate manual bookkeeping and get real-time visibility into cash flow, expenses, and profitability.",
-      "explanation_template": "As a {role} in {industry}, managing finances in spreadsheets or disconnected tools is costing you time and accuracy. At {size} people, you need a system that automates invoicing, tracks expenses, and gives you a live financial picture — not month-end surprises."
-    },
-    {
-      "id": "marketing_lead_nurture",
-      "name": "Marketing + Lead Nurture",
-      "required_signals": ["marketing_automation_needed", "crm_needed"],
-      "supporting_signals": ["email_campaigns_needed", "social_media_needed", "customer_engagement_needed", "analytics_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50"], "role": ["owner-operator", "team-manager"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_crm", "zoho_marketing_automation", "zoho_campaigns"],
-      "supporting_bundle": ["zoho_social", "zoho_salesiq", "zoho_analytics", "zoho_pagesense", "zoho_landingpage"],
-      "business_outcome": "Turn anonymous visitors into qualified leads and nurture them to purchase with automated multi-channel journeys.",
-      "explanation_template": "As a {role} in {industry}, your marketing efforts are scattered. With {size} people, you can't afford to manually chase every lead. This pattern automates the nurture process — from first touch to sales-ready — so your team focuses on the prospects most likely to buy."
-    },
-    {
-      "id": "internal_ops_workflow",
+      "id": "ops_workflow_automation",
       "name": "Internal Ops + Workflow Automation",
-      "required_signals": ["workflow_automation", "process_definition_needed"],
-      "supporting_signals": ["approval_flows_needed", "data_entry_automation", "reporting_needed", "collaboration_needed"],
+      "required_signals": ["workflow_automation", "approval_flows_needed"],
+      "supporting_signals": ["process_definition_needed", "spreadsheet_replacement", "collaboration_needed"],
       "anti_signals": [],
-      "ideal_profile": { "size": ["6-15", "16-50", "51-200"], "role": ["owner-operator", "team-manager", "system-admin"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_creator", "zoho_flow", "zoho_cliq"],
-      "supporting_bundle": ["zoho_analytics", "zoho_projects", "zoho_writer", "zoho_workdrive"],
-      "business_outcome": "Replace ad-hoc processes with structured, automated workflows that enforce accountability and reduce errors.",
-      "explanation_template": "As a {role} in {industry}, your team of {size} is spending too much time on manual processes that should run themselves. This pattern gives you a low-code platform to build exactly the workflows you need, connected to your team chat and file storage."
+      "ideal_profile": {
+        "size": ["11-50", "51-200", "201-500"],
+        "role": ["Executive or Director", "Manager or Team Lead"],
+        "b2b":  ["b2b", "both"]
+      },
+      "primary_bundle":    ["zoho_creator", "zoho_cliq", "zoho_projects"],
+      "supporting_bundle": ["zoho_analytics"],
+      "business_outcome": "Operational processes become explicit, owned, and auditable instead of tribal knowledge.",
+      "explanation_template": "Approvals get stuck because the process lives in people's heads. This pattern defines the workflow, assigns ownership, and surfaces bottlenecks."
     },
     {
-      "id": "field_service_job_management",
-      "name": "Field Service + Job Management",
-      "required_signals": ["field_service_needed", "project_management_needed"],
-      "supporting_signals": ["crm_needed", "billing_needed", "data_entry_automation", "appointment_scheduling_needed"],
+      "id": "marketing_lead_attribution",
+      "name": "Marketing + Lead Attribution",
+      "required_signals": ["marketing_automation_needed", "attribution_needed"],
+      "supporting_signals": ["email_campaigns_needed", "social_media_needed", "analytics_needed"],
       "anti_signals": [],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50"], "role": ["owner-operator", "team-manager"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_crm", "zoho_projects", "zoho_invoice"],
-      "supporting_bundle": ["zoho_books", "zoho_creator", "zoho_lens", "zoho_bookings", "zoho_flow"],
-      "business_outcome": "Schedule, dispatch, and track field jobs from quote to invoice without paperwork.",
-      "explanation_template": "As a {role} in {industry}, managing field work across {size} people means jobs slip through the cracks if they aren't tracked centrally. This pattern connects your customer records to project scheduling and invoicing so nothing gets lost between the office and the field."
-    },
-    {
-      "id": "hr_people_management",
-      "name": "HR + People Management",
-      "required_signals": ["hr_needed"],
-      "supporting_signals": ["approval_flows_needed", "payroll_needed", "recruiting_needed", "learning_management_needed", "employee_engagement_needed"],
-      "anti_signals": ["solo_productivity"],
-      "ideal_profile": { "size": ["16-50", "51-200", "200+"], "role": ["owner-operator", "team-manager"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_people", "zoho_recruit", "zoho_payroll"],
-      "supporting_bundle": ["zoho_learn", "zoho_connect", "zoho_expense", "zoho_analytics", "zoho_cliq"],
-      "business_outcome": "Manage the full employee lifecycle — from hiring to payroll to performance — in one connected system.",
-      "explanation_template": "As a {role} in {industry} with {size} employees, managing people in spreadsheets is unsustainable. This pattern centralizes HR records, automates leave and attendance, and connects hiring to onboarding so your team spends less time on admin and more on people."
-    },
-    {
-      "id": "project_delivery_client",
-      "name": "Project Delivery + Client Management",
-      "required_signals": ["project_management_needed", "crm_needed"],
-      "supporting_signals": ["collaboration_needed", "billing_needed", "document_management_needed", "reporting_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50"], "role": ["owner-operator", "team-manager"], "b2b": ["b2b"] },
-      "primary_bundle": ["zoho_projects", "zoho_crm", "zoho_invoice"],
-      "supporting_bundle": ["zoho_workdrive", "zoho_cliq", "zoho_analytics", "zoho_books", "zoho_meeting"],
-      "business_outcome": "Deliver client work on time and on budget by connecting project tracking to your sales pipeline and billing.",
-      "explanation_template": "As a {role} in {industry} with a {size}-person team, you're juggling client work across tools that don't talk to each other. This pattern connects your CRM pipeline to project delivery and invoicing — so when a deal closes, the project kicks off automatically."
-    },
-    {
-      "id": "ecommerce_order_management",
-      "name": "E-commerce + Order Management",
-      "required_signals": ["ecommerce_needed"],
-      "supporting_signals": ["inventory_needed", "billing_needed", "marketing_automation_needed", "accounting_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["just-me", "2-5", "6-15", "16-50"], "role": ["owner-operator"], "b2b": ["b2c", "both"] },
-      "primary_bundle": ["zoho_commerce", "zoho_inventory", "zoho_books"],
-      "supporting_bundle": ["zoho_campaigns", "zoho_crm", "zoho_analytics", "zoho_checkout", "zoho_social"],
-      "business_outcome": "Sell online with a storefront that syncs inventory, payments, and accounting in real time.",
-      "explanation_template": "As a {role} in {industry}, you need a storefront that doesn't create more manual work. At {size} people, this pattern gives you integrated commerce — products, inventory, payments, and books all connected — so orders flow through without re-keying data."
-    },
-    {
-      "id": "analytics_business_intelligence",
-      "name": "Analytics + Business Intelligence",
-      "required_signals": ["reporting_needed"],
-      "supporting_signals": ["analytics_needed", "dashboard_needed", "data_entry_automation", "database_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["6-15", "16-50", "51-200", "200+"], "role": ["team-manager", "system-admin", "owner-operator"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_analytics", "zoho_sheet", "zoho_dataprep"],
-      "supporting_bundle": ["zoho_crm", "zoho_books", "zoho_desk", "zoho_flow"],
-      "business_outcome": "Make data-driven decisions with cross-functional dashboards that pull from every system you run.",
-      "explanation_template": "As a {role} in {industry} with {size} people, you're making decisions based on gut feel because your data is scattered. This pattern gives you a unified analytics layer that blends data from CRM, finance, support, and more into actionable dashboards."
-    },
-    {
-      "id": "spreadsheet_replacement_custom",
-      "name": "Spreadsheet Replacement + Custom Apps",
-      "required_signals": ["spreadsheet_replacement", "database_needed"],
-      "supporting_signals": ["data_entry_automation", "custom_apps_needed", "workflow_automation", "process_definition_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50"], "role": ["owner-operator", "team-manager", "system-admin"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_creator", "zoho_sheet", "zoho_analytics"],
-      "supporting_bundle": ["zoho_flow", "zoho_workdrive", "zoho_forms"],
-      "business_outcome": "Replace fragile spreadsheets with custom apps that enforce data integrity and automate repetitive work.",
-      "explanation_template": "As a {role} in {industry}, your team of {size} is running critical operations in spreadsheets that break, get duplicated, and have no audit trail. This pattern replaces them with custom apps that capture data once, enforce rules, and generate reports automatically."
-    },
-    {
-      "id": "integration_connected_stack",
-      "name": "Integration + Connected Stack",
-      "required_signals": ["integration_needed", "unified_platform_needed"],
-      "supporting_signals": ["api_orchestration_needed", "workflow_automation", "data_entry_automation"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["6-15", "16-50", "51-200"], "role": ["system-admin", "owner-operator"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_flow", "zoho_creator", "zoho_analytics"],
-      "supporting_bundle": ["zoho_catalyst", "zoho_crm", "zoho_directory"],
-      "business_outcome": "Connect your existing tools into a unified data flow where every system stays in sync automatically.",
-      "explanation_template": "As a {role} in {industry}, your {size}-person team is wasting time re-entering data across tools that don't talk to each other. This pattern connects your stack through automated workflows and a central integration layer — so data moves between systems without human intervention."
-    },
-    {
-      "id": "collaboration_knowledge_management",
-      "name": "Collaboration + Knowledge Management",
-      "required_signals": ["collaboration_needed", "document_management_needed"],
-      "supporting_signals": ["project_management_needed", "video_conferencing_needed", "unified_platform_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["6-15", "16-50", "51-200", "200+"], "role": ["team-manager", "owner-operator"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_cliq", "zoho_workdrive", "zoho_projects"],
-      "supporting_bundle": ["zoho_meeting", "zoho_connect", "zoho_learn", "zoho_writer"],
-      "business_outcome": "Give your team one place to communicate, share files, and manage work — so knowledge doesn't live in inboxes.",
-      "explanation_template": "As a {role} in {industry} with {size} people, information is scattered across email, chat, and shared drives. This pattern centralizes communication, documents, and project work — so your team can find what they need and collaborate without switching tools."
-    },
-    {
-      "id": "recruiting_onboarding",
-      "name": "Recruiting + Onboarding",
-      "required_signals": ["recruiting_needed", "hr_needed"],
-      "supporting_signals": ["learning_management_needed", "approval_flows_needed", "process_definition_needed"],
-      "anti_signals": ["solo_productivity"],
-      "ideal_profile": { "size": ["16-50", "51-200", "200+"], "role": ["team-manager", "owner-operator"], "b2b": ["b2b", "b2c", "both"] },
-      "primary_bundle": ["zoho_recruit", "zoho_people", "zoho_learn"],
-      "supporting_bundle": ["zoho_sign", "zoho_connect", "zoho_cliq", "zoho_expense"],
-      "business_outcome": "Hire faster and ramp new employees to productivity with a connected pipeline from job post to first-day checklist.",
-      "explanation_template": "As a {role} in {industry}, hiring at {size} people means every open role costs you output. This pattern streamlines the pipeline — from posting the job, to signing the offer, to onboarding with training courses — so new hires are productive from day one."
-    },
-    {
-      "id": "document_management_esignature",
-      "name": "Document Management + E-signature",
-      "required_signals": ["document_management_needed", "esignature_needed"],
-      "supporting_signals": ["contract_management_needed", "approval_flows_needed", "collaboration_needed"],
-      "anti_signals": [],
-      "ideal_profile": { "size": ["2-5", "6-15", "16-50", "51-200"], "role": ["owner-operator", "team-manager", "system-admin"], "b2b": ["b2b", "both"] },
-      "primary_bundle": ["zoho_workdrive", "zoho_sign", "zoho_writer"],
-      "supporting_bundle": ["zoho_contracts", "zoho_crm", "zoho_flow"],
-      "business_outcome": "Create, share, sign, and store documents in one secure workflow — no more emailing PDFs back and forth.",
-      "explanation_template": "As a {role} in {industry}, your team of {size} is spending too much time chasing signatures and tracking document versions. This pattern gives you a single flow from document creation to e-signature to secure storage — with audit trails at every step."
+      "ideal_profile": {
+        "size": ["2-10", "11-50", "51-200"],
+        "role": ["Owner / Founder", "Manager or Team Lead", "Executive or Director"],
+        "b2b":  ["b2b", "b2c", "both"]
+      },
+      "primary_bundle":    ["zoho_marketing_automation", "zoho_campaigns", "zoho_social"],
+      "supporting_bundle": ["zoho_analytics", "zoho_crm"],
+      "business_outcome": "Marketing spend becomes measurable end-to-end, from first touch to closed revenue.",
+      "explanation_template": "Campaigns go out but there's no line from ad spend to revenue. This pattern instruments your funnel so attribution is observable."
     }
   ]
 }
